@@ -53,6 +53,7 @@ export default function AdminSettingsPage() {
   const [settings, setSettings] = useState(defaultSettings);
   const [saving, setSaving] = useState(false);
   const [saved, setSaved] = useState(false);
+  const [saveError, setSaveError] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -80,6 +81,7 @@ export default function AdminSettingsPage() {
 
   const handleSave = async () => {
     setSaving(true);
+    setSaveError(null);
     const supabase = createClient();
 
     const upsertData = {
@@ -92,17 +94,25 @@ export default function AdminSettingsPage() {
       .select("id")
       .single();
 
+    let saveErr: string | null = null;
     if (existing) {
-      await supabase.from("site_settings").update(upsertData).eq("id", existing.id);
+      const { error } = await supabase.from("site_settings").update(upsertData).eq("id", existing.id);
+      if (error) saveErr = error.message;
     } else {
-      await supabase.from("site_settings").insert(upsertData);
+      const { error } = await supabase.from("site_settings").insert(upsertData);
+      if (error) saveErr = error.message;
     }
 
     setSaving(false);
+
+    if (saveErr) {
+      setSaveError(saveErr);
+      return;
+    }
+
     setSaved(true);
     setTimeout(() => setSaved(false), 2000);
 
-    // Trigger revalidation
     try {
       await fetch("/api/revalidate", {
         method: "POST",
@@ -168,6 +178,20 @@ export default function AdminSettingsPage() {
           {saved ? "Saved!" : "Save Changes"}
         </Button>
       </div>
+
+      {saveError && (
+        <div className="rounded-lg border border-destructive/40 bg-destructive/10 px-4 py-3 text-sm text-destructive">
+          <strong>Save failed:</strong> {saveError}
+          {saveError.includes("column") && (
+            <p className="mt-1 text-xs opacity-80">
+              Run this SQL in Supabase SQL Editor first:<br />
+              <code className="font-mono bg-black/20 px-1 rounded">
+                ALTER TABLE site_settings ADD COLUMN IF NOT EXISTS hero_bg_type TEXT DEFAULT &apos;orbs&apos;, ADD COLUMN IF NOT EXISTS hero_bg_custom_html TEXT, ADD COLUMN IF NOT EXISTS hero_bg_blur BOOLEAN DEFAULT false;
+              </code>
+            </p>
+          )}
+        </div>
+      )}
 
       <Tabs defaultValue="hero">
         <TabsList className="w-full justify-start flex-wrap h-auto gap-1">
