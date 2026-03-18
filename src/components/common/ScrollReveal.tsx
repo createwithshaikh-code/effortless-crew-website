@@ -1,7 +1,7 @@
 "use client";
 
-import { motion, useInView } from "framer-motion";
-import { useRef, ReactNode } from "react";
+import { motion, useInView, useReducedMotion } from "framer-motion";
+import { useRef, ReactNode, useEffect, useState } from "react";
 
 interface ScrollRevealProps {
   children: ReactNode;
@@ -18,6 +18,17 @@ export default function ScrollReveal({
 }: ScrollRevealProps) {
   const ref = useRef(null);
   const isInView = useInView(ref, { once: true, margin: "-80px" });
+  const prefersReduced = useReducedMotion();
+  const [isMobile, setIsMobile] = useState(false);
+
+  useEffect(() => {
+    setIsMobile(window.innerWidth < 768);
+  }, []);
+
+  // On mobile or reduced-motion: render immediately with no animation
+  if (isMobile || prefersReduced) {
+    return <div className={className}>{children}</div>;
+  }
 
   const directionMap = {
     up: { y: 30, x: 0 },
@@ -27,10 +38,7 @@ export default function ScrollReveal({
     none: { y: 0, x: 0 },
   };
 
-  const initial = {
-    opacity: 0,
-    ...directionMap[direction],
-  };
+  const initial = { opacity: 0, ...directionMap[direction] };
 
   return (
     <motion.div
@@ -38,11 +46,7 @@ export default function ScrollReveal({
       className={className}
       initial={initial}
       animate={isInView ? { opacity: 1, y: 0, x: 0 } : initial}
-      transition={{
-        duration: 0.5,
-        delay,
-        ease: [0.22, 1, 0.36, 1],
-      }}
+      transition={{ duration: 0.5, delay, ease: [0.22, 1, 0.36, 1] }}
     >
       {children}
     </motion.div>

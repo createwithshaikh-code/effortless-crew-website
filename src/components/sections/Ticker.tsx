@@ -34,7 +34,7 @@ export default function Ticker() {
 
       <div className="flex overflow-hidden">
         {/* First set */}
-        <div className="flex items-center gap-0 animate-ticker whitespace-nowrap flex-shrink-0">
+        <div className="flex items-center gap-0 animate-ticker whitespace-nowrap flex-shrink-0" style={{ willChange: "transform" }}>
           {repeatedItems.map((item, i) => (
             <span key={i} className="flex items-center gap-4 px-4 text-white font-semibold text-sm">
               <Sparkles className="w-3 h-3 text-white/50 flex-shrink-0" />
@@ -45,6 +45,7 @@ export default function Ticker() {
         {/* Duplicate for seamless loop */}
         <div
           className="flex items-center gap-0 animate-ticker whitespace-nowrap flex-shrink-0"
+          style={{ willChange: "transform" }}
           aria-hidden
         >
           {repeatedItems.map((item, i) => (

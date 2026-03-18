@@ -37,61 +37,54 @@ export default function Hero({ videoUrl }: { videoUrl?: string | null }) {
       {/* Deep background base */}
       <div className="absolute inset-0 section-bg-1" />
 
-      {/* Video background */}
+      {/* Video background — desktop only (too heavy for mobile) */}
       {videoUrl && (
         <video
-          className="absolute inset-0 w-full h-full object-cover opacity-30"
+          className="absolute inset-0 w-full h-full object-cover opacity-30 hidden md:block"
           src={videoUrl}
           autoPlay
           loop
           muted
           playsInline
-          preload="auto"
+          preload="none"
         />
       )}
 
       {/* Grid pattern */}
       <div className="absolute inset-0 bg-grid opacity-100" />
 
-      {/* Large morphing blob — magenta */}
+      {/* Large morphing blob — magenta (desktop only) */}
       <motion.div
-        className="absolute top-[-20%] right-[-10%] w-[700px] h-[700px] orb orb-magenta opacity-40"
-        animate={{
-          scale: [1, 1.15, 1],
-          x: [0, 30, 0],
-          y: [0, -30, 0],
-        }}
+        className="absolute hidden md:block top-[-20%] right-[-10%] w-[700px] h-[700px] orb orb-magenta opacity-40"
+        animate={{ scale: [1, 1.15, 1], x: [0, 30, 0], y: [0, -30, 0] }}
         transition={{ duration: 12, repeat: Infinity, ease: "easeInOut" }}
         style={{ borderRadius: "60% 40% 30% 70% / 60% 30% 70% 40%" }}
       />
+      {/* Mobile static orb — no animation */}
+      <div className="absolute md:hidden top-[-20%] right-[-10%] w-[300px] h-[300px] orb orb-magenta opacity-30 rounded-full" />
 
-      {/* Large morphing blob — royal blue */}
+      {/* Large morphing blob — royal blue (desktop only) */}
       <motion.div
-        className="absolute bottom-[-20%] left-[-10%] w-[600px] h-[600px] orb orb-blue opacity-35"
-        animate={{
-          scale: [1.1, 1, 1.1],
-          x: [0, -20, 0],
-          y: [0, 20, 0],
-        }}
+        className="absolute hidden md:block bottom-[-20%] left-[-10%] w-[600px] h-[600px] orb orb-blue opacity-35"
+        animate={{ scale: [1.1, 1, 1.1], x: [0, -20, 0], y: [0, 20, 0] }}
         transition={{ duration: 15, repeat: Infinity, ease: "easeInOut" }}
         style={{ borderRadius: "40% 60% 70% 30% / 40% 50% 60% 50%" }}
       />
+      {/* Mobile static orb */}
+      <div className="absolute md:hidden bottom-[-20%] left-[-10%] w-[280px] h-[280px] orb orb-blue opacity-25 rounded-full" />
 
-      {/* Center accent orb — purple */}
+      {/* Center accent orb — desktop only */}
       <motion.div
-        className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] orb orb-purple opacity-25"
-        animate={{
-          scale: [1, 1.3, 1],
-          opacity: [0.1, 0.2, 0.1],
-        }}
+        className="absolute hidden md:block top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] orb orb-purple opacity-25"
+        animate={{ scale: [1, 1.3, 1], opacity: [0.1, 0.2, 0.1] }}
         transition={{ duration: 8, repeat: Infinity, ease: "easeInOut" }}
       />
 
-      {/* Small floating particles */}
+      {/* Small floating particles — desktop only */}
       {[...Array(6)].map((_, i) => (
         <motion.div
           key={i}
-          className="absolute w-1.5 h-1.5 rounded-full"
+          className="absolute hidden md:block w-1.5 h-1.5 rounded-full"
           style={{
             background: i % 2 === 0 ? "#D946EF" : "#60A5FA",
             left: `${15 + i * 15}%`,
@@ -112,9 +105,9 @@ export default function Hero({ videoUrl }: { videoUrl?: string | null }) {
         />
       ))}
 
-      {/* Grain overlay */}
+      {/* Grain overlay — desktop only (SVG filter is GPU heavy on mobile) */}
       <div
-        className="absolute inset-0 opacity-[0.25] pointer-events-none"
+        className="absolute inset-0 opacity-[0.25] pointer-events-none hidden md:block"
         style={{
           backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E")`,
         }}
