@@ -1,3 +1,5 @@
+export const dynamic = "force-dynamic";
+
 import Hero from "@/components/sections/Hero";
 import type { HeroBgConfig } from "@/components/sections/Hero";
 import Ticker from "@/components/sections/Ticker";

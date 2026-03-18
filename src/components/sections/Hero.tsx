@@ -51,14 +51,6 @@ export default function Hero({ heroBg }: { heroBg?: HeroBgConfig }) {
       {/* Grid pattern overlay */}
       <div className="absolute inset-0 bg-grid opacity-100" />
 
-      {/* Grain overlay — desktop only */}
-      <div
-        className="absolute inset-0 opacity-[0.22] pointer-events-none hidden md:block"
-        style={{
-          backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E")`,
-        }}
-      />
-
       {/* Content */}
       <div className="relative z-10 container mx-auto px-4 sm:px-6 lg:px-8 text-center">
 
