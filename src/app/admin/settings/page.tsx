@@ -84,19 +84,40 @@ export default function AdminSettingsPage() {
     setSaveError(null);
     const supabase = createClient();
 
+    // Check if a row exists
+    const { count } = await supabase
+      .from("site_settings")
+      .select("id", { count: "exact", head: true });
+
     const upsertData = {
-      ...settings,
+      hero_headline: settings.hero_headline,
+      hero_subheadline: settings.hero_subheadline,
+      hero_reel_url: settings.hero_reel_url,
+      hero_cta_text: settings.hero_cta_text,
+      hero_cta_link: settings.hero_cta_link,
+      hero_bg_type: settings.hero_bg_type,
+      hero_bg_custom_html: settings.hero_bg_custom_html || null,
+      hero_bg_blur: settings.hero_bg_blur,
+      about_headline: settings.about_headline,
+      about_body: settings.about_body,
+      about_image_url: settings.about_image_url,
+      stats_json: settings.stats_json,
+      social_links: settings.social_links,
+      seo_title: settings.seo_title,
+      seo_description: settings.seo_description,
+      seo_og_image_url: settings.seo_og_image_url,
+      footer_tagline: settings.footer_tagline,
       updated_at: new Date().toISOString(),
     };
 
-    const { data: existing } = await supabase
-      .from("site_settings")
-      .select("id")
-      .single();
-
     let saveErr: string | null = null;
-    if (existing) {
-      const { error } = await supabase.from("site_settings").update(upsertData).eq("id", existing.id);
+
+    if ((count ?? 0) > 0) {
+      // Update — no ID needed, just update the only row
+      const { error } = await supabase
+        .from("site_settings")
+        .update(upsertData)
+        .not("id", "is", null);
       if (error) saveErr = error.message;
     } else {
       const { error } = await supabase.from("site_settings").insert(upsertData);
