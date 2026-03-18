@@ -1,4 +1,5 @@
 import Hero from "@/components/sections/Hero";
+import type { HeroBgConfig } from "@/components/sections/Hero";
 import Ticker from "@/components/sections/Ticker";
 import Stats from "@/components/sections/Stats";
 import Services from "@/components/sections/Services";
@@ -7,11 +8,11 @@ import Process from "@/components/sections/Process";
 import Testimonials from "@/components/sections/Testimonials";
 import CTA from "@/components/sections/CTA";
 import { createClient } from "@/lib/supabase/server";
+import type { HeroBgType } from "@/components/sections/HeroBackground";
 
 export default async function HomePage() {
-  // Fetch featured portfolio items for "Results That Speak" section
   let dbItems = undefined;
-  let heroVideoUrl: string | null = null;
+  let heroBg: HeroBgConfig = { type: "orbs" };
   try {
     const supabase = await createClient();
     const { data } = await supabase
@@ -25,20 +26,22 @@ export default async function HomePage() {
 
     const { data: settings } = await supabase
       .from("site_settings")
-      .select("hero_video_url")
+      .select("hero_bg_type, hero_bg_custom_html, hero_bg_blur")
       .maybeSingle();
-    heroVideoUrl =
-      settings?.hero_video_url ??
-      process.env.NEXT_PUBLIC_HERO_VIDEO_URL ??
-      "https://res.cloudinary.com/dtn8imtzw/video/upload/v1773822084/webs_u48gto.mp4";
+    if (settings) {
+      heroBg = {
+        type: (settings.hero_bg_type as HeroBgType) ?? "orbs",
+        customHtml: settings.hero_bg_custom_html ?? undefined,
+        blur: settings.hero_bg_blur ?? false,
+      };
+    }
   } catch {
-    // Supabase not configured yet — use static fallback
-    heroVideoUrl = "https://res.cloudinary.com/dtn8imtzw/video/upload/v1773822084/webs_u48gto.mp4";
+    // Supabase not configured — use default
   }
 
   return (
     <>
-      <Hero videoUrl={heroVideoUrl} />
+      <Hero heroBg={heroBg} />
       <Ticker />
       <Stats />
       <Services />

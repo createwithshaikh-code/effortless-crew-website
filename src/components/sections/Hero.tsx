@@ -3,7 +3,13 @@
 import Link from "next/link";
 import { motion } from "framer-motion";
 import { Play, ArrowRight, ChevronDown, Sparkles, Zap, Star } from "lucide-react";
-import { Button } from "@/components/ui/button";
+import HeroBackground, { type HeroBgType } from "@/components/sections/HeroBackground";
+
+export interface HeroBgConfig {
+  type: HeroBgType;
+  customHtml?: string;
+  blur?: boolean;
+}
 
 const words = ["We Make", "Creators", "Look Legendary."];
 
@@ -25,89 +31,29 @@ const wordVariant = {
 };
 
 const floatingBadges = [
-  { icon: Zap, text: "500+ Videos", color: "from-brand/20 to-brand/5", border: "border-brand/20", textColor: "text-brand", x: "-left-4 lg:-left-16", y: "top-24" },
-  { icon: Star, text: "4.9/5 Rating", color: "from-royal/20 to-royal/5", border: "border-royal/20", textColor: "text-royal-300", x: "-right-4 lg:-right-16", y: "top-32" },
-  { icon: Sparkles, text: "100M+ Views", color: "from-purple-500/20 to-purple-500/5", border: "border-purple-500/20", textColor: "text-purple-400", x: "-left-4 lg:-left-20", y: "bottom-32" },
+  { icon: Zap, text: "500+ Videos", border: "border-brand/20", textColor: "text-brand", x: "-left-4 lg:-left-16", y: "top-24" },
+  { icon: Star, text: "4.9/5 Rating", border: "border-royal/20", textColor: "text-royal-300", x: "-right-4 lg:-right-16", y: "top-32" },
+  { icon: Sparkles, text: "100M+ Views", border: "border-purple-500/20", textColor: "text-purple-400", x: "-left-4 lg:-left-20", y: "bottom-32" },
 ];
 
-export default function Hero({ videoUrl }: { videoUrl?: string | null }) {
+export default function Hero({ heroBg }: { heroBg?: HeroBgConfig }) {
+  const bg = heroBg ?? { type: "orbs" as HeroBgType };
+
   return (
     <section className="relative min-h-screen flex flex-col items-center justify-center overflow-hidden bg-dark-300">
 
       {/* Deep background base */}
       <div className="absolute inset-0 section-bg-1" />
 
-      {/* Video background — desktop only (too heavy for mobile) */}
-      {videoUrl && (
-        <video
-          className="absolute inset-0 w-full h-full object-cover opacity-30 hidden md:block"
-          src={videoUrl}
-          autoPlay
-          loop
-          muted
-          playsInline
-          preload="none"
-        />
-      )}
+      {/* Animated background */}
+      <HeroBackground type={bg.type} customHtml={bg.customHtml} blur={bg.blur} />
 
-      {/* Grid pattern */}
+      {/* Grid pattern overlay */}
       <div className="absolute inset-0 bg-grid opacity-100" />
 
-      {/* Large morphing blob — magenta (desktop only) */}
-      <motion.div
-        className="absolute hidden md:block top-[-20%] right-[-10%] w-[700px] h-[700px] orb orb-magenta opacity-40"
-        animate={{ scale: [1, 1.15, 1], x: [0, 30, 0], y: [0, -30, 0] }}
-        transition={{ duration: 12, repeat: Infinity, ease: "easeInOut" }}
-        style={{ borderRadius: "60% 40% 30% 70% / 60% 30% 70% 40%" }}
-      />
-      {/* Mobile static orb — no animation */}
-      <div className="absolute md:hidden top-[-20%] right-[-10%] w-[300px] h-[300px] orb orb-magenta opacity-30 rounded-full" />
-
-      {/* Large morphing blob — royal blue (desktop only) */}
-      <motion.div
-        className="absolute hidden md:block bottom-[-20%] left-[-10%] w-[600px] h-[600px] orb orb-blue opacity-35"
-        animate={{ scale: [1.1, 1, 1.1], x: [0, -20, 0], y: [0, 20, 0] }}
-        transition={{ duration: 15, repeat: Infinity, ease: "easeInOut" }}
-        style={{ borderRadius: "40% 60% 70% 30% / 40% 50% 60% 50%" }}
-      />
-      {/* Mobile static orb */}
-      <div className="absolute md:hidden bottom-[-20%] left-[-10%] w-[280px] h-[280px] orb orb-blue opacity-25 rounded-full" />
-
-      {/* Center accent orb — desktop only */}
-      <motion.div
-        className="absolute hidden md:block top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] orb orb-purple opacity-25"
-        animate={{ scale: [1, 1.3, 1], opacity: [0.1, 0.2, 0.1] }}
-        transition={{ duration: 8, repeat: Infinity, ease: "easeInOut" }}
-      />
-
-      {/* Small floating particles — desktop only */}
-      {[...Array(6)].map((_, i) => (
-        <motion.div
-          key={i}
-          className="absolute hidden md:block w-1.5 h-1.5 rounded-full"
-          style={{
-            background: i % 2 === 0 ? "#D946EF" : "#60A5FA",
-            left: `${15 + i * 15}%`,
-            top: `${20 + (i % 3) * 25}%`,
-            opacity: 0.6,
-          }}
-          animate={{
-            y: [0, -20, 0],
-            opacity: [0.4, 0.8, 0.4],
-            scale: [1, 1.5, 1],
-          }}
-          transition={{
-            duration: 3 + i * 0.7,
-            repeat: Infinity,
-            ease: "easeInOut",
-            delay: i * 0.4,
-          }}
-        />
-      ))}
-
-      {/* Grain overlay — desktop only (SVG filter is GPU heavy on mobile) */}
+      {/* Grain overlay — desktop only */}
       <div
-        className="absolute inset-0 opacity-[0.25] pointer-events-none hidden md:block"
+        className="absolute inset-0 opacity-[0.22] pointer-events-none hidden md:block"
         style={{
           backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E")`,
         }}
@@ -161,11 +107,7 @@ export default function Hero({ videoUrl }: { videoUrl?: string | null }) {
           style={{ perspective: "1000px" }}
         >
           {words.map((line, i) => (
-            <motion.span
-              key={i}
-              variants={wordVariant}
-              className={`block ${i === 1 ? "text-gradient" : ""}`}
-            >
+            <motion.span key={i} variants={wordVariant} className={`block ${i === 1 ? "text-gradient" : ""}`}>
               {line}
             </motion.span>
           ))}
@@ -190,27 +132,20 @@ export default function Hero({ videoUrl }: { videoUrl?: string | null }) {
           transition={{ duration: 0.8, delay: 1.2 }}
           className="flex flex-col sm:flex-row items-center justify-center gap-4"
         >
-          {/* Primary gradient button */}
           <Link
             href="/contact"
             className="relative group flex items-center gap-2.5 px-8 py-4 rounded-2xl font-semibold text-white text-base overflow-hidden w-full sm:w-auto justify-center"
-            style={{
-              background: "linear-gradient(135deg, #C026D3 0%, #2563EB 100%)",
-              boxShadow: "0 0 30px rgba(192,38,211,0.4), 0 0 60px rgba(37,99,235,0.2)",
-            }}
+            style={{ background: "linear-gradient(135deg, #C026D3 0%, #2563EB 100%)", boxShadow: "0 0 30px rgba(192,38,211,0.4), 0 0 60px rgba(37,99,235,0.2)" }}
           >
             <span className="relative z-10 flex items-center gap-2">
               Start Your Project
               <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
             </span>
             <span className="absolute inset-0 btn-shimmer" />
-            {/* Hover glow */}
             <span className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300"
-              style={{ background: "linear-gradient(135deg, #D946EF 0%, #3B82F6 100%)" }}
-            />
+              style={{ background: "linear-gradient(135deg, #D946EF 0%, #3B82F6 100%)" }} />
           </Link>
 
-          {/* Secondary ghost button */}
           <button
             className="flex items-center gap-3 group cursor-pointer w-full sm:w-auto justify-center"
             onClick={() => document.getElementById("portfolio")?.scrollIntoView({ behavior: "smooth" })}
@@ -240,7 +175,7 @@ export default function Hero({ videoUrl }: { videoUrl?: string | null }) {
             { value: "50+", label: "Happy Clients", color: "text-royal-300" },
             { value: "100M+", label: "Views Generated", color: "text-purple-400" },
             { value: "4.9/5", label: "Client Rating", color: "text-brand-300" },
-          ].map((stat, i) => (
+          ].map((stat) => (
             <motion.div
               key={stat.label}
               className="flex items-center gap-2 px-4 py-2.5 rounded-full glass border border-white/8"

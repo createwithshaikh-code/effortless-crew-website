@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { Save, Loader2, Plus, Trash2 } from "lucide-react";
+import { Save, Loader2, Plus, Trash2, Check, Eye, EyeOff } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -9,14 +9,30 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import type { StatItem } from "@/types";
+import type { HeroBgType } from "@/components/sections/HeroBackground";
+
+const BG_PRESETS: { id: HeroBgType; name: string; gradient: string; emoji: string }[] = [
+  { id: "orbs",      name: "Floating Orbs",   gradient: "from-purple-600 via-pink-600 to-blue-700",   emoji: "🔮" },
+  { id: "aurora",    name: "Aurora",           gradient: "from-green-500 via-purple-600 to-blue-600",  emoji: "🌌" },
+  { id: "stars",     name: "Starfield",        gradient: "from-slate-900 via-indigo-950 to-slate-900", emoji: "✨" },
+  { id: "matrix",    name: "Matrix Rain",      gradient: "from-slate-950 via-purple-950 to-blue-950", emoji: "💻" },
+  { id: "waves",     name: "Pulse Waves",      gradient: "from-purple-900 via-violet-900 to-purple-900", emoji: "〰️" },
+  { id: "nebula",    name: "Nebula",           gradient: "from-indigo-950 via-purple-900 to-blue-950", emoji: "🌠" },
+  { id: "mesh",      name: "Color Mesh",       gradient: "from-violet-900 via-indigo-800 to-blue-900", emoji: "🎨" },
+  { id: "bokeh",     name: "Bokeh Lights",     gradient: "from-slate-950 via-purple-950 to-slate-950", emoji: "💫" },
+  { id: "geometric", name: "Geometric",        gradient: "from-indigo-950 via-blue-950 to-purple-950", emoji: "⬡" },
+  { id: "synthwave", name: "Synthwave Grid",   gradient: "from-purple-950 via-pink-950 to-purple-950", emoji: "🌆" },
+];
 
 const defaultSettings = {
   hero_headline: "We Make Creators Look Legendary.",
   hero_subheadline: "From cinematic long-form edits to viral shorts and stunning motion graphics — we turn raw footage into content that actually converts.",
   hero_reel_url: "",
-  hero_video_url: "",
   hero_cta_text: "Start Your Project",
   hero_cta_link: "/contact",
+  hero_bg_type: "orbs" as HeroBgType,
+  hero_bg_custom_html: "",
+  hero_bg_blur: false,
   about_headline: "Built by Creators, for Creators",
   about_body: "We're a team of passionate video editors and content strategists who've spent years perfecting the craft of storytelling through video.",
   about_image_url: "",
@@ -52,6 +68,9 @@ export default function AdminSettingsPage() {
           ...data,
           stats_json: data.stats_json ?? defaultSettings.stats_json,
           social_links: data.social_links ?? defaultSettings.social_links,
+          hero_bg_type: (data.hero_bg_type as HeroBgType) ?? defaultSettings.hero_bg_type,
+          hero_bg_custom_html: data.hero_bg_custom_html ?? "",
+          hero_bg_blur: data.hero_bg_blur ?? false,
         });
       }
       setLoading(false);
@@ -191,18 +210,79 @@ export default function AdminSettingsPage() {
                 Upload your reel to Cloudinary and paste the URL here
               </p>
             </div>
-            <div>
-              <Label>Hero Video Background URL</Label>
-              <Input
-                value={settings.hero_video_url}
-                onChange={(e) => setSettings((p) => ({ ...p, hero_video_url: e.target.value }))}
-                placeholder="https://res.cloudinary.com/..."
-                className="mt-1.5"
-              />
-              <p className="text-xs text-muted-foreground mt-1">
-                Optional video that plays as the hero section background (muted, looped, 30% opacity)
-              </p>
+          </div>
+
+          {/* Background Animation Picker */}
+          <div className="rounded-xl border border-border bg-card p-5 space-y-5">
+            <div className="flex items-center justify-between">
+              <div>
+                <h3 className="font-semibold">Background Animation</h3>
+                <p className="text-xs text-muted-foreground mt-0.5">Select a preset or paste custom HTML/CSS animation code</p>
+              </div>
+              {/* Blur toggle */}
+              <button
+                type="button"
+                onClick={() => setSettings((p) => ({ ...p, hero_bg_blur: !p.hero_bg_blur }))}
+                className={`flex items-center gap-2 px-3 py-1.5 rounded-lg border text-xs font-medium transition-colors cursor-pointer ${settings.hero_bg_blur ? "bg-brand/15 border-brand/40 text-brand-300" : "border-border text-muted-foreground hover:border-border/80"}`}
+              >
+                {settings.hero_bg_blur ? <EyeOff className="w-3.5 h-3.5" /> : <Eye className="w-3.5 h-3.5" />}
+                Blur {settings.hero_bg_blur ? "ON" : "OFF"}
+              </button>
             </div>
+
+            {/* 10 preset tiles */}
+            <div className="grid grid-cols-2 sm:grid-cols-5 gap-2">
+              {BG_PRESETS.map((preset) => {
+                const active = settings.hero_bg_type === preset.id;
+                return (
+                  <button
+                    key={preset.id}
+                    type="button"
+                    onClick={() => setSettings((p) => ({ ...p, hero_bg_type: preset.id, hero_bg_custom_html: "" }))}
+                    className={`relative flex flex-col items-center justify-center gap-1.5 p-3 rounded-xl border text-center transition-all cursor-pointer ${active ? "border-brand/60 bg-brand/10 ring-1 ring-brand/40" : "border-border hover:border-white/20 bg-background/50"}`}
+                  >
+                    <div className={`w-full h-10 rounded-lg bg-gradient-to-br ${preset.gradient} flex items-center justify-center text-lg`}>
+                      {preset.emoji}
+                    </div>
+                    <span className="text-[11px] font-medium leading-tight text-muted-foreground">{preset.name}</span>
+                    {active && (
+                      <span className="absolute top-1.5 right-1.5 w-4 h-4 rounded-full bg-brand flex items-center justify-center">
+                        <Check className="w-2.5 h-2.5 text-white" />
+                      </span>
+                    )}
+                  </button>
+                );
+              })}
+            </div>
+
+            {/* Custom HTML box */}
+            <div className="space-y-2">
+              <Label>Custom Animation HTML/CSS</Label>
+              <Textarea
+                value={settings.hero_bg_custom_html}
+                onChange={(e) => setSettings((p) => ({ ...p, hero_bg_custom_html: e.target.value }))}
+                placeholder={"<style>/* your keyframes */</style>\n<div class=\"your-animation\"></div>"}
+                rows={5}
+                className="mt-1.5 font-mono text-xs"
+              />
+              <div className="flex items-center gap-2">
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  disabled={!settings.hero_bg_custom_html.trim()}
+                  onClick={() => setSettings((p) => ({ ...p, hero_bg_type: "custom" }))}
+                  className="cursor-pointer"
+                >
+                  Apply Custom Animation
+                </Button>
+                <p className="text-xs text-muted-foreground">Paste any HTML + CSS animation code and click Apply, then Save.</p>
+              </div>
+            </div>
+          </div>
+
+          <div className="rounded-xl border border-border bg-card p-5 space-y-4">
+            <h3 className="font-semibold">Hero Section</h3>
             <div className="grid grid-cols-2 gap-4">
               <div>
                 <Label>CTA Button Text</Label>
