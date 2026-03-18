@@ -7,6 +7,8 @@ import { Button } from "@/components/ui/button";
 import ScrollReveal from "@/components/common/ScrollReveal";
 import { createClient } from "@/lib/supabase/server";
 
+export const revalidate = 3600; // cache for 1 hour, rebuild on deploy
+
 export const metadata: Metadata = {
   title: "Services",
   description: "Professional video editing services — long form, short form, motion graphics, and YouTube automation.",

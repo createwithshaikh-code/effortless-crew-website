@@ -27,9 +27,13 @@ export default async function HomePage() {
       .from("site_settings")
       .select("hero_video_url")
       .maybeSingle();
-    heroVideoUrl = settings?.hero_video_url ?? process.env.NEXT_PUBLIC_HERO_VIDEO_URL ?? null;
+    heroVideoUrl =
+      settings?.hero_video_url ??
+      process.env.NEXT_PUBLIC_HERO_VIDEO_URL ??
+      "https://res.cloudinary.com/dtn8imtzw/video/upload/v1773822084/webs_u48gto.mp4";
   } catch {
     // Supabase not configured yet — use static fallback
+    heroVideoUrl = "https://res.cloudinary.com/dtn8imtzw/video/upload/v1773822084/webs_u48gto.mp4";
   }
 
   return (

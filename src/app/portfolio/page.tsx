@@ -4,6 +4,8 @@ import PortfolioGridClient from "./PortfolioGridClient";
 import ScrollReveal from "@/components/common/ScrollReveal";
 import { Badge } from "@/components/ui/badge";
 
+export const revalidate = 3600;
+
 export const metadata: Metadata = {
   title: "Portfolio",
   description: "View our video editing work — long form, short form, motion graphics, and YouTube automation projects.",

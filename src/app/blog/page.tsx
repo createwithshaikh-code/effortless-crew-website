@@ -7,6 +7,8 @@ import ScrollReveal from "@/components/common/ScrollReveal";
 import { formatDateShort } from "@/lib/utils";
 import { Clock, ArrowRight } from "lucide-react";
 
+export const revalidate = 3600;
+
 export const metadata: Metadata = {
   title: "Blog",
   description: "Tips, insights, and guides on video editing, YouTube growth, and content creation.",
