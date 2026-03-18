@@ -1,8 +1,8 @@
-import { createClient } from "@/lib/supabase/server";
+import { createServiceClient } from "@/lib/supabase/server";
 import ContactInboxClient from "./ContactInboxClient";
 
 export default async function AdminContactPage() {
-  const supabase = await createClient();
+  const supabase = await createServiceClient();
   const { data: submissions } = await supabase
     .from("contact_submissions")
     .select("*")
