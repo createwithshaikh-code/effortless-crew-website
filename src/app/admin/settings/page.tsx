@@ -54,6 +54,9 @@ export default function AdminSettingsPage() {
   const [saving, setSaving] = useState(false);
   const [saved, setSaved] = useState(false);
   const [saveError, setSaveError] = useState<string | null>(null);
+  const [bgApplying, setBgApplying] = useState(false);
+  const [bgApplied, setBgApplied] = useState(false);
+  const [bgError, setBgError] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -142,6 +145,28 @@ export default function AdminSettingsPage() {
       });
     } catch {
       // ignore
+    }
+  };
+
+  const applyBackground = async () => {
+    setBgApplying(true);
+    setBgError(null);
+    const supabase = createClient();
+    const { error } = await supabase
+      .from("site_settings")
+      .update({
+        hero_bg_type: settings.hero_bg_type,
+        hero_bg_custom_html: settings.hero_bg_custom_html || null,
+        hero_bg_blur: settings.hero_bg_blur,
+        updated_at: new Date().toISOString(),
+      })
+      .not("id", "is", null);
+    setBgApplying(false);
+    if (error) {
+      setBgError(error.message);
+    } else {
+      setBgApplied(true);
+      setTimeout(() => setBgApplied(false), 2500);
     }
   };
 
@@ -319,11 +344,36 @@ export default function AdminSettingsPage() {
                   onClick={() => setSettings((p) => ({ ...p, hero_bg_type: "custom" }))}
                   className="cursor-pointer"
                 >
-                  Apply Custom Animation
+                  Use Custom HTML
                 </Button>
-                <p className="text-xs text-muted-foreground">Paste any HTML + CSS animation code and click Apply, then Save.</p>
+                <p className="text-xs text-muted-foreground">Paste HTML + CSS code then click Use Custom HTML, then Apply Background below.</p>
               </div>
             </div>
+
+            {/* Apply button */}
+            <div className="pt-2 border-t border-border flex items-center gap-3">
+              <Button
+                type="button"
+                variant="brand"
+                onClick={applyBackground}
+                disabled={bgApplying}
+                className="cursor-pointer"
+              >
+                {bgApplying ? (
+                  <Loader2 className="w-4 h-4 animate-spin" />
+                ) : bgApplied ? (
+                  <Check className="w-4 h-4" />
+                ) : null}
+                {bgApplying ? "Applying..." : bgApplied ? "Applied!" : "Apply Background to Hero"}
+              </Button>
+              <p className="text-xs text-muted-foreground">
+                Currently: <span className="font-medium text-foreground">{settings.hero_bg_type}</span>
+                {settings.hero_bg_blur && " · Blur ON"}
+              </p>
+            </div>
+            {bgError && (
+              <p className="text-xs text-destructive">{bgError}</p>
+            )}
           </div>
 
           <div className="rounded-xl border border-border bg-card p-5 space-y-4">
