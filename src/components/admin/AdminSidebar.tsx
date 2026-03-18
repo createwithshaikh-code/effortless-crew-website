@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { useEffect, useState } from "react";
 import {
   LayoutDashboard,
   FileText,
@@ -77,6 +78,32 @@ const navItems = [
 export default function AdminSidebar() {
   const pathname = usePathname();
   const router = useRouter();
+  const [newMsgCount, setNewMsgCount] = useState(0);
+
+  useEffect(() => {
+    const supabase = createClient();
+
+    // Initial fetch
+    supabase
+      .from("contact_submissions")
+      .select("id", { count: "exact", head: true })
+      .eq("status", "new")
+      .then(({ count }) => setNewMsgCount(count ?? 0));
+
+    // Realtime — refetch count on any change
+    const channel = supabase
+      .channel("sidebar_msg_count")
+      .on("postgres_changes", { event: "*", schema: "public", table: "contact_submissions" }, async () => {
+        const { count } = await supabase
+          .from("contact_submissions")
+          .select("id", { count: "exact", head: true })
+          .eq("status", "new");
+        setNewMsgCount(count ?? 0);
+      })
+      .subscribe();
+
+    return () => { supabase.removeChannel(channel); };
+  }, []);
 
   const handleLogout = async () => {
     const supabase = createClient();
@@ -120,6 +147,11 @@ export default function AdminSidebar() {
           >
             <item.icon className="w-4 h-4 flex-shrink-0" />
             <span className="flex-1">{item.label}</span>
+            {item.href === "/admin/contact" && newMsgCount > 0 && (
+              <span className="flex items-center justify-center min-w-[18px] h-[18px] px-1 rounded-full bg-brand text-white text-[10px] font-bold">
+                {newMsgCount > 99 ? "99+" : newMsgCount}
+              </span>
+            )}
             <ChevronRight
               className={cn(
                 "w-3 h-3 opacity-0 group-hover:opacity-50 transition-opacity",

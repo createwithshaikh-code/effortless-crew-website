@@ -1,4 +1,4 @@
-import { createClient } from "@/lib/supabase/server";
+import { createServiceClient } from "@/lib/supabase/server";
 import { FileText, Image, Star, Mail, Plus, ArrowRight } from "lucide-react";
 import Link from "next/link";
 import { formatRelativeDate } from "@/lib/utils";
@@ -7,7 +7,7 @@ import { Badge } from "@/components/ui/badge";
 
 async function getStats() {
   try {
-  const supabase = await createClient();
+  const supabase = await createServiceClient();
 
   const [blogs, portfolio, testimonials, contacts] = await Promise.all([
     supabase.from("blog_posts").select("id", { count: "exact" }),

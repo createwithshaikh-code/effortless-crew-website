@@ -1,6 +1,7 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { Trash2 } from "lucide-react";
 import { formatRelativeDate } from "@/lib/utils";
 import { createClient } from "@/lib/supabase/client";
 import { Badge } from "@/components/ui/badge";
@@ -32,6 +33,30 @@ export default function ContactInboxClient({
   const [selected, setSelected] = useState<ContactSubmission | null>(null);
   const [filter, setFilter] = useState<ContactSubmission["status"] | "all">("all");
 
+  // ── Realtime subscription ──────────────────────────────────────────
+  useEffect(() => {
+    const supabase = createClient();
+    const channel = supabase
+      .channel("contact_submissions_realtime")
+      .on(
+        "postgres_changes",
+        { event: "INSERT", schema: "public", table: "contact_submissions" },
+        (payload) => {
+          setLocalSubmissions((prev) => [payload.new as ContactSubmission, ...prev]);
+        }
+      )
+      .on(
+        "postgres_changes",
+        { event: "DELETE", schema: "public", table: "contact_submissions" },
+        (payload) => {
+          setLocalSubmissions((prev) => prev.filter((s) => s.id !== payload.old.id));
+        }
+      )
+      .subscribe();
+
+    return () => { supabase.removeChannel(channel); };
+  }, []);
+
   const filtered =
     filter === "all"
       ? localSubmissions
@@ -44,6 +69,15 @@ export default function ContactInboxClient({
       prev.map((s) => (s.id === id ? { ...s, status } : s))
     );
     if (selected?.id === id) setSelected((p) => p ? { ...p, status } : p);
+  };
+
+  const deleteSubmission = async (id: string, e?: React.MouseEvent) => {
+    e?.stopPropagation();
+    if (!confirm("Delete this message?")) return;
+    const supabase = createClient();
+    await supabase.from("contact_submissions").delete().eq("id", id);
+    setLocalSubmissions((prev) => prev.filter((s) => s.id !== id));
+    if (selected?.id === id) setSelected(null);
   };
 
   const exportCSV = () => {
@@ -61,6 +95,8 @@ export default function ContactInboxClient({
     a.click();
   };
 
+  const newCount = localSubmissions.filter((s) => s.status === "new").length;
+
   return (
     <>
       <div className="flex flex-wrap gap-2 items-center justify-between">
@@ -77,6 +113,11 @@ export default function ContactInboxClient({
               )}
             >
               {s}
+              {s === "new" && newCount > 0 && (
+                <span className="ml-1.5 bg-white/20 text-white px-1.5 py-0.5 rounded-full text-[10px] font-bold">
+                  {newCount}
+                </span>
+              )}
             </button>
           ))}
         </div>
@@ -93,14 +134,14 @@ export default function ContactInboxClient({
         ) : (
           <div className="divide-y divide-border">
             {filtered.map((submission) => (
-              <button
+              <div
                 key={submission.id}
                 onClick={() => {
                   setSelected(submission);
                   if (submission.status === "new") updateStatus(submission.id, "read");
                 }}
                 className={cn(
-                  "w-full flex items-center gap-4 px-5 py-4 hover:bg-muted/50 transition-colors text-left cursor-pointer",
+                  "w-full flex items-center gap-4 px-5 py-4 hover:bg-muted/50 transition-colors cursor-pointer",
                   submission.status === "new" && "bg-brand/5"
                 )}
               >
@@ -127,8 +168,16 @@ export default function ContactInboxClient({
                   <Badge variant={statusColors[submission.status] as "brand" | "secondary" | "success" | "outline"}>
                     {submission.status}
                   </Badge>
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    className="h-7 w-7 text-destructive hover:bg-destructive/10 cursor-pointer"
+                    onClick={(e) => deleteSubmission(submission.id, e)}
+                  >
+                    <Trash2 className="w-3.5 h-3.5" />
+                  </Button>
                 </div>
-              </button>
+              </div>
             ))}
           </div>
         )}
@@ -172,22 +221,33 @@ export default function ContactInboxClient({
                 </p>
               </div>
 
-              <div className="flex items-center gap-2">
-                <span className="text-xs text-muted-foreground">Status:</span>
-                {statusOptions.map((s) => (
-                  <button
-                    key={s}
-                    onClick={() => updateStatus(selected.id, s)}
-                    className={cn(
-                      "px-2.5 py-1 rounded-full text-xs font-medium capitalize transition-colors cursor-pointer",
-                      selected.status === s
-                        ? "bg-brand text-white"
-                        : "bg-muted hover:bg-accent"
-                    )}
-                  >
-                    {s}
-                  </button>
-                ))}
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-2 flex-wrap">
+                  <span className="text-xs text-muted-foreground">Status:</span>
+                  {statusOptions.map((s) => (
+                    <button
+                      key={s}
+                      onClick={() => updateStatus(selected.id, s)}
+                      className={cn(
+                        "px-2.5 py-1 rounded-full text-xs font-medium capitalize transition-colors cursor-pointer",
+                        selected.status === s
+                          ? "bg-brand text-white"
+                          : "bg-muted hover:bg-accent"
+                      )}
+                    >
+                      {s}
+                    </button>
+                  ))}
+                </div>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  className="text-destructive hover:bg-destructive/10 cursor-pointer"
+                  onClick={() => deleteSubmission(selected.id)}
+                >
+                  <Trash2 className="w-3.5 h-3.5" />
+                  Delete
+                </Button>
               </div>
             </div>
           )}
