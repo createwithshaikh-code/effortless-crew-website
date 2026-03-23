@@ -1,8 +1,9 @@
 "use client";
 
 import {
-  Film, Youtube, Smartphone, Share2,
-  Palette, Code2, Sparkles, BarChart3,
+  Film, Image, Smartphone, FileText,
+  Sparkles, Bot, Share2, Palette, Megaphone,
+  Globe, ShoppingCart, Video, Zap, BarChart3,
 } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
 
@@ -14,14 +15,25 @@ interface Service {
 }
 
 const services: Service[] = [
-  { name: "Video Editing",   icon: Film,       orbit: "inner",  angle: 0   },
-  { name: "YouTube",         icon: Youtube,    orbit: "inner",  angle: 120 },
-  { name: "Short Form",      icon: Smartphone, orbit: "inner",  angle: 240 },
-  { name: "Social Media",    icon: Share2,     orbit: "middle", angle: 60  },
-  { name: "Logo Design",     icon: Palette,    orbit: "middle", angle: 180 },
-  { name: "Web Dev",         icon: Code2,      orbit: "middle", angle: 300 },
-  { name: "Motion Graphics", icon: Sparkles,   orbit: "outer",  angle: 90  },
-  { name: "Brand Strategy",  icon: BarChart3,  orbit: "outer",  angle: 270 },
+  /* ── Inner orbit ── */
+  { name: "Video Editing",    icon: Film,         orbit: "inner",  angle: 0   },
+  { name: "Thumbnails",       icon: Image,        orbit: "inner",  angle: 90  },
+  { name: "Short-Form",       icon: Smartphone,   orbit: "inner",  angle: 180 },
+  { name: "Scripts & Copy",   icon: FileText,     orbit: "inner",  angle: 270 },
+
+  /* ── Middle orbit ── */
+  { name: "Motion Graphics",  icon: Sparkles,     orbit: "middle", angle: 0   },
+  { name: "YT Automation",    icon: Bot,          orbit: "middle", angle: 72  },
+  { name: "Social Media",     icon: Share2,       orbit: "middle", angle: 144 },
+  { name: "Logo Design",      icon: Palette,      orbit: "middle", angle: 216 },
+  { name: "Ads & Marketing",  icon: Megaphone,    orbit: "middle", angle: 288 },
+
+  /* ── Outer orbit ── */
+  { name: "Web Design",       icon: Globe,        orbit: "outer",  angle: 36  },
+  { name: "Ecommerce Sites",  icon: ShoppingCart, orbit: "outer",  angle: 108 },
+  { name: "Faceless Videos",  icon: Video,        orbit: "outer",  angle: 180 },
+  { name: "AI Production",    icon: Zap,          orbit: "outer",  angle: 252 },
+  { name: "Brand Strategy",   icon: BarChart3,    orbit: "outer",  angle: 324 },
 ];
 
 const orbitConfig = {
@@ -30,7 +42,6 @@ const orbitConfig = {
   outer:  { radius: 445, duration: 50 },
 };
 
-/* Orbit ring visual styles */
 const ringStyle = {
   inner: {
     border: "1px solid rgba(192,38,211,0.35)",
@@ -46,7 +57,6 @@ const ringStyle = {
   },
 };
 
-/* Small floating particles inside the orbit area */
 const particles = [
   { top: "14%", left: "22%", size: 2, delay: 0,  dur: 9  },
   { top: "74%", left: "12%", size: 2, delay: -3, dur: 12 },
@@ -107,7 +117,6 @@ export default function HeroOrbit() {
 
       {/* ── Center EC Sun ── */}
       <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-20">
-        {/* Outer glow rings */}
         <div
           className="absolute rounded-full animate-ping"
           style={{
@@ -125,7 +134,6 @@ export default function HeroOrbit() {
             animationDelay: "-0.7s",
           }}
         />
-        {/* Core */}
         <div
           className="relative rounded-full flex items-center justify-center select-none"
           style={{
@@ -153,7 +161,6 @@ export default function HeroOrbit() {
         return (
           <div
             key={service.name}
-            /* Layer 1 — rotates the arm CW */
             className="absolute"
             style={{
               top: "50%", left: "50%",
@@ -163,9 +170,7 @@ export default function HeroOrbit() {
               willChange: "transform",
             }}
           >
-            {/* Layer 2 — static arm pushes to orbit radius */}
             <div style={{ transform: `translateY(-${radius}px)` }}>
-              {/* Layer 3 — counter-rotate so card stays upright */}
               <div
                 style={{
                   animation: `orbit-ccw ${duration}s linear infinite`,
@@ -173,12 +178,12 @@ export default function HeroOrbit() {
                   willChange: "transform",
                 }}
               >
-                {/* Layer 4 — center the card */}
                 <div style={{ transform: "translateX(-50%)" }}>
                   <div
-                    className="group flex items-center gap-2 px-3 py-[7px] rounded-full whitespace-nowrap
+                    className="flex items-center gap-1.5 px-2.5 rounded-full whitespace-nowrap
                                 transition-transform duration-300 hover:scale-110 cursor-default"
                     style={{
+                      height: "28px",
                       background: "rgba(10,10,30,0.65)",
                       backdropFilter: "blur(14px)",
                       WebkitBackdropFilter: "blur(14px)",
@@ -187,8 +192,11 @@ export default function HeroOrbit() {
                         "0 0 12px rgba(192,38,211,0.15), 0 4px 20px rgba(0,0,0,0.55), inset 0 1px 0 rgba(255,255,255,0.08)",
                     }}
                   >
-                    <Icon className="w-3.5 h-3.5 text-brand-400 flex-shrink-0" />
-                    <span className="text-xs font-semibold text-white/90 leading-none">
+                    <Icon
+                      style={{ width: 12, height: 12, flexShrink: 0 }}
+                      className="text-brand-400"
+                    />
+                    <span className="text-[11px] font-semibold text-white/90 leading-none">
                       {service.name}
                     </span>
                   </div>
