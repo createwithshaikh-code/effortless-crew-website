@@ -110,8 +110,8 @@ export default function Hero() {
       >
         <motion.div
           style={{
-            maskImage: "linear-gradient(to right, transparent 0%, transparent 30%, rgba(0,0,0,0.7) 46%, black 56%)",
-            WebkitMaskImage: "linear-gradient(to right, transparent 0%, transparent 30%, rgba(0,0,0,0.7) 46%, black 56%)",
+            maskImage: "linear-gradient(to right, transparent 0%, black 13%)",
+            WebkitMaskImage: "linear-gradient(to right, transparent 0%, black 13%)",
           }}
           initial={{ opacity: 0, scale: 0.85 }}
           animate={{ opacity: 1, scale: 1 }}

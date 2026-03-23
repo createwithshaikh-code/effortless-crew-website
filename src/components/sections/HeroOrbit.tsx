@@ -42,27 +42,15 @@ const orbitConfig = {
   outer:  { radius: 445, duration: 52 },
 };
 
-const ringStyle = {
-  inner: {
-    border: "1px solid rgba(192,38,211,0.35)",
-    boxShadow: "0 0 18px rgba(192,38,211,0.10), inset 0 0 18px rgba(192,38,211,0.05)",
-  },
-  middle: {
-    border: "1px solid rgba(124,58,237,0.30)",
-    boxShadow: "0 0 22px rgba(124,58,237,0.09), inset 0 0 22px rgba(124,58,237,0.04)",
-  },
-  outer: {
-    border: "1px solid rgba(37,99,235,0.28)",
-    boxShadow: "0 0 28px rgba(37,99,235,0.08), inset 0 0 28px rgba(37,99,235,0.03)",
-  },
+/* Trail & icon colour per orbit */
+const orbitColor = {
+  inner:  { r: 192, g: 38,  b: 211 }, // magenta
+  middle: { r: 167, g: 139, b: 250 }, // purple
+  outer:  { r: 96,  g: 165, b: 250 }, // blue
 };
 
-/* icon color per orbit */
-const iconColor = {
-  inner:  "rgba(192,38,211,0.90)",
-  middle: "rgba(167,139,250,0.90)",
-  outer:  "rgba(96,165,250,0.90)",
-};
+const rgba = (c: { r: number; g: number; b: number }, a: number) =>
+  `rgba(${c.r},${c.g},${c.b},${a})`;
 
 const particles = [
   { top: "14%", left: "22%", size: 2, delay: 0,  dur: 9  },
@@ -84,7 +72,7 @@ export default function HeroOrbit() {
         className="absolute inset-0 pointer-events-none"
         style={{
           background:
-            "radial-gradient(circle at center, rgba(192,38,211,0.09) 0%, rgba(37,99,235,0.06) 40%, transparent 68%)",
+            "radial-gradient(circle at center, rgba(192,38,211,0.08) 0%, rgba(37,99,235,0.05) 40%, transparent 68%)",
         }}
       />
 
@@ -96,31 +84,12 @@ export default function HeroOrbit() {
           style={{
             top: p.top, left: p.left,
             width: p.size, height: p.size,
-            background: i % 2 === 0 ? "rgba(192,38,211,0.50)" : "rgba(37,99,235,0.50)",
+            background: i % 2 === 0 ? "rgba(192,38,211,0.45)" : "rgba(37,99,235,0.45)",
             animation: `orbit-particle ${p.dur}s ease-in-out infinite`,
             animationDelay: `${p.delay}s`,
           }}
         />
       ))}
-
-      {/* ── Orbit track rings ── */}
-      {(["inner", "middle", "outer"] as const).map((key) => {
-        const { radius } = orbitConfig[key];
-        return (
-          <div
-            key={key}
-            className="absolute rounded-full pointer-events-none"
-            style={{
-              width: radius * 2,
-              height: radius * 2,
-              top: "50%", left: "50%",
-              marginTop: -radius,
-              marginLeft: -radius,
-              ...ringStyle[key],
-            }}
-          />
-        );
-      })}
 
       {/* ── Center EC Sun ── */}
       <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-20">
@@ -150,98 +119,130 @@ export default function HeroOrbit() {
             willChange: "box-shadow",
           }}
         >
-          <span
-            className="font-black text-white text-sm tracking-tight"
-            style={{ fontFamily: "var(--font-space-grotesk)" }}
-          >
+          <span className="font-black text-white text-sm tracking-tight"
+                style={{ fontFamily: "var(--font-space-grotesk)" }}>
             EC
           </span>
         </div>
       </div>
 
-      {/* ── Orbiting service nodes ── */}
+      {/* ── Per-node comet trail + orbiting node ── */}
       {services.map((service) => {
         const { radius, duration } = orbitConfig[service.orbit];
-        // negative delay = already N seconds into the animation at render time
         const delay = -((service.angle / 360) * duration);
         const Icon = service.icon;
-        const color = iconColor[service.orbit];
+        const col = orbitColor[service.orbit];
+
+        /*
+         * Trail logic:
+         * The orbit arm always points UP (0°) in local space before rotation.
+         * The negative delay starts the animation already rotated to service.angle.
+         * Therefore in LOCAL coords, the node is always at 0° (top).
+         * A conic-gradient sector from 318°→360° in local coords will always
+         * appear immediately BEHIND the node as it orbits. ✓
+         */
+        const trailGradient = `conic-gradient(
+          transparent 0deg,
+          transparent 318deg,
+          ${rgba(col, 0.0)} 318deg,
+          ${rgba(col, 0.25)} 340deg,
+          ${rgba(col, 0.55)} 355deg,
+          ${rgba(col, 0.70)} 359deg,
+          transparent 360deg
+        )`;
+
+        /* Ring mask: show only the orbit-border strip, hide fill */
+        const ringMask = `radial-gradient(
+          transparent ${radius - 6}px,
+          black       ${radius - 4}px,
+          black       ${radius + 4}px,
+          transparent ${radius + 6}px
+        )`;
 
         return (
-          <div
-            key={service.name}
-            /* ── Layer 1: rotates CW around container center ── */
-            className="absolute"
-            style={{
-              top: "50%",
-              left: "50%",
-              width: 0,
-              height: 0,
-              animation: `orbit-cw ${duration}s linear infinite`,
-              animationDelay: `${delay}s`,
-              willChange: "transform",
-            }}
-          >
-            {/* ── Layer 2: translateY moves the arm outward to orbit radius ── */}
-            <div style={{ transform: `translateY(-${radius}px)` }}>
+          <div key={service.name}>
 
-              {/* ── Layer 3: counter-rotates CCW so the node stays upright ── */}
-              <div
-                style={{
-                  animation: `orbit-ccw ${duration}s linear infinite`,
-                  animationDelay: `${delay}s`,
-                  willChange: "transform",
-                }}
-              >
-                {/* ── Layer 4: center circle on orbit point, label to the right ── */}
-                {/* translate(-19px) = half of 38px circle, so circle center = orbit point */}
-                <div style={{ transform: "translate(-19px, -50%)", display: "flex", alignItems: "center", gap: 7 }}>
+            {/* ── Comet trail arc (same rotation as the node, no counter-rotate) ── */}
+            <div
+              className="absolute pointer-events-none"
+              style={{
+                width: radius * 2,
+                height: radius * 2,
+                top: "50%", left: "50%",
+                marginTop: -radius,
+                marginLeft: -radius,
+                borderRadius: "50%",
+                background: trailGradient,
+                WebkitMaskImage: ringMask,
+                maskImage: ringMask,
+                animation: `orbit-cw ${duration}s linear infinite`,
+                animationDelay: `${delay}s`,
+                willChange: "transform",
+              }}
+            />
 
-                  {/* Circle planet */}
-                  <div
-                    style={{
-                      width: 38,
-                      height: 38,
-                      borderRadius: "50%",
-                      flexShrink: 0,
-                      background: "rgba(8,8,28,0.82)",
-                      backdropFilter: "blur(12px)",
-                      WebkitBackdropFilter: "blur(12px)",
-                      border: `1.5px solid ${color.replace("0.90", "0.40")}`,
-                      boxShadow: `0 0 12px ${color.replace("0.90", "0.16")}, 0 4px 14px rgba(0,0,0,0.6)`,
-                      display: "flex",
-                      alignItems: "center",
-                      justifyContent: "center",
-                    }}
-                  >
-                    <Icon
+            {/* ── Orbiting node ── */}
+            <div
+              className="absolute"
+              style={{
+                top: "50%", left: "50%",
+                width: 0, height: 0,
+                animation: `orbit-cw ${duration}s linear infinite`,
+                animationDelay: `${delay}s`,
+                willChange: "transform",
+              }}
+            >
+              {/* translate to radius */}
+              <div style={{ transform: `translateY(-${radius}px)` }}>
+                {/* counter-rotate so node stays upright */}
+                <div
+                  style={{
+                    animation: `orbit-ccw ${duration}s linear infinite`,
+                    animationDelay: `${delay}s`,
+                    willChange: "transform",
+                  }}
+                >
+                  {/* center circle on orbit point, label to right */}
+                  <div style={{ transform: "translate(-19px, -50%)", display: "flex", alignItems: "center", gap: 7 }}>
+
+                    {/* Circle */}
+                    <div
                       style={{
-                        width: 14,
-                        height: 14,
-                        color,
+                        width: 38, height: 38,
+                        borderRadius: "50%",
                         flexShrink: 0,
-                        display: "block",
+                        background: "rgba(8,8,28,0.82)",
+                        backdropFilter: "blur(12px)",
+                        WebkitBackdropFilter: "blur(12px)",
+                        border: `1.5px solid ${rgba(col, 0.42)}`,
+                        boxShadow: `0 0 12px ${rgba(col, 0.28)}, 0 0 24px ${rgba(col, 0.12)}, 0 4px 14px rgba(0,0,0,0.6)`,
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "center",
                       }}
-                    />
+                    >
+                      <Icon style={{ width: 14, height: 14, color: rgba(col, 0.95), display: "block", flexShrink: 0 }} />
+                    </div>
+
+                    {/* Label */}
+                    <span
+                      style={{
+                        fontSize: 10,
+                        fontWeight: 600,
+                        color: "rgba(255,255,255,0.72)",
+                        whiteSpace: "nowrap",
+                        lineHeight: 1,
+                        letterSpacing: "0.02em",
+                      }}
+                    >
+                      {service.name}
+                    </span>
+
                   </div>
-
-                  {/* Label to the right */}
-                  <span
-                    style={{
-                      fontSize: 10,
-                      fontWeight: 600,
-                      color: "rgba(255,255,255,0.72)",
-                      whiteSpace: "nowrap",
-                      lineHeight: 1,
-                      letterSpacing: "0.02em",
-                    }}
-                  >
-                    {service.name}
-                  </span>
-
                 </div>
               </div>
             </div>
+
           </div>
         );
       })}
