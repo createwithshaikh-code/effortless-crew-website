@@ -37,9 +37,9 @@ const services: Service[] = [
 ];
 
 const orbitConfig = {
-  inner:  { radius: 200, duration: 20 },
-  middle: { radius: 320, duration: 35 },
-  outer:  { radius: 445, duration: 50 },
+  inner:  { radius: 200, duration: 22 },
+  middle: { radius: 320, duration: 36 },
+  outer:  { radius: 445, duration: 52 },
 };
 
 const ringStyle = {
@@ -55,6 +55,13 @@ const ringStyle = {
     border: "1px solid rgba(37,99,235,0.28)",
     boxShadow: "0 0 28px rgba(37,99,235,0.08), inset 0 0 28px rgba(37,99,235,0.03)",
   },
+};
+
+/* icon color per orbit */
+const iconColor = {
+  inner:  "rgba(192,38,211,0.90)",
+  middle: "rgba(167,139,250,0.90)",
+  outer:  "rgba(96,165,250,0.90)",
 };
 
 const particles = [
@@ -155,64 +162,83 @@ export default function HeroOrbit() {
       {/* ── Orbiting service nodes ── */}
       {services.map((service) => {
         const { radius, duration } = orbitConfig[service.orbit];
+        // negative delay = already N seconds into the animation at render time
         const delay = -((service.angle / 360) * duration);
         const Icon = service.icon;
+        const color = iconColor[service.orbit];
 
         return (
           <div
             key={service.name}
-            /* pivot at exact center */
+            /* ── Layer 1: rotates CW around container center ── */
             className="absolute"
             style={{
-              top: "50%", left: "50%",
-              width: 0, height: 0,
-              transformOrigin: "0 0",
+              top: "50%",
+              left: "50%",
+              width: 0,
+              height: 0,
               animation: `orbit-cw ${duration}s linear infinite`,
               animationDelay: `${delay}s`,
               willChange: "transform",
             }}
           >
-            {/* push node outward by radius — translate before rotation is applied */}
-            <div
-              style={{
-                position: "absolute",
-                top: -radius,
-                left: 0,
-                transformOrigin: `0 ${radius}px`,
-              }}
-            >
-              {/* counter-rotate so pill stays upright */}
+            {/* ── Layer 2: translateY moves the arm outward to orbit radius ── */}
+            <div style={{ transform: `translateY(-${radius}px)` }}>
+
+              {/* ── Layer 3: counter-rotates CCW so the node stays upright ── */}
               <div
                 style={{
                   animation: `orbit-ccw ${duration}s linear infinite`,
                   animationDelay: `${delay}s`,
                   willChange: "transform",
-                  transformOrigin: "center center",
                 }}
               >
-                {/* center the pill on the orbit point */}
-                <div style={{ transform: "translateX(-50%)" }}>
+                {/* ── Layer 4: center the circle on the orbit point ── */}
+                <div style={{ transform: "translate(-50%, -50%)" }}>
+
+                  {/* Circle planet */}
                   <div
-                    className="inline-flex items-center gap-1.5 px-2.5 whitespace-nowrap
-                                rounded-full cursor-default"
                     style={{
-                      height: "26px",
-                      background: "rgba(10,10,30,0.70)",
-                      backdropFilter: "blur(14px)",
-                      WebkitBackdropFilter: "blur(14px)",
-                      border: "1px solid rgba(192,38,211,0.30)",
-                      boxShadow:
-                        "0 0 12px rgba(192,38,211,0.15), 0 4px 20px rgba(0,0,0,0.55), inset 0 1px 0 rgba(255,255,255,0.08)",
+                      width: 48,
+                      height: 48,
+                      borderRadius: "50%",
+                      background: "rgba(8,8,28,0.80)",
+                      backdropFilter: "blur(12px)",
+                      WebkitBackdropFilter: "blur(12px)",
+                      border: `1.5px solid ${color.replace("0.90", "0.40")}`,
+                      boxShadow: `0 0 14px ${color.replace("0.90", "0.18")}, 0 4px 16px rgba(0,0,0,0.6)`,
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
                     }}
                   >
-                    <span className="flex items-center justify-center flex-shrink-0"
-                          style={{ width: 13, height: 13 }}>
-                      <Icon className="w-3 h-3 text-brand-400" />
-                    </span>
-                    <span className="text-[11px] font-semibold text-white/90 leading-none">
-                      {service.name}
-                    </span>
+                    <Icon
+                      style={{
+                        width: 18,
+                        height: 18,
+                        color,
+                        flexShrink: 0,
+                        display: "block",
+                      }}
+                    />
                   </div>
+
+                  {/* Label below */}
+                  <p
+                    style={{
+                      marginTop: 6,
+                      textAlign: "center",
+                      fontSize: 10,
+                      fontWeight: 600,
+                      color: "rgba(255,255,255,0.70)",
+                      whiteSpace: "nowrap",
+                      lineHeight: 1,
+                      letterSpacing: "0.02em",
+                    }}
+                  >
+                    {service.name}
+                  </p>
+
                 </div>
               </div>
             </div>
