@@ -77,6 +77,26 @@ html {
   scroll-behavior: smooth;
 }
 
+/* ── Solar Orbit Animations ───────────────────────────────── */
+@keyframes orbit-cw {
+  from { transform: rotate(0deg); }
+  to   { transform: rotate(360deg); }
+}
+@keyframes orbit-ccw {
+  from { transform: rotate(0deg); }
+  to   { transform: rotate(-360deg); }
+}
+@keyframes sun-pulse {
+  0%, 100% { box-shadow: 0 0 25px rgba(192,38,211,0.55), 0 0 55px rgba(37,99,235,0.30), 0 0 90px rgba(192,38,211,0.12); }
+  50%       { box-shadow: 0 0 45px rgba(192,38,211,0.90), 0 0 90px rgba(37,99,235,0.55), 0 0 150px rgba(192,38,211,0.28); }
+}
+@keyframes orbit-particle {
+  0%   { transform: translate(0, 0);       opacity: 0.25; }
+  33%  { transform: translate(12px, -8px); opacity: 0.55; }
+  66%  { transform: translate(-7px, 10px); opacity: 0.35; }
+  100% { transform: translate(0, 0);       opacity: 0.25; }
+}
+
 /* Custom scrollbar */
 ::-webkit-scrollbar {
   width: 5px;
