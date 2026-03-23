@@ -52,6 +52,21 @@ const orbitColor = {
 const rgba = (c: { r: number; g: number; b: number }, a: number) =>
   `rgba(${c.r},${c.g},${c.b},${a})`;
 
+const ringStyle = {
+  inner: {
+    border: "1px solid rgba(192,38,211,0.30)",
+    boxShadow: "0 0 16px rgba(192,38,211,0.09), inset 0 0 16px rgba(192,38,211,0.04)",
+  },
+  middle: {
+    border: "1px solid rgba(124,58,237,0.24)",
+    boxShadow: "0 0 20px rgba(124,58,237,0.07), inset 0 0 20px rgba(124,58,237,0.03)",
+  },
+  outer: {
+    border: "1px solid rgba(37,99,235,0.22)",
+    boxShadow: "0 0 24px rgba(37,99,235,0.06), inset 0 0 24px rgba(37,99,235,0.03)",
+  },
+};
+
 const particles = [
   { top: "14%", left: "22%", size: 2, delay: 0,  dur: 9  },
   { top: "74%", left: "12%", size: 2, delay: -3, dur: 12 },
@@ -90,6 +105,26 @@ export default function HeroOrbit() {
           }}
         />
       ))}
+
+      {/* ── Orbit track rings ── */}
+      {(["inner", "middle", "outer"] as const).map((key) => {
+        const { radius } = orbitConfig[key];
+        return (
+          <div
+            key={key}
+            className="absolute rounded-full pointer-events-none"
+            style={{
+              width: radius * 2,
+              height: radius * 2,
+              top: "50%",
+              left: "50%",
+              marginTop: -radius,
+              marginLeft: -radius,
+              ...ringStyle[key],
+            }}
+          />
+        );
+      })}
 
       {/* ── Center EC Sun ── */}
       <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-20">
