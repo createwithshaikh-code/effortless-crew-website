@@ -25,9 +25,9 @@ const services: Service[] = [
 ];
 
 const orbitConfig = {
-  inner:  { radius: 108, duration: 20 },
-  middle: { radius: 172, duration: 35 },
-  outer:  { radius: 236, duration: 50 },
+  inner:  { radius: 200, duration: 20 },
+  middle: { radius: 320, duration: 35 },
+  outer:  { radius: 445, duration: 50 },
 };
 
 /* Orbit ring visual styles */
@@ -60,7 +60,7 @@ const particles = [
 
 export default function HeroOrbit() {
   return (
-    <div className="relative" style={{ width: 480, height: 480, flexShrink: 0 }}>
+    <div className="relative" style={{ width: 1000, height: 1000, flexShrink: 0 }}>
 
       {/* Radial glow backdrop */}
       <div

@@ -5,7 +5,30 @@
       "Bash(npx tsc:*)",
       "Bash(npm run:*)",
       "Bash(taskkill /F /IM node.exe)",
-      "Bash(exit 0)"
+      "Bash(exit 0)",
+      "Bash(git add:*)",
+      "Bash(git commit:*)",
+      "Bash(git push:*)",
+      "Bash(git status:*)",
+      "WebFetch(domain:www.effortlesscrew.com)",
+      "Skill(update-config)",
+      "Skill(update-config:*)"
+    ]
+  },
+  "hooks": {
+    "PostToolUse": [
+      {
+        "matcher": "Edit|Write",
+        "hooks": [
+          {
+            "type": "command",
+            "shell": "powershell",
+            "command": "$json = [Console]::In.ReadToEnd() | ConvertFrom-Json; $file = $json.tool_input.file_path; $basename = if ($file) { Split-Path $file -Leaf } else { 'files' }; Set-Location 'c:/Users/jassim/WEBSITE x MUHIB/effortless crew website'; git add -A; if (git status --porcelain) { git commit -m \"auto: update $basename\"; git push origin main } 2>&1",
+            "timeout": 30,
+            "statusMessage": "Pushing to git..."
+          }
+        ]
+      }
     ]
   }
 }

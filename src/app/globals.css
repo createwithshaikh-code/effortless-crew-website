@@ -97,18 +97,19 @@ html {
   100% { transform: translate(0, 0);       opacity: 0.25; }
 }
 @keyframes twinkle {
-  0%, 100% { opacity: 0.08; transform: scale(0.7); }
-  50%       { opacity: 0.95; transform: scale(1.4); }
+  0%, 100% { opacity: 0.12; transform: scale(0.85); }
+  50%       { opacity: 0.60; transform: scale(1.2); }
 }
 @keyframes twinkle-slow {
-  0%, 100% { opacity: 0.05; transform: scale(0.8); }
-  50%       { opacity: 0.70; transform: scale(1.2); }
+  0%, 100% { opacity: 0.08; transform: scale(0.9); }
+  50%       { opacity: 0.42; transform: scale(1.1); }
 }
 @keyframes shooting-star {
   0%   { transform: rotate(20deg) translateY(0px);   opacity: 0; }
-  10%  { opacity: 0.92; }
-  82%  { opacity: 0.92; }
-  100% { transform: rotate(20deg) translateY(380px); opacity: 0; }
+  3%   { opacity: 0.92; }
+  18%  { transform: rotate(20deg) translateY(380px); opacity: 0.3; }
+  20%  { transform: rotate(20deg) translateY(380px); opacity: 0; }
+  100% { transform: rotate(20deg) translateY(0px);   opacity: 0; }
 }
 
 /* Custom scrollbar */

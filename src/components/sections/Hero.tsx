@@ -33,14 +33,11 @@ const ORBIT_STARS = Array.from({ length: 60 }, (_, i) => ({
 
 const ALL_STARS = [...BG_STARS, ...ORBIT_STARS];
 
-/* ── Shooting stars — fall downward ── */
+/* ── Shooting stars — 1 at a time, 5s apart ── */
 const SHOOTING = [
-  { top: "4%",  left: "55%", delay: 0,  dur: 2.6 },
-  { top: "7%",  left: "72%", delay: 5,  dur: 3.0 },
-  { top: "11%", left: "83%", delay: 10, dur: 2.4 },
-  { top: "2%",  left: "63%", delay: 16, dur: 2.8 },
-  { top: "5%",  left: "78%", delay: 22, dur: 3.2 },
-  { top: "14%", left: "91%", delay: 28, dur: 2.5 },
+  { top: "8%",  left: "62%", delay: 0,  dur: 15 },
+  { top: "3%",  left: "76%", delay: 5,  dur: 15 },
+  { top: "12%", left: "88%", delay: 10, dur: 15 },
 ];
 
 const wordVariant = {
@@ -103,6 +100,23 @@ export default function Hero() {
           }}
         />
       ))}
+
+      {/* ── Solar orbit — absolutely fills right side, fades left ── */}
+      <motion.div
+        className="hidden lg:block absolute pointer-events-none"
+        style={{
+          right: "-60px",
+          top: "50%",
+          transform: "translateY(-50%)",
+          maskImage: "linear-gradient(to right, transparent 0%, rgba(0,0,0,0.6) 30%, black 50%)",
+          WebkitMaskImage: "linear-gradient(to right, transparent 0%, rgba(0,0,0,0.6) 30%, black 50%)",
+        }}
+        initial={{ opacity: 0, scale: 0.85 }}
+        animate={{ opacity: 1, scale: 1 }}
+        transition={{ duration: 1.0, delay: 0.6, ease: [0.22, 1, 0.36, 1] }}
+      >
+        <HeroOrbit />
+      </motion.div>
 
       {/* ── Main split layout ── */}
       <div className="relative z-10 w-full container mx-auto px-4 sm:px-6 lg:px-8 py-24 lg:py-0">
@@ -198,15 +212,6 @@ export default function Hero() {
             </motion.div>
           </div>
 
-          {/* RIGHT: Solar orbit — desktop only, clipped */}
-          <motion.div
-            className="hidden lg:flex flex-1 items-center justify-center overflow-hidden"
-            initial={{ opacity: 0, scale: 0.85 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ duration: 1.0, delay: 0.6, ease: [0.22, 1, 0.36, 1] }}
-          >
-            <HeroOrbit />
-          </motion.div>
         </div>
       </div>
 
