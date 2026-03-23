@@ -82,7 +82,7 @@ export default function Hero() {
         />
       ))}
 
-      {/* ── Shooting stars — fall downward ── */}
+      {/* ── Shooting stars ── */}
       {SHOOTING.map((s, i) => (
         <div
           key={i}
@@ -96,27 +96,30 @@ export default function Hero() {
             borderRadius: "999px",
             transformOrigin: "top center",
             animation: `shooting-star ${s.dur}s ease-in ${s.delay}s infinite`,
+            animationFillMode: "backwards",
             willChange: "transform, opacity",
           }}
         />
       ))}
 
-      {/* ── Solar orbit — absolutely fills right side, fades left ── */}
-      <motion.div
-        className="hidden lg:block absolute pointer-events-none"
-        style={{
-          right: "-60px",
-          top: "50%",
-          transform: "translateY(-50%)",
-          maskImage: "linear-gradient(to right, transparent 0%, rgba(0,0,0,0.6) 30%, black 50%)",
-          WebkitMaskImage: "linear-gradient(to right, transparent 0%, rgba(0,0,0,0.6) 30%, black 50%)",
-        }}
-        initial={{ opacity: 0, scale: 0.85 }}
-        animate={{ opacity: 1, scale: 1 }}
-        transition={{ duration: 1.0, delay: 0.6, ease: [0.22, 1, 0.36, 1] }}
+      {/* ── Solar orbit — right side, vertically centered, fades left ── */}
+      {/* Outer div handles position only (no transform conflict with framer scale) */}
+      <div
+        className="hidden lg:flex absolute pointer-events-none items-center"
+        style={{ right: "-60px", top: 0, bottom: 0 }}
       >
-        <HeroOrbit />
-      </motion.div>
+        <motion.div
+          style={{
+            maskImage: "linear-gradient(to right, transparent 0%, rgba(0,0,0,0.5) 25%, black 45%)",
+            WebkitMaskImage: "linear-gradient(to right, transparent 0%, rgba(0,0,0,0.5) 25%, black 45%)",
+          }}
+          initial={{ opacity: 0, scale: 0.85 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ duration: 1.0, delay: 0.6, ease: [0.22, 1, 0.36, 1] }}
+        >
+          <HeroOrbit />
+        </motion.div>
+      </div>
 
       {/* ── Main split layout ── */}
       <div className="relative z-10 w-full container mx-auto px-4 sm:px-6 lg:px-8 py-24 lg:py-0">
