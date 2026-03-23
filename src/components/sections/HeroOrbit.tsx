@@ -161,30 +161,43 @@ export default function HeroOrbit() {
         return (
           <div
             key={service.name}
+            /* pivot at exact center */
             className="absolute"
             style={{
               top: "50%", left: "50%",
               width: 0, height: 0,
+              transformOrigin: "0 0",
               animation: `orbit-cw ${duration}s linear infinite`,
               animationDelay: `${delay}s`,
               willChange: "transform",
             }}
           >
-            <div style={{ transform: `translateY(-${radius}px)` }}>
+            {/* push node outward by radius — translate before rotation is applied */}
+            <div
+              style={{
+                position: "absolute",
+                top: -radius,
+                left: 0,
+                transformOrigin: `0 ${radius}px`,
+              }}
+            >
+              {/* counter-rotate so pill stays upright */}
               <div
                 style={{
                   animation: `orbit-ccw ${duration}s linear infinite`,
                   animationDelay: `${delay}s`,
                   willChange: "transform",
+                  transformOrigin: "center center",
                 }}
               >
+                {/* center the pill on the orbit point */}
                 <div style={{ transform: "translateX(-50%)" }}>
                   <div
-                    className="flex items-center gap-1.5 px-2.5 rounded-full whitespace-nowrap
-                                transition-transform duration-300 hover:scale-110 cursor-default"
+                    className="inline-flex items-center gap-1.5 px-2.5 whitespace-nowrap
+                                rounded-full cursor-default"
                     style={{
-                      height: "28px",
-                      background: "rgba(10,10,30,0.65)",
+                      height: "26px",
+                      background: "rgba(10,10,30,0.70)",
                       backdropFilter: "blur(14px)",
                       WebkitBackdropFilter: "blur(14px)",
                       border: "1px solid rgba(192,38,211,0.30)",
@@ -192,10 +205,10 @@ export default function HeroOrbit() {
                         "0 0 12px rgba(192,38,211,0.15), 0 4px 20px rgba(0,0,0,0.55), inset 0 1px 0 rgba(255,255,255,0.08)",
                     }}
                   >
-                    <Icon
-                      style={{ width: 12, height: 12, flexShrink: 0 }}
-                      className="text-brand-400"
-                    />
+                    <span className="flex items-center justify-center flex-shrink-0"
+                          style={{ width: 13, height: 13 }}>
+                      <Icon className="w-3 h-3 text-brand-400" />
+                    </span>
                     <span className="text-[11px] font-semibold text-white/90 leading-none">
                       {service.name}
                     </span>
