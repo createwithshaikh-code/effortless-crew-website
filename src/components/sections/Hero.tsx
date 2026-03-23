@@ -5,27 +5,42 @@ import { motion } from "framer-motion";
 import { Play, ArrowRight, ChevronDown, Sparkles } from "lucide-react";
 import HeroOrbit from "@/components/sections/HeroOrbit";
 
-/* ── Deterministic star field (golden-angle distribution) ── */
-const STARS = Array.from({ length: 110 }, (_, i) => {
-  const n = (i + 1) * 137.508;
-  return {
-    top:   `${(n % 100).toFixed(2)}%`,
-    left:  `${((n * 1.6180) % 100).toFixed(2)}%`,
-    size:  (n % 3) < 1 ? 1 : (n % 3) < 2 ? 2 : 1,
-    delay: `${-(n % 4).toFixed(1)}s`,
-    dur:   `${((n % 2.5) + 1.8).toFixed(1)}s`,
-    slow:  i % 3 === 0,
-  };
-});
+/* ── Seeded pseudo-random (sin-based, truly non-uniform) ── */
+function sr(seed: number) {
+  const x = Math.sin(seed + 1.5) * 73856;
+  return x - Math.floor(x);
+}
 
-/* ── Shooting stars ── */
+/* Sparse background stars — scattered across full screen */
+const BG_STARS = Array.from({ length: 70 }, (_, i) => ({
+  top:   `${(sr(i * 4.71 + 1.3)  * 100).toFixed(2)}%`,
+  left:  `${(sr(i * 8.93 + 2.7)  * 100).toFixed(2)}%`,
+  size:  sr(i * 12.1 + 0.3) > 0.82 ? 2 : 1,
+  delay: `${-(sr(i * 6.57 + 3.9) * 5).toFixed(1)}s`,
+  dur:   `${(sr(i * 2.83 + 1.1)  * 3 + 1.6).toFixed(1)}s`,
+  slow:  i % 5 === 0,
+}));
+
+/* Dense stars near the orbit (right 55%, full height) */
+const ORBIT_STARS = Array.from({ length: 60 }, (_, i) => ({
+  top:   `${(sr(i * 19.3 + 7.1) * 88 + 6).toFixed(2)}%`,
+  left:  `${(sr(i * 11.7 + 4.9) * 55 + 45).toFixed(2)}%`,
+  size:  1,
+  delay: `${-(sr(i * 7.43 + 2.2) * 4).toFixed(1)}s`,
+  dur:   `${(sr(i * 3.61 + 0.8) * 2 + 1.4).toFixed(1)}s`,
+  slow:  i % 4 === 0,
+}));
+
+const ALL_STARS = [...BG_STARS, ...ORBIT_STARS];
+
+/* ── Shooting stars — fall downward ── */
 const SHOOTING = [
-  { top: "10%", left: "52%", delay: 0,   dur: 2.8 },
-  { top: "6%",  left: "70%", delay: 5,   dur: 3.2 },
-  { top: "22%", left: "80%", delay: 9,   dur: 2.5 },
-  { top: "14%", left: "62%", delay: 14,  dur: 3.0 },
-  { top: "3%",  left: "75%", delay: 19,  dur: 2.6 },
-  { top: "30%", left: "88%", delay: 24,  dur: 3.4 },
+  { top: "4%",  left: "55%", delay: 0,  dur: 2.6 },
+  { top: "7%",  left: "72%", delay: 5,  dur: 3.0 },
+  { top: "11%", left: "83%", delay: 10, dur: 2.4 },
+  { top: "2%",  left: "63%", delay: 16, dur: 2.8 },
+  { top: "5%",  left: "78%", delay: 22, dur: 3.2 },
+  { top: "14%", left: "91%", delay: 28, dur: 2.5 },
 ];
 
 const wordVariant = {
@@ -54,7 +69,7 @@ export default function Hero() {
       <div className="absolute inset-0 bg-grid opacity-100" />
 
       {/* ── Star field ── */}
-      {STARS.map((s, i) => (
+      {ALL_STARS.map((s, i) => (
         <div
           key={i}
           className="absolute rounded-full pointer-events-none"
@@ -70,7 +85,7 @@ export default function Hero() {
         />
       ))}
 
-      {/* ── Shooting stars ── */}
+      {/* ── Shooting stars — fall downward ── */}
       {SHOOTING.map((s, i) => (
         <div
           key={i}
@@ -78,11 +93,13 @@ export default function Hero() {
           style={{
             top: s.top,
             left: s.left,
-            height: "1.5px",
-            background: "linear-gradient(90deg, transparent, rgba(186,230,253,0.85), white)",
+            width: "1.5px",
+            height: "80px",
+            background: "linear-gradient(to bottom, transparent, rgba(186,230,253,0.75), white)",
             borderRadius: "999px",
+            transformOrigin: "top center",
             animation: `shooting-star ${s.dur}s ease-in ${s.delay}s infinite`,
-            willChange: "transform, opacity, width",
+            willChange: "transform, opacity",
           }}
         />
       ))}

@@ -1,14 +1,8 @@
 "use client";
 
 import {
-  Film,
-  Youtube,
-  Smartphone,
-  Share2,
-  Palette,
-  Code2,
-  Sparkles,
-  BarChart3,
+  Film, Youtube, Smartphone, Share2,
+  Palette, Code2, Sparkles, BarChart3,
 } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
 
@@ -20,67 +14,79 @@ interface Service {
 }
 
 const services: Service[] = [
-  { name: "Video Editing",      icon: Film,       orbit: "inner",  angle: 0   },
-  { name: "YouTube",            icon: Youtube,    orbit: "inner",  angle: 120 },
-  { name: "Short Form",         icon: Smartphone, orbit: "inner",  angle: 240 },
-  { name: "Social Media",       icon: Share2,     orbit: "middle", angle: 60  },
-  { name: "Logo Design",        icon: Palette,    orbit: "middle", angle: 180 },
-  { name: "Web Dev",            icon: Code2,      orbit: "middle", angle: 300 },
-  { name: "Motion Graphics",    icon: Sparkles,   orbit: "outer",  angle: 90  },
-  { name: "Brand Strategy",     icon: BarChart3,  orbit: "outer",  angle: 270 },
+  { name: "Video Editing",   icon: Film,       orbit: "inner",  angle: 0   },
+  { name: "YouTube",         icon: Youtube,    orbit: "inner",  angle: 120 },
+  { name: "Short Form",      icon: Smartphone, orbit: "inner",  angle: 240 },
+  { name: "Social Media",    icon: Share2,     orbit: "middle", angle: 60  },
+  { name: "Logo Design",     icon: Palette,    orbit: "middle", angle: 180 },
+  { name: "Web Dev",         icon: Code2,      orbit: "middle", angle: 300 },
+  { name: "Motion Graphics", icon: Sparkles,   orbit: "outer",  angle: 90  },
+  { name: "Brand Strategy",  icon: BarChart3,  orbit: "outer",  angle: 270 },
 ];
 
 const orbitConfig = {
-  inner:  { radius: 115, duration: 20 },
-  middle: { radius: 180, duration: 35 },
-  outer:  { radius: 245, duration: 50 },
+  inner:  { radius: 108, duration: 20 },
+  middle: { radius: 172, duration: 35 },
+  outer:  { radius: 236, duration: 50 },
 };
 
+/* Orbit ring visual styles */
+const ringStyle = {
+  inner: {
+    border: "1px solid rgba(192,38,211,0.35)",
+    boxShadow: "0 0 18px rgba(192,38,211,0.10), inset 0 0 18px rgba(192,38,211,0.05)",
+  },
+  middle: {
+    border: "1px solid rgba(124,58,237,0.30)",
+    boxShadow: "0 0 22px rgba(124,58,237,0.09), inset 0 0 22px rgba(124,58,237,0.04)",
+  },
+  outer: {
+    border: "1px solid rgba(37,99,235,0.28)",
+    boxShadow: "0 0 28px rgba(37,99,235,0.08), inset 0 0 28px rgba(37,99,235,0.03)",
+  },
+};
+
+/* Small floating particles inside the orbit area */
 const particles = [
-  { top: "12%", left: "18%", size: 3, delay: 0,  dur: 8  },
-  { top: "72%", left: "8%",  size: 2, delay: -2, dur: 11 },
-  { top: "28%", left: "82%", size: 3, delay: -4, dur: 9  },
-  { top: "82%", left: "76%", size: 2, delay: -1, dur: 13 },
-  { top: "48%", left: "4%",  size: 2, delay: -6, dur: 10 },
-  { top: "8%",  left: "62%", size: 3, delay: -3, dur: 12 },
-  { top: "92%", left: "42%", size: 2, delay: -5, dur: 7  },
-  { top: "38%", left: "93%", size: 3, delay: -7, dur: 9  },
-  { top: "60%", left: "88%", size: 2, delay: -9, dur: 14 },
+  { top: "14%", left: "22%", size: 2, delay: 0,  dur: 9  },
+  { top: "74%", left: "12%", size: 2, delay: -3, dur: 12 },
+  { top: "32%", left: "78%", size: 2, delay: -5, dur: 8  },
+  { top: "80%", left: "72%", size: 2, delay: -2, dur: 11 },
+  { top: "50%", left: "6%",  size: 2, delay: -7, dur: 10 },
+  { top: "10%", left: "60%", size: 2, delay: -4, dur: 13 },
+  { top: "88%", left: "44%", size: 2, delay: -6, dur: 8  },
+  { top: "42%", left: "92%", size: 2, delay: -1, dur: 10 },
 ];
 
 export default function HeroOrbit() {
   return (
-    <div className="relative" style={{ width: 500, height: 500, flexShrink: 0 }}>
-      {/* Radial backdrop glow */}
+    <div className="relative" style={{ width: 480, height: 480, flexShrink: 0 }}>
+
+      {/* Radial glow backdrop */}
       <div
         className="absolute inset-0 pointer-events-none"
         style={{
           background:
-            "radial-gradient(circle at center, rgba(192,38,211,0.08) 0%, rgba(37,99,235,0.05) 38%, transparent 68%)",
+            "radial-gradient(circle at center, rgba(192,38,211,0.09) 0%, rgba(37,99,235,0.06) 40%, transparent 68%)",
         }}
       />
 
-      {/* Floating particles */}
+      {/* Particles */}
       {particles.map((p, i) => (
         <div
           key={i}
           className="absolute rounded-full pointer-events-none"
           style={{
-            top: p.top,
-            left: p.left,
-            width: p.size,
-            height: p.size,
-            background:
-              i % 2 === 0
-                ? "rgba(192,38,211,0.55)"
-                : "rgba(37,99,235,0.55)",
+            top: p.top, left: p.left,
+            width: p.size, height: p.size,
+            background: i % 2 === 0 ? "rgba(192,38,211,0.50)" : "rgba(37,99,235,0.50)",
             animation: `orbit-particle ${p.dur}s ease-in-out infinite`,
             animationDelay: `${p.delay}s`,
           }}
         />
       ))}
 
-      {/* Orbit track rings */}
+      {/* ── Orbit track rings ── */}
       {(["inner", "middle", "outer"] as const).map((key) => {
         const { radius } = orbitConfig[key];
         return (
@@ -90,42 +96,41 @@ export default function HeroOrbit() {
             style={{
               width: radius * 2,
               height: radius * 2,
-              top: "50%",
-              left: "50%",
+              top: "50%", left: "50%",
               marginTop: -radius,
               marginLeft: -radius,
-              border: "1px dashed rgba(192,38,211,0.14)",
+              ...ringStyle[key],
             }}
           />
         );
       })}
 
-      {/* ── Center "Sun" ── */}
+      {/* ── Center EC Sun ── */}
       <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-20">
-        {/* Outer ping rings */}
+        {/* Outer glow rings */}
         <div
           className="absolute rounded-full animate-ping"
           style={{
-            inset: -8,
-            background: "linear-gradient(135deg, rgba(192,38,211,0.25), rgba(37,99,235,0.15))",
-            animationDuration: "2.2s",
+            inset: -10,
+            background: "linear-gradient(135deg, rgba(192,38,211,0.22), rgba(37,99,235,0.14))",
+            animationDuration: "2.4s",
           }}
         />
         <div
           className="absolute rounded-full animate-ping"
           style={{
-            inset: -18,
-            background: "linear-gradient(135deg, rgba(192,38,211,0.10), rgba(37,99,235,0.06))",
-            animationDuration: "3s",
-            animationDelay: "-0.6s",
+            inset: -22,
+            background: "linear-gradient(135deg, rgba(192,38,211,0.09), rgba(37,99,235,0.06))",
+            animationDuration: "3.2s",
+            animationDelay: "-0.7s",
           }}
         />
         {/* Core */}
         <div
-          className="relative w-[78px] h-[78px] rounded-full flex items-center justify-center select-none"
+          className="relative rounded-full flex items-center justify-center select-none"
           style={{
-            background:
-              "linear-gradient(135deg, #C026D3 0%, #7C3AED 50%, #2563EB 100%)",
+            width: 84, height: 84,
+            background: "linear-gradient(135deg, #C026D3 0%, #7C3AED 50%, #2563EB 100%)",
             animation: "sun-pulse 3s ease-in-out infinite",
             willChange: "box-shadow",
           }}
@@ -148,21 +153,19 @@ export default function HeroOrbit() {
         return (
           <div
             key={service.name}
-            /* Layer 1: rotates the arm CW around center */
+            /* Layer 1 — rotates the arm CW */
             className="absolute"
             style={{
-              top: "50%",
-              left: "50%",
-              width: 0,
-              height: 0,
+              top: "50%", left: "50%",
+              width: 0, height: 0,
               animation: `orbit-cw ${duration}s linear infinite`,
               animationDelay: `${delay}s`,
               willChange: "transform",
             }}
           >
-            {/* Layer 2: static arm — push outward to orbit radius */}
+            {/* Layer 2 — static arm pushes to orbit radius */}
             <div style={{ transform: `translateY(-${radius}px)` }}>
-              {/* Layer 3: counter-rotates so card stays upright */}
+              {/* Layer 3 — counter-rotate so card stays upright */}
               <div
                 style={{
                   animation: `orbit-ccw ${duration}s linear infinite`,
@@ -170,22 +173,22 @@ export default function HeroOrbit() {
                   willChange: "transform",
                 }}
               >
-                {/* Layer 4: horizontal centering */}
+                {/* Layer 4 — center the card */}
                 <div style={{ transform: "translateX(-50%)" }}>
                   <div
-                    className="group flex items-center gap-1.5 px-2.5 py-[5px] rounded-full whitespace-nowrap cursor-default
-                                transition-transform duration-300 hover:scale-110"
+                    className="group flex items-center gap-2 px-3 py-[7px] rounded-full whitespace-nowrap
+                                transition-transform duration-300 hover:scale-110 cursor-default"
                     style={{
-                      background: "rgba(255,255,255,0.06)",
+                      background: "rgba(10,10,30,0.65)",
                       backdropFilter: "blur(14px)",
                       WebkitBackdropFilter: "blur(14px)",
-                      border: "1px solid rgba(255,255,255,0.12)",
+                      border: "1px solid rgba(192,38,211,0.30)",
                       boxShadow:
-                        "0 4px 16px rgba(0,0,0,0.45), inset 0 1px 0 rgba(255,255,255,0.08)",
+                        "0 0 12px rgba(192,38,211,0.15), 0 4px 20px rgba(0,0,0,0.55), inset 0 1px 0 rgba(255,255,255,0.08)",
                     }}
                   >
-                    <Icon className="w-[11px] h-[11px] text-brand-400 flex-shrink-0" />
-                    <span className="text-[11px] font-semibold text-white/85 leading-none">
+                    <Icon className="w-3.5 h-3.5 text-brand-400 flex-shrink-0" />
+                    <span className="text-xs font-semibold text-white/90 leading-none">
                       {service.name}
                     </span>
                   </div>

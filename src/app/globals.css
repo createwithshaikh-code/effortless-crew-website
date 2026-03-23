@@ -105,10 +105,10 @@ html {
   50%       { opacity: 0.70; transform: scale(1.2); }
 }
 @keyframes shooting-star {
-  0%   { transform: rotate(-42deg) translateX(0px);    opacity: 0; width: 0px;  }
-  6%   { opacity: 0.85; width: 90px; }
-  80%  { opacity: 0.85; width: 90px; }
-  100% { transform: rotate(-42deg) translateX(380px);  opacity: 0; width: 0px;  }
+  0%   { transform: rotate(20deg) translateY(0px);   opacity: 0; }
+  10%  { opacity: 0.92; }
+  82%  { opacity: 0.92; }
+  100% { transform: rotate(20deg) translateY(380px); opacity: 0; }
 }
 
 /* Custom scrollbar */
