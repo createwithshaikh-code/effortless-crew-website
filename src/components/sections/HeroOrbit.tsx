@@ -126,7 +126,7 @@ export default function HeroOrbit() {
         </div>
       </div>
 
-      {/* ── Per-node comet trail + orbiting node ── */}
+      {/* ── Per-node comet trail (ghost circles) + orbiting node ── */}
       {services.map((service) => {
         const { radius, duration } = orbitConfig[service.orbit];
         const delay = -((service.angle / 360) * duration);
@@ -134,54 +134,50 @@ export default function HeroOrbit() {
         const col = orbitColor[service.orbit];
 
         /*
-         * Trail logic:
-         * The orbit arm always points UP (0°) in local space before rotation.
-         * The negative delay starts the animation already rotated to service.angle.
-         * Therefore in LOCAL coords, the node is always at 0° (top).
-         * A conic-gradient sector from 318°→360° in local coords will always
-         * appear immediately BEHIND the node as it orbits. ✓
+         * Ghost circles trail behind the main node.
+         * A POSITIVE delta means the ghost's delay is less negative,
+         * so at render-time it is slightly behind the main node in CW orbit.
+         * delta is a fraction of the orbit period so visual spacing is
+         * consistent regardless of which orbit the service is on.
          */
-        const trailGradient = `conic-gradient(
-          transparent 0deg,
-          transparent 318deg,
-          ${rgba(col, 0.0)} 318deg,
-          ${rgba(col, 0.25)} 340deg,
-          ${rgba(col, 0.55)} 355deg,
-          ${rgba(col, 0.70)} 359deg,
-          transparent 360deg
-        )`;
-
-        /* Ring mask: show only the orbit-border strip, hide fill */
-        const ringMask = `radial-gradient(
-          transparent ${radius - 6}px,
-          black       ${radius - 4}px,
-          black       ${radius + 4}px,
-          transparent ${radius + 6}px
-        )`;
+        const ghosts = [
+          { delta: duration * 0.025, size: 28, alpha: 0.55 },
+          { delta: duration * 0.055, size: 20, alpha: 0.30 },
+          { delta: duration * 0.095, size: 13, alpha: 0.14 },
+        ];
 
         return (
           <div key={service.name}>
 
-            {/* ── Comet trail arc (same rotation as the node, no counter-rotate) ── */}
-            <div
-              className="absolute pointer-events-none"
-              style={{
-                width: radius * 2,
-                height: radius * 2,
-                top: "50%", left: "50%",
-                marginTop: -radius,
-                marginLeft: -radius,
-                borderRadius: "50%",
-                background: trailGradient,
-                WebkitMaskImage: ringMask,
-                maskImage: ringMask,
-                animation: `orbit-cw ${duration}s linear infinite`,
-                animationDelay: `${delay}s`,
-                willChange: "transform",
-              }}
-            />
+            {/* Ghost trail circles — no counter-rotation needed (symmetric) */}
+            {ghosts.map((g, gi) => (
+              <div
+                key={gi}
+                className="absolute pointer-events-none"
+                style={{
+                  top: "50%", left: "50%",
+                  width: 0, height: 0,
+                  animation: `orbit-cw ${duration}s linear infinite`,
+                  animationDelay: `${delay + g.delta}s`,
+                  willChange: "transform",
+                }}
+              >
+                <div style={{ transform: `translateY(-${radius}px)` }}>
+                  <div
+                    style={{
+                      width: g.size,
+                      height: g.size,
+                      borderRadius: "50%",
+                      transform: "translate(-50%, -50%)",
+                      background: rgba(col, g.alpha * 0.35),
+                      boxShadow: `0 0 ${Math.round(g.size * 0.7)}px ${rgba(col, g.alpha)}, 0 0 ${Math.round(g.size * 1.4)}px ${rgba(col, g.alpha * 0.5)}`,
+                    }}
+                  />
+                </div>
+              </div>
+            ))}
 
-            {/* ── Orbiting node ── */}
+            {/* ── Main orbiting node ── */}
             <div
               className="absolute"
               style={{
@@ -192,9 +188,7 @@ export default function HeroOrbit() {
                 willChange: "transform",
               }}
             >
-              {/* translate to radius */}
               <div style={{ transform: `translateY(-${radius}px)` }}>
-                {/* counter-rotate so node stays upright */}
                 <div
                   style={{
                     animation: `orbit-ccw ${duration}s linear infinite`,
@@ -202,7 +196,6 @@ export default function HeroOrbit() {
                     willChange: "transform",
                   }}
                 >
-                  {/* center circle on orbit point, label to right */}
                   <div style={{ transform: "translate(-19px, -50%)", display: "flex", alignItems: "center", gap: 7 }}>
 
                     {/* Circle */}
