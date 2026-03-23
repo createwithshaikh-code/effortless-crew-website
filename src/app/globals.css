@@ -96,6 +96,20 @@ html {
   66%  { transform: translate(-7px, 10px); opacity: 0.35; }
   100% { transform: translate(0, 0);       opacity: 0.25; }
 }
+@keyframes twinkle {
+  0%, 100% { opacity: 0.08; transform: scale(0.7); }
+  50%       { opacity: 0.95; transform: scale(1.4); }
+}
+@keyframes twinkle-slow {
+  0%, 100% { opacity: 0.05; transform: scale(0.8); }
+  50%       { opacity: 0.70; transform: scale(1.2); }
+}
+@keyframes shooting-star {
+  0%   { transform: rotate(-42deg) translateX(0px);    opacity: 0; width: 0px;  }
+  6%   { opacity: 0.85; width: 90px; }
+  80%  { opacity: 0.85; width: 90px; }
+  100% { transform: rotate(-42deg) translateX(380px);  opacity: 0; width: 0px;  }
+}
 
 /* Custom scrollbar */
 ::-webkit-scrollbar {
