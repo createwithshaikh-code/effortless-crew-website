@@ -231,14 +231,19 @@ export default function HeroOrbit() {
                     willChange: "transform",
                   }}
                 >
-                  <div style={{ transform: "translate(-19px, -50%)", display: "flex", alignItems: "center", gap: 7 }}>
+                  {/*
+                   * Centering wrapper = exactly 38×38px (same as circle).
+                   * translate(-50%, -50%) = translate(-19px, -19px) — always precise.
+                   * Circle center lands exactly on the orbit point.
+                   * Label is absolutely positioned to the right, clear of the circle.
+                   */}
+                  <div style={{ position: "relative", width: 38, height: 38, transform: "translate(-50%, -50%)" }}>
 
-                    {/* Circle */}
+                    {/* Circle — fills the wrapper exactly */}
                     <div
                       style={{
                         width: 38, height: 38,
                         borderRadius: "50%",
-                        flexShrink: 0,
                         background: "rgba(8,8,28,0.82)",
                         backdropFilter: "blur(12px)",
                         WebkitBackdropFilter: "blur(12px)",
@@ -249,12 +254,16 @@ export default function HeroOrbit() {
                         justifyContent: "center",
                       }}
                     >
-                      <Icon style={{ width: 14, height: 14, color: rgba(col, 0.95), display: "block", flexShrink: 0 }} />
+                      <Icon style={{ width: 14, height: 14, color: rgba(col, 0.95), display: "block" }} />
                     </div>
 
-                    {/* Label */}
+                    {/* Label — absolutely to the right, vertically centered on circle */}
                     <span
                       style={{
+                        position: "absolute",
+                        left: "calc(100% + 8px)",
+                        top: "50%",
+                        transform: "translateY(-50%)",
                         fontSize: 10,
                         fontWeight: 600,
                         color: "rgba(255,255,255,0.72)",
