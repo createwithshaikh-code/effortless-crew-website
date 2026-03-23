@@ -12,28 +12,27 @@ interface Service {
   icon: LucideIcon;
   orbit: "inner" | "middle" | "outer";
   angle: number;
+  tooltip?: string;
 }
 
 const services: Service[] = [
-  /* ── Inner orbit ── */
-  { name: "Video Editing",    icon: Film,         orbit: "inner",  angle: 0   },
-  { name: "Thumbnails",       icon: Image,        orbit: "inner",  angle: 90  },
-  { name: "Short-Form",       icon: Smartphone,   orbit: "inner",  angle: 180 },
-  { name: "Scripts & Copy",   icon: FileText,     orbit: "inner",  angle: 270 },
+  /* ── Ring 1 — Core Production ── */
+  { name: "YT Automation",    icon: Bot,        orbit: "inner",  angle: 0,   tooltip: "Forget the 2AM edits. Reaching for the stars became easier." },
+  { name: "Scriptwriting",    icon: FileText,   orbit: "inner",  angle: 120, tooltip: undefined },
+  { name: "Short-Form Video", icon: Smartphone, orbit: "inner",  angle: 240, tooltip: undefined },
 
-  /* ── Middle orbit ── */
-  { name: "Motion Graphics",  icon: Sparkles,     orbit: "middle", angle: 0   },
-  { name: "YT Automation",    icon: Bot,          orbit: "middle", angle: 72  },
-  { name: "Social Media",     icon: Share2,       orbit: "middle", angle: 144 },
-  { name: "Logo Design",      icon: Palette,      orbit: "middle", angle: 216 },
-  { name: "Ads & Marketing",  icon: Megaphone,    orbit: "middle", angle: 288 },
+  /* ── Ring 2 — Web & Design ── */
+  { name: "Ecommerce Sites",  icon: ShoppingCart, orbit: "middle", angle: 0,   tooltip: undefined },
+  { name: "Logo Design",      icon: Palette,      orbit: "middle", angle: 90,  tooltip: undefined },
+  { name: "Portfolio Sites",  icon: Globe,        orbit: "middle", angle: 180, tooltip: undefined },
+  { name: "Thumbnails",       icon: Image,        orbit: "middle", angle: 270, tooltip: "Supercharge your growth with visuals that convert." },
 
-  /* ── Outer orbit ── */
-  { name: "Web Design",       icon: Globe,        orbit: "outer",  angle: 36  },
-  { name: "Ecommerce Sites",  icon: ShoppingCart, orbit: "outer",  angle: 108 },
-  { name: "Faceless Videos",  icon: Video,        orbit: "outer",  angle: 180 },
-  { name: "AI Production",    icon: Zap,          orbit: "outer",  angle: 252 },
-  { name: "Brand Strategy",   icon: BarChart3,    orbit: "outer",  angle: 324 },
+  /* ── Ring 3 — Growth & Marketing ── */
+  { name: "Social Media Mgmt",  icon: Share2,     orbit: "outer",  angle: 0,   tooltip: undefined },
+  { name: "Trend Research",     icon: BarChart3,  orbit: "outer",  angle: 72,  tooltip: undefined },
+  { name: "Ad Production",      icon: Megaphone,  orbit: "outer",  angle: 144, tooltip: undefined },
+  { name: "AI Production",      icon: Zap,        orbit: "outer",  angle: 216, tooltip: undefined },
+  { name: "Video Editing",      icon: Film,       orbit: "outer",  angle: 288, tooltip: undefined },
 ];
 
 const orbitConfig = {
@@ -232,14 +231,13 @@ export default function HeroOrbit() {
                   }}
                 >
                   {/*
-                   * Centering wrapper = exactly 38×38px (same as circle).
-                   * translate(-50%, -50%) = translate(-19px, -19px) — always precise.
-                   * Circle center lands exactly on the orbit point.
-                   * Label is absolutely positioned to the right, clear of the circle.
+                   * Centering wrapper = exactly 38×38px.
+                   * translate(-50%,-50%) = (-19px,-19px) always.
+                   * Circle center lands exactly on orbit point.
                    */}
                   <div style={{ position: "relative", width: 38, height: 38, transform: "translate(-50%, -50%)" }}>
 
-                    {/* Circle — fills the wrapper exactly */}
+                    {/* Circle */}
                     <div
                       style={{
                         width: 38, height: 38,
@@ -257,7 +255,7 @@ export default function HeroOrbit() {
                       <Icon style={{ width: 14, height: 14, color: rgba(col, 0.95), display: "block" }} />
                     </div>
 
-                    {/* Label — absolutely to the right, vertically centered on circle */}
+                    {/* Label */}
                     <span
                       style={{
                         position: "absolute",
@@ -274,6 +272,38 @@ export default function HeroOrbit() {
                     >
                       {service.name}
                     </span>
+
+                    {/* Tooltip — shown on hover, floats above the circle */}
+                    {service.tooltip && (
+                      <div
+                        className="group/node"
+                        style={{ position: "absolute", inset: 0, cursor: "default" }}
+                      >
+                        <div
+                          style={{
+                            position: "absolute",
+                            bottom: "calc(100% + 10px)",
+                            left: "50%",
+                            transform: "translateX(-50%)",
+                            background: "rgba(8,8,28,0.92)",
+                            border: `1px solid ${rgba(col, 0.35)}`,
+                            borderRadius: 8,
+                            padding: "6px 10px",
+                            fontSize: 9,
+                            fontWeight: 500,
+                            color: "rgba(255,255,255,0.85)",
+                            whiteSpace: "nowrap",
+                            pointerEvents: "none",
+                            opacity: 0,
+                            boxShadow: `0 0 16px ${rgba(col, 0.2)}`,
+                            transition: "opacity 0.2s",
+                          }}
+                          className="group-hover/node:opacity-100"
+                        >
+                          {service.tooltip}
+                        </div>
+                      </div>
+                    )}
 
                   </div>
                 </div>

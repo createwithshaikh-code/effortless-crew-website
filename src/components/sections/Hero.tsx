@@ -141,7 +141,7 @@ export default function Hero() {
                 transition={{ duration: 1.5, repeat: Infinity }}
               />
               <span className="text-sm font-semibold bg-gradient-to-r from-brand-300 to-royal-300 bg-clip-text text-transparent">
-                Premium Video Editing Agency
+                AI-Powered Creative Super-Team
               </span>
               <Sparkles className="w-3.5 h-3.5 text-brand-400 animate-sparkle" />
             </motion.div>
@@ -154,7 +154,7 @@ export default function Hero() {
               className="font-display text-5xl sm:text-6xl lg:text-6xl xl:text-7xl font-black text-white leading-[1.05] tracking-tight mb-6"
               style={{ perspective: "1000px" }}
             >
-              {["We Make", "Creators", "Look Legendary."].map((line, i) => (
+              {["WORK LESS.", "GROW FASTER.", "DOMINATE."].map((line, i) => (
                 <motion.span key={i} variants={wordVariant} className={`block ${i === 1 ? "text-gradient" : ""}`}>
                   {line}
                 </motion.span>
@@ -168,9 +168,10 @@ export default function Hero() {
               transition={{ duration: 0.8, delay: 1.0 }}
               className="text-white/55 text-lg max-w-lg mb-10 leading-relaxed"
             >
-              From cinematic long-form edits to viral shorts and stunning motion
-              graphics — we turn raw footage into content that{" "}
-              <span className="text-white/80 font-medium">actually converts.</span>
+              Forget the freelance chaos. Effortless Crew is your reliable,
+              AI-powered solar system of content and design services.{" "}
+              <span className="text-white/80 font-medium">Work Less, Grow Faster,</span>{" "}
+              and let us supercharge your growth.
             </motion.p>
 
             {/* CTA Buttons */}
@@ -188,8 +189,8 @@ export default function Hero() {
                   boxShadow: "0 0 30px rgba(192,38,211,0.4), 0 0 60px rgba(37,99,235,0.2)",
                 }}
               >
-                <span className="relative z-10 flex items-center gap-2">
-                  Start Your Project
+                <span className="relative z-10 flex items-center gap-2 uppercase tracking-wide text-sm">
+                  Claim Your Creative Freedom
                   <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
                 </span>
                 <span className="absolute inset-0 btn-shimmer" />
