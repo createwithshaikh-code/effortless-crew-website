@@ -193,20 +193,22 @@ export default function HeroOrbit() {
                   willChange: "transform",
                 }}
               >
-                {/* ── Layer 4: center the circle on the orbit point ── */}
-                <div style={{ transform: "translate(-50%, -50%)" }}>
+                {/* ── Layer 4: center circle on orbit point, label to the right ── */}
+                {/* translate(-19px) = half of 38px circle, so circle center = orbit point */}
+                <div style={{ transform: "translate(-19px, -50%)", display: "flex", alignItems: "center", gap: 7 }}>
 
                   {/* Circle planet */}
                   <div
                     style={{
-                      width: 48,
-                      height: 48,
+                      width: 38,
+                      height: 38,
                       borderRadius: "50%",
-                      background: "rgba(8,8,28,0.80)",
+                      flexShrink: 0,
+                      background: "rgba(8,8,28,0.82)",
                       backdropFilter: "blur(12px)",
                       WebkitBackdropFilter: "blur(12px)",
                       border: `1.5px solid ${color.replace("0.90", "0.40")}`,
-                      boxShadow: `0 0 14px ${color.replace("0.90", "0.18")}, 0 4px 16px rgba(0,0,0,0.6)`,
+                      boxShadow: `0 0 12px ${color.replace("0.90", "0.16")}, 0 4px 14px rgba(0,0,0,0.6)`,
                       display: "flex",
                       alignItems: "center",
                       justifyContent: "center",
@@ -214,8 +216,8 @@ export default function HeroOrbit() {
                   >
                     <Icon
                       style={{
-                        width: 18,
-                        height: 18,
+                        width: 14,
+                        height: 14,
                         color,
                         flexShrink: 0,
                         display: "block",
@@ -223,21 +225,19 @@ export default function HeroOrbit() {
                     />
                   </div>
 
-                  {/* Label below */}
-                  <p
+                  {/* Label to the right */}
+                  <span
                     style={{
-                      marginTop: 6,
-                      textAlign: "center",
                       fontSize: 10,
                       fontWeight: 600,
-                      color: "rgba(255,255,255,0.70)",
+                      color: "rgba(255,255,255,0.72)",
                       whiteSpace: "nowrap",
                       lineHeight: 1,
                       letterSpacing: "0.02em",
                     }}
                   >
                     {service.name}
-                  </p>
+                  </span>
 
                 </div>
               </div>
