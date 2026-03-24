@@ -61,6 +61,7 @@ export async function POST(req: NextRequest) {
     card_visual,
     card_cta,
     card_image_url,
+    card_images,
     sort_order,
   } = body;
 
@@ -77,6 +78,7 @@ export async function POST(req: NextRequest) {
       card_visual: card_visual ?? "",
       card_cta: card_cta ?? "",
       card_image_url: card_image_url ?? null,
+      card_images: card_images ?? [],
       sort_order: sort_order ?? 0,
     })
     .select()

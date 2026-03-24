@@ -20,6 +20,7 @@ interface DbService {
   card_visual: string;
   card_cta: string;
   card_image_url: string | null;
+  card_images: string[] | null;
 }
 
 /* ── Seeded pseudo-random ── */
@@ -163,35 +164,55 @@ const ORBIT_GLOW: Record<"inner" | "middle" | "outer", string> = {
   outer:  "rgba(96,165,250",
 };
 
-/* ── Left panel: full-bleed image or icon placeholder ── */
-function CardVisual({ glow, imageUrl, icon: Icon }: { glow: string; imageUrl?: string; icon: React.ElementType }) {
+/* ── Left panel: multi-image with pan + crossfade ── */
+function CardVisual({ glow, images, icon: Icon }: { glow: string; images: string[]; icon: React.ElementType }) {
+  // cycle is an always-incrementing counter; even for 1 image, it forces a key change
+  // so AnimatePresence triggers a fresh fade+pan on each loop.
+  const [cycle, setCycle] = useState(0);
+  const idx = images.length > 1 ? cycle % images.length : 0;
+
+  // Reset cycle to 0 when the images list changes (new service selected)
+  useEffect(() => { setCycle(0); }, [images]);
+
+  // Advance every 11s (8s pan + 3s pause). Works for 1 or more images.
+  useEffect(() => {
+    if (!images.length) return;
+    const timer = setTimeout(() => { setCycle((c) => c + 1); }, 11000);
+    return () => clearTimeout(timer);
+  }, [cycle, images]);
+
+  if (!images.length) {
+    return (
+      <div style={{
+        position: "absolute", inset: 0,
+        display: "flex", alignItems: "center", justifyContent: "center",
+        background: `linear-gradient(160deg, ${glow},0.13) 0%, transparent 70%)`,
+      }}>
+        <Icon style={{ width: 56, height: 56, color: `${glow},0.30)` }} />
+      </div>
+    );
+  }
+
   return (
     <div style={{ position: "relative", width: "100%", height: "100%", overflow: "hidden" }}>
-      {imageUrl ? (
-        <>
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img
-            src={imageUrl}
-            alt=""
-            style={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "cover" }}
-          />
-          {/* Right-edge fade to blend into card body */}
-          <div style={{
+      <AnimatePresence>
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <motion.img
+          key={cycle}
+          src={images[idx]}
+          alt=""
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          transition={{ duration: 0.8 }}
+          style={{
             position: "absolute", inset: 0,
-            background: "linear-gradient(to right, transparent 55%, rgba(4,4,18,0.85) 100%)",
-            pointerEvents: "none",
-          }} />
-        </>
-      ) : (
-        /* No image — show glowing icon placeholder */
-        <div style={{
-          position: "absolute", inset: 0,
-          display: "flex", alignItems: "center", justifyContent: "center",
-          background: `linear-gradient(160deg, ${glow},0.13) 0%, transparent 70%)`,
-        }}>
-          <Icon style={{ width: 56, height: 56, color: `${glow},0.30)` }} />
-        </div>
-      )}
+            width: "100%", height: "100%",
+            objectFit: "cover",
+            animation: "pan-lr 11s linear forwards",
+          }}
+        />
+      </AnimatePresence>
     </div>
   );
 }
@@ -274,10 +295,15 @@ export default function Hero() {
       })()
     : null;
 
-  // imageUrl for PhoneMockup
-  const cardImageUrl: string | undefined = selectedService && dbServices
-    ? (dbServices.find((s) => s.name === selectedService.name)?.card_image_url ?? undefined)
-    : undefined;
+  // Resolve images for CardVisual: prefer card_images array, fall back to card_image_url
+  const cardImages: string[] = selectedService && dbServices
+    ? (() => {
+        const dbSvc = dbServices.find((s) => s.name === selectedService.name);
+        if (dbSvc?.card_images?.length) return dbSvc.card_images;
+        if (dbSvc?.card_image_url) return [dbSvc.card_image_url];
+        return [];
+      })()
+    : [];
 
   const orbitGlow = selectedService ? ORBIT_GLOW[selectedService.orbit] : ORBIT_GLOW.inner;
 
@@ -585,30 +611,30 @@ export default function Hero() {
                   <div
                     className="absolute top-5 left-5 z-20 flex items-center gap-2.5"
                     style={{
-                      background: "rgba(0,0,0,0.52)",
-                      backdropFilter: "blur(12px)",
-                      WebkitBackdropFilter: "blur(12px)",
+                      background: `${orbitGlow},0.22)`,
+                      backdropFilter: "blur(14px)",
+                      WebkitBackdropFilter: "blur(14px)",
                       borderRadius: 999,
                       padding: "5px 12px 5px 5px",
-                      border: "1px solid rgba(255,255,255,0.07)",
+                      border: `1px solid ${orbitGlow},0.35)`,
                     }}
                   >
                     <div
                       style={{
                         width: 32, height: 32,
                         borderRadius: "50%",
-                        background: `${orbitGlow},0.18)`,
-                        border: `1.5px solid ${orbitGlow},0.50)`,
+                        background: `${orbitGlow},0.25)`,
+                        border: `1.5px solid ${orbitGlow},0.55)`,
                         boxShadow: `0 0 12px ${orbitGlow},0.35)`,
                         display: "flex", alignItems: "center", justifyContent: "center",
                         flexShrink: 0,
                       }}
                     >
-                      <Icon style={{ width: 13, height: 13, color: `${orbitGlow},0.95)` }} />
+                      <Icon style={{ width: 13, height: 13, color: "rgba(255,255,255,0.95)" }} />
                     </div>
                     <span
                       className="text-xs font-bold uppercase tracking-widest"
-                      style={{ color: `${orbitGlow},0.80)` }}
+                      style={{ color: "rgba(255,255,255,0.95)" }}
                     >
                       {selectedService.name}
                     </span>
@@ -645,7 +671,7 @@ export default function Hero() {
                 >
                   <CardVisual
                     glow={orbitGlow}
-                    imageUrl={cardImageUrl}
+                    images={cardImages}
                     icon={selectedService.icon}
                   />
                 </div>

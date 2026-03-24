@@ -32,6 +32,7 @@ interface HeroService {
   card_visual: string;
   card_cta: string;
   card_image_url: string | null;
+  card_images: string[] | null;
   sort_order: number;
   is_active: boolean;
 }
@@ -56,7 +57,7 @@ const ICON_OPTIONS = [
 
 // ── Default services ───────────────────────────────────────────────────────────
 
-const DEFAULT_SERVICES: Omit<ServiceDraft, "card_title" | "card_desc" | "card_sub_desc" | "card_visual" | "card_cta" | "card_image_url">[] = [
+const DEFAULT_SERVICES: Omit<ServiceDraft, "card_title" | "card_desc" | "card_sub_desc" | "card_visual" | "card_cta" | "card_image_url" | "card_images">[] = [
   { name: "YT Automation",     icon_name: "Bot",          orbit: "inner",  angle: 0   },
   { name: "Scriptwriting",     icon_name: "FileText",     orbit: "inner",  angle: 120 },
   { name: "Short-Form Video",  icon_name: "Smartphone",   orbit: "inner",  angle: 240 },
@@ -73,7 +74,9 @@ const DEFAULT_SERVICES: Omit<ServiceDraft, "card_title" | "card_desc" | "card_su
 
 // ── Migration SQL ──────────────────────────────────────────────────────────────
 
-const MIGRATION_SQL = `CREATE TABLE IF NOT EXISTS hero_services (
+const MIGRATION_SQL = `-- Run once in Supabase SQL Editor:
+
+CREATE TABLE IF NOT EXISTS hero_services (
   id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
   name TEXT NOT NULL,
   icon_name TEXT NOT NULL DEFAULT 'Zap',
@@ -85,10 +88,15 @@ const MIGRATION_SQL = `CREATE TABLE IF NOT EXISTS hero_services (
   card_visual TEXT DEFAULT '',
   card_cta TEXT DEFAULT '',
   card_image_url TEXT,
+  card_images TEXT[] DEFAULT ARRAY[]::TEXT[],
   sort_order INTEGER DEFAULT 0,
   is_active BOOLEAN DEFAULT true,
   created_at TIMESTAMPTZ DEFAULT NOW()
-);`;
+);
+
+-- If table already exists, add the column:
+ALTER TABLE hero_services
+  ADD COLUMN IF NOT EXISTS card_images TEXT[] DEFAULT ARRAY[]::TEXT[];`;
 
 // ── Blank draft ────────────────────────────────────────────────────────────────
 
@@ -104,6 +112,7 @@ function blankDraft(): ServiceDraft {
     card_visual: "",
     card_cta: "",
     card_image_url: null,
+    card_images: [],
   };
 }
 
@@ -132,7 +141,7 @@ interface ServiceFormProps {
   saving: boolean;
   imageUploading: boolean;
   onImageUpload: (file: File) => void;
-  onImageRemove: () => void;
+  onImageRemove: (index: number) => void;
 }
 
 function ServiceForm({
@@ -249,22 +258,32 @@ function ServiceForm({
         />
       </div>
 
-      {/* Card Image */}
+      {/* Card Images (up to 5) */}
       <div>
-        <Label>Card Image</Label>
+        <Label>Card Images <span className="text-muted-foreground font-normal">(up to 5 · pan + crossfade)</span></Label>
         <div className="mt-1.5 space-y-2">
-          {draft.card_image_url && (
-            // eslint-disable-next-line @next/next/no-img-element
-            <img
-              src={draft.card_image_url}
-              alt="Card preview"
-              className="rounded-lg object-cover h-24 border border-border"
-            />
+          {(draft.card_images ?? []).length > 0 && (
+            <div className="grid grid-cols-3 gap-2">
+              {(draft.card_images ?? []).map((url, i) => (
+                <div key={i} className="relative rounded-lg overflow-hidden border border-border" style={{ aspectRatio: "16/9" }}>
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img src={url} alt="" className="w-full h-full object-cover" />
+                  <button
+                    type="button"
+                    onClick={() => onImageRemove(i)}
+                    className="absolute top-1 right-1 w-5 h-5 rounded-full bg-black/70 border border-white/20 flex items-center justify-center cursor-pointer hover:bg-destructive/80 transition-colors"
+                  >
+                    <X className="w-3 h-3 text-white" />
+                  </button>
+                  <span className="absolute bottom-1 left-1.5 text-[9px] font-bold text-white/60">#{i + 1}</span>
+                </div>
+              ))}
+            </div>
           )}
-          <div className="flex gap-2">
+          {(draft.card_images ?? []).length < 5 ? (
             <label className="cursor-pointer inline-flex items-center gap-2 px-3 py-1.5 rounded-lg border border-border bg-background hover:bg-accent text-xs font-medium transition-colors">
               {imageUploading ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Plus className="w-3.5 h-3.5" />}
-              {imageUploading ? "Uploading…" : "Upload Image"}
+              {imageUploading ? "Uploading…" : "Add Image / GIF"}
               <input
                 type="file"
                 accept="image/*"
@@ -273,20 +292,13 @@ function ServiceForm({
                 onChange={(e) => {
                   const file = e.target.files?.[0];
                   if (file) onImageUpload(file);
+                  e.target.value = "";
                 }}
               />
             </label>
-            {draft.card_image_url && (
-              <button
-                type="button"
-                onClick={onImageRemove}
-                className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-destructive/40 bg-destructive/10 text-destructive hover:bg-destructive/20 text-xs font-medium transition-colors cursor-pointer"
-              >
-                <X className="w-3 h-3" />
-                Remove
-              </button>
-            )}
-          </div>
+          ) : (
+            <p className="text-xs text-muted-foreground">Maximum 5 images reached.</p>
+          )}
         </div>
       </div>
 
@@ -423,6 +435,7 @@ export default function HeroAdminPage() {
       card_visual: service.card_visual,
       card_cta: service.card_cta,
       card_image_url: service.card_image_url,
+      card_images: service.card_images ?? [],
     });
   };
 
@@ -430,7 +443,7 @@ export default function HeroAdminPage() {
     setEditImageUploading(true);
     try {
       const url = await uploadImage(file);
-      setEditDraft((d) => ({ ...d, card_image_url: url }));
+      setEditDraft((d) => ({ ...d, card_images: [...(d.card_images ?? []), url] }));
     } catch (e) {
       alert("Upload failed: " + (e as Error).message);
     } finally {
@@ -473,7 +486,7 @@ export default function HeroAdminPage() {
     setAddImageUploading(true);
     try {
       const url = await uploadImage(file);
-      setAddDraft((d) => ({ ...d, card_image_url: url }));
+      setAddDraft((d) => ({ ...d, card_images: [...(d.card_images ?? []), url] }));
     } catch (e) {
       alert("Upload failed: " + (e as Error).message);
     } finally {
@@ -515,6 +528,7 @@ export default function HeroAdminPage() {
           card_visual: "",
           card_cta: "",
           card_image_url: null,
+          card_images: [],
         }),
       });
     }
@@ -721,7 +735,11 @@ export default function HeroAdminPage() {
                               saving={editSaving}
                               imageUploading={editImageUploading}
                               onImageUpload={handleEditImageUpload}
-                              onImageRemove={() => setEditDraft((d) => ({ ...d, card_image_url: null }))}
+                              onImageRemove={(i) => setEditDraft((d) => {
+                                const imgs = [...(d.card_images ?? [])];
+                                imgs.splice(i, 1);
+                                return { ...d, card_images: imgs };
+                              })}
                             />
                           </div>
                         )}
@@ -750,7 +768,11 @@ export default function HeroAdminPage() {
                     saving={addSaving}
                     imageUploading={addImageUploading}
                     onImageUpload={handleAddImageUpload}
-                    onImageRemove={() => setAddDraft((d) => ({ ...d, card_image_url: null }))}
+                    onImageRemove={(i) => setAddDraft((d) => {
+                      const imgs = [...(d.card_images ?? [])];
+                      imgs.splice(i, 1);
+                      return { ...d, card_images: imgs };
+                    })}
                   />
                 )}
               </div>
