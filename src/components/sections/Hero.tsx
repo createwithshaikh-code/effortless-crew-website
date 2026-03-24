@@ -286,7 +286,7 @@ export default function Hero() {
         <div
           className="absolute"
           style={{ top: "-30%", left: "-30%", width: "160%", height: "160%",
-            animation: "star-field-rotate 500s linear infinite reverse" }}
+            animation: "star-field-rotate 500s linear infinite" }}
         >
           {STARS_FAR.map((s, i) => (
             <div key={i} className="absolute rounded-full"
