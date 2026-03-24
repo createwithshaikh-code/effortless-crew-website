@@ -16,18 +16,16 @@ const BG_STARS = Array.from({ length: 70 }, (_, i) => ({
   top:   `${(sr(i * 4.71 + 1.3)  * 100).toFixed(2)}%`,
   left:  `${(sr(i * 8.93 + 2.7)  * 100).toFixed(2)}%`,
   size:  sr(i * 12.1 + 0.3) > 0.82 ? 2 : 1,
-  delay: `${-(sr(i * 6.57 + 3.9) * 5).toFixed(1)}s`,
-  dur:   `${(sr(i * 2.83 + 1.1)  * 3 + 1.6).toFixed(1)}s`,
-  slow:  i % 5 === 0,
+  delay: `${-(sr(i * 6.57 + 3.9) * 9).toFixed(1)}s`,
+  dur:   `${(sr(i * 2.83 + 1.1)  * 6 + 4).toFixed(1)}s`,
 }));
 
 const ORBIT_STARS = Array.from({ length: 60 }, (_, i) => ({
   top:   `${(sr(i * 19.3 + 7.1) * 88 + 6).toFixed(2)}%`,
   left:  `${(sr(i * 11.7 + 4.9) * 55 + 45).toFixed(2)}%`,
   size:  1,
-  delay: `${-(sr(i * 7.43 + 2.2) * 4).toFixed(1)}s`,
-  dur:   `${(sr(i * 3.61 + 0.8) * 2 + 1.4).toFixed(1)}s`,
-  slow:  i % 4 === 0,
+  delay: `${-(sr(i * 7.43 + 2.2) * 8).toFixed(1)}s`,
+  dur:   `${(sr(i * 3.61 + 0.8) * 5 + 3.5).toFixed(1)}s`,
 }));
 
 const ALL_STARS = [...BG_STARS, ...ORBIT_STARS];
@@ -283,7 +281,7 @@ export default function Hero() {
               width: s.size,
               height: s.size,
               background: "white",
-              animation: `${s.slow ? "twinkle-slow" : "twinkle"} ${s.dur}s ease-in-out ${s.delay}s infinite`,
+              animation: `twinkle-slow ${s.dur}s ease-in-out ${s.delay}s infinite`,
               willChange: "opacity, transform",
             }}
           />
