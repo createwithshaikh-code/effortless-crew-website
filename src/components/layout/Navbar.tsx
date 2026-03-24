@@ -73,7 +73,7 @@ export default function Navbar() {
           {/* Logo */}
           <Link href="/" className="flex items-center gap-2.5 group">
             <div className="group-hover:scale-110 transition-transform duration-300 flex items-center justify-center">
-              <Image src="/logo.png" alt="Effortless Crew" width={52} height={52} className="object-contain" />
+              <Image src="/logo.png" alt="Effortless Crew" width={72} height={72} className="object-contain" />
             </div>
             <span className="font-display font-bold text-lg tracking-tight text-white">
               Effortless<span className="text-gradient-brand">Crew</span>
