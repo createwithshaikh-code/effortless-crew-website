@@ -1,7 +1,6 @@
 export const dynamic = "force-dynamic";
 
 import Hero from "@/components/sections/Hero";
-import Ticker from "@/components/sections/Ticker";
 import Stats from "@/components/sections/Stats";
 import Services from "@/components/sections/Services";
 import Portfolio from "@/components/sections/Portfolio";
@@ -29,7 +28,6 @@ export default async function HomePage() {
   return (
     <>
       <Hero />
-      <Ticker />
       <Stats />
       <Services />
       <Portfolio dbItems={dbItems} />
