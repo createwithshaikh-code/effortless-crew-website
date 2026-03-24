@@ -1,5 +1,5 @@
 import Link from "next/link";
-import Image from "next/image";
+import SiteLogo from "@/components/common/SiteLogo";
 import { Youtube, Instagram, Twitter, Linkedin } from "lucide-react";
 
 const footerLinks = {
@@ -40,8 +40,8 @@ export default function Footer() {
           {/* Brand */}
           <div className="lg:col-span-2">
             <Link href="/" className="flex items-center gap-2.5 group mb-5">
-              <div className="group-hover:scale-110 transition-transform flex items-center justify-center">
-                <Image src="/logo.png" alt="Effortless Crew" width={52} height={52} className="object-contain" />
+              <div className="group-hover:scale-110 transition-transform">
+                <SiteLogo defaultHeight={44} />
               </div>
               <span className="font-display font-bold text-lg tracking-tight text-white">
                 Effortless<span className="text-gradient-brand">Crew</span>

@@ -7,6 +7,7 @@ import Navbar from "@/components/layout/Navbar";
 import FooterWrapper from "@/components/layout/FooterWrapper";
 import LoadingScreen from "@/components/common/LoadingScreen";
 import PlayReelButton from "@/components/common/PlayReelButton";
+import DynamicFavicon from "@/components/common/DynamicFavicon";
 import "./globals.css";
 
 const inter = Inter({
@@ -70,6 +71,7 @@ export default function RootLayout({
           enableSystem
           disableTransitionOnChange
         >
+          <DynamicFavicon />
           <LoadingScreen />
           <Navbar />
           <main>{children}</main>

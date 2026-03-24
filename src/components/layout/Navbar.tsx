@@ -1,8 +1,8 @@
 "use client";
 
 import { useState, useEffect, useRef, useCallback } from "react";
-import Image from "next/image";
 import Link from "next/link";
+import SiteLogo from "@/components/common/SiteLogo";
 import { usePathname } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import { Menu, X, Sun, Moon } from "lucide-react";
@@ -72,8 +72,8 @@ export default function Navbar() {
         <div className="flex items-center justify-between h-16 lg:h-20">
           {/* Logo */}
           <Link href="/" className="flex items-center gap-2.5 group">
-            <div className="group-hover:scale-110 transition-transform duration-300 flex items-center justify-center">
-              <Image src="/logo.png" alt="Effortless Crew" width={72} height={72} className="object-contain" />
+            <div className="group-hover:scale-110 transition-transform duration-300">
+              <SiteLogo defaultHeight={48} />
             </div>
           </Link>
 

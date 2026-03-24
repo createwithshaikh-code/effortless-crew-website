@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { Save, Loader2, Plus, Trash2, Check, Eye, EyeOff } from "lucide-react";
+import { Save, Loader2, Plus, Trash2, Check, Eye, EyeOff, Upload, ImageIcon } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -47,10 +47,15 @@ const defaultSettings = {
   seo_description: "We make creators look legendary. Premium video editing, YouTube automation, motion graphics, and short-form content.",
   seo_og_image_url: "",
   footer_tagline: "Making creators legendary, one frame at a time.",
+  logo_url: "",
+  logo_height: 48,
+  favicon_url: "",
 };
 
 export default function AdminSettingsPage() {
   const [settings, setSettings] = useState(defaultSettings);
+  const [logoUploading, setLogoUploading] = useState(false);
+  const [faviconUploading, setFaviconUploading] = useState(false);
   const [saving, setSaving] = useState(false);
   const [saved, setSaved] = useState(false);
   const [saveError, setSaveError] = useState<string | null>(null);
@@ -75,12 +80,55 @@ export default function AdminSettingsPage() {
           hero_bg_type: (data.hero_bg_type as HeroBgType) ?? defaultSettings.hero_bg_type,
           hero_bg_custom_html: data.hero_bg_custom_html ?? "",
           hero_bg_blur: data.hero_bg_blur ?? false,
+          logo_url: data.logo_url ?? "",
+          logo_height: data.logo_height ?? 48,
+          favicon_url: data.favicon_url ?? "",
         });
       }
       setLoading(false);
     };
     fetchSettings();
   }, []);
+
+  const uploadBrandingFile = async (file: File, type: "logo" | "favicon") => {
+    const supabase = createClient();
+    const ext = file.name.split(".").pop();
+    const filename = `${type}-${Date.now()}.${ext}`;
+    const { error } = await supabase.storage
+      .from("branding")
+      .upload(filename, file, { upsert: true });
+    if (error) throw new Error(error.message);
+    const { data } = supabase.storage.from("branding").getPublicUrl(filename);
+    return data.publicUrl;
+  };
+
+  const handleLogoUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    setLogoUploading(true);
+    try {
+      const url = await uploadBrandingFile(file, "logo");
+      setSettings((p) => ({ ...p, logo_url: url }));
+    } catch (err) {
+      alert("Upload failed: " + (err as Error).message);
+    } finally {
+      setLogoUploading(false);
+    }
+  };
+
+  const handleFaviconUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    setFaviconUploading(true);
+    try {
+      const url = await uploadBrandingFile(file, "favicon");
+      setSettings((p) => ({ ...p, favicon_url: url }));
+    } catch (err) {
+      alert("Upload failed: " + (err as Error).message);
+    } finally {
+      setFaviconUploading(false);
+    }
+  };
 
   const handleSave = async () => {
     setSaving(true);
@@ -110,6 +158,9 @@ export default function AdminSettingsPage() {
       seo_description: settings.seo_description,
       seo_og_image_url: settings.seo_og_image_url,
       footer_tagline: settings.footer_tagline,
+      logo_url: settings.logo_url || null,
+      logo_height: settings.logo_height,
+      favicon_url: settings.favicon_url || null,
       updated_at: new Date().toISOString(),
     };
 
@@ -241,12 +292,153 @@ export default function AdminSettingsPage() {
 
       <Tabs defaultValue="hero">
         <TabsList className="w-full justify-start flex-wrap h-auto gap-1">
+          <TabsTrigger value="branding">Branding</TabsTrigger>
           <TabsTrigger value="hero">Hero</TabsTrigger>
           <TabsTrigger value="about">About</TabsTrigger>
           <TabsTrigger value="stats">Stats</TabsTrigger>
           <TabsTrigger value="social">Social</TabsTrigger>
           <TabsTrigger value="seo">SEO</TabsTrigger>
         </TabsList>
+
+        <TabsContent value="branding" className="space-y-4 mt-6">
+          {/* SQL migration notice */}
+          <div className="rounded-lg border border-amber-500/30 bg-amber-500/8 px-4 py-3 text-xs text-amber-300">
+            <strong>First time setup:</strong> Run this SQL in your Supabase SQL Editor to add the branding columns, then create a Storage bucket named <code className="font-mono bg-black/20 px-1 rounded">branding</code> with public access.
+            <pre className="mt-2 font-mono bg-black/20 px-2 py-1.5 rounded text-[11px] leading-relaxed whitespace-pre-wrap">
+{`ALTER TABLE site_settings
+  ADD COLUMN IF NOT EXISTS logo_url TEXT,
+  ADD COLUMN IF NOT EXISTS logo_height INTEGER DEFAULT 48,
+  ADD COLUMN IF NOT EXISTS favicon_url TEXT;`}
+            </pre>
+          </div>
+
+          {/* Logo upload */}
+          <div className="rounded-xl border border-border bg-card p-5 space-y-5">
+            <h3 className="font-semibold">Site Logo</h3>
+
+            {/* Preview */}
+            <div className="flex items-center gap-4 p-4 rounded-lg bg-background border border-border">
+              {settings.logo_url ? (
+                // eslint-disable-next-line @next/next/no-img-element
+                <img
+                  src={settings.logo_url}
+                  alt="Logo preview"
+                  style={{ height: `${settings.logo_height}px`, width: "auto", maxWidth: 260 }}
+                />
+              ) : (
+                <div className="flex items-center gap-2 text-muted-foreground text-sm">
+                  <ImageIcon className="w-5 h-5" />
+                  <span>No logo uploaded yet — using default</span>
+                </div>
+              )}
+            </div>
+
+            {/* Upload button */}
+            <div>
+              <label className="cursor-pointer inline-flex items-center gap-2 px-4 py-2 rounded-lg border border-border bg-background hover:bg-accent text-sm font-medium transition-colors">
+                {logoUploading ? (
+                  <Loader2 className="w-4 h-4 animate-spin" />
+                ) : (
+                  <Upload className="w-4 h-4" />
+                )}
+                {logoUploading ? "Uploading…" : "Upload Logo"}
+                <input
+                  type="file"
+                  accept="image/*"
+                  className="hidden"
+                  onChange={handleLogoUpload}
+                  disabled={logoUploading}
+                />
+              </label>
+              <p className="text-xs text-muted-foreground mt-1.5">PNG, SVG, or WebP recommended. Transparent background works best.</p>
+            </div>
+
+            {/* Height slider */}
+            <div className="space-y-2">
+              <div className="flex items-center justify-between">
+                <Label>Logo Height in Navbar</Label>
+                <span className="text-sm font-mono text-muted-foreground">{settings.logo_height}px</span>
+              </div>
+              <input
+                type="range"
+                min={28}
+                max={120}
+                value={settings.logo_height}
+                onChange={(e) => setSettings((p) => ({ ...p, logo_height: Number(e.target.value) }))}
+                className="w-full accent-purple-500"
+              />
+              <div className="flex justify-between text-xs text-muted-foreground">
+                <span>28px (small)</span>
+                <span>120px (large)</span>
+              </div>
+            </div>
+
+            {/* Manual URL fallback */}
+            <div>
+              <Label>Or paste a URL directly</Label>
+              <Input
+                value={settings.logo_url}
+                onChange={(e) => setSettings((p) => ({ ...p, logo_url: e.target.value }))}
+                placeholder="https://..."
+                className="mt-1.5"
+              />
+            </div>
+          </div>
+
+          {/* Favicon upload */}
+          <div className="rounded-xl border border-border bg-card p-5 space-y-4">
+            <h3 className="font-semibold">Favicon</h3>
+
+            {/* Preview */}
+            <div className="flex items-center gap-4 p-4 rounded-lg bg-background border border-border">
+              {settings.favicon_url ? (
+                // eslint-disable-next-line @next/next/no-img-element
+                <img src={settings.favicon_url} alt="Favicon preview" style={{ width: 32, height: 32 }} />
+              ) : (
+                <div className="flex items-center gap-2 text-muted-foreground text-sm">
+                  <ImageIcon className="w-5 h-5" />
+                  <span>No favicon uploaded yet</span>
+                </div>
+              )}
+              {settings.favicon_url && (
+                <span className="text-xs text-muted-foreground">Displayed at 32×32 for preview</span>
+              )}
+            </div>
+
+            <div>
+              <label className="cursor-pointer inline-flex items-center gap-2 px-4 py-2 rounded-lg border border-border bg-background hover:bg-accent text-sm font-medium transition-colors">
+                {faviconUploading ? (
+                  <Loader2 className="w-4 h-4 animate-spin" />
+                ) : (
+                  <Upload className="w-4 h-4" />
+                )}
+                {faviconUploading ? "Uploading…" : "Upload Favicon"}
+                <input
+                  type="file"
+                  accept="image/*"
+                  className="hidden"
+                  onChange={handleFaviconUpload}
+                  disabled={faviconUploading}
+                />
+              </label>
+              <p className="text-xs text-muted-foreground mt-1.5">ICO, PNG, or SVG. Recommended size: 32×32 or 64×64.</p>
+            </div>
+
+            <div>
+              <Label>Or paste a URL directly</Label>
+              <Input
+                value={settings.favicon_url}
+                onChange={(e) => setSettings((p) => ({ ...p, favicon_url: e.target.value }))}
+                placeholder="https://..."
+                className="mt-1.5"
+              />
+            </div>
+          </div>
+
+          <p className="text-xs text-muted-foreground">
+            Click <strong>Save Changes</strong> at the top to apply your branding updates to the live site.
+          </p>
+        </TabsContent>
 
         <TabsContent value="hero" className="space-y-4 mt-6">
           <div className="rounded-xl border border-border bg-card p-5 space-y-4">
