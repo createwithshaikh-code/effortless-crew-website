@@ -5,7 +5,6 @@ import { Geist_Mono } from "next/font/google";
 import { ThemeProvider } from "@/components/providers/ThemeProvider";
 import Navbar from "@/components/layout/Navbar";
 import FooterWrapper from "@/components/layout/FooterWrapper";
-import LoadingScreen from "@/components/common/LoadingScreen";
 import PlayReelButton from "@/components/common/PlayReelButton";
 import DynamicFavicon from "@/components/common/DynamicFavicon";
 import "./globals.css";
@@ -72,7 +71,6 @@ export default function RootLayout({
           disableTransitionOnChange
         >
           <DynamicFavicon />
-          <LoadingScreen />
           <Navbar />
           <main>{children}</main>
           <FooterWrapper />
