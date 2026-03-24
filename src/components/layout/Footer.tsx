@@ -1,4 +1,5 @@
 import Link from "next/link";
+import Image from "next/image";
 import { Youtube, Instagram, Twitter, Linkedin } from "lucide-react";
 
 const footerLinks = {
@@ -39,11 +40,8 @@ export default function Footer() {
           {/* Brand */}
           <div className="lg:col-span-2">
             <Link href="/" className="flex items-center gap-2.5 group mb-5">
-              <div
-                className="w-9 h-9 rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform"
-                style={{ background: "linear-gradient(135deg, #C026D3 0%, #2563EB 100%)" }}
-              >
-                <span className="text-white font-black text-sm font-display">EC</span>
+              <div className="w-9 h-9 group-hover:scale-110 transition-transform flex items-center justify-center">
+                <Image src="/logo.png" alt="Effortless Crew" width={36} height={36} className="object-contain" />
               </div>
               <span className="font-display font-bold text-lg tracking-tight text-white">
                 Effortless<span className="text-gradient-brand">Crew</span>

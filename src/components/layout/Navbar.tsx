@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect, useRef, useCallback } from "react";
+import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
@@ -71,11 +72,8 @@ export default function Navbar() {
         <div className="flex items-center justify-between h-16 lg:h-20">
           {/* Logo */}
           <Link href="/" className="flex items-center gap-2.5 group">
-            <div
-              className="w-9 h-9 rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform duration-300 shadow-[0_0_15px_rgba(192,38,211,0.4)]"
-              style={{ background: "linear-gradient(135deg, #C026D3 0%, #2563EB 100%)" }}
-            >
-              <span className="text-white font-black text-sm font-display">EC</span>
+            <div className="w-9 h-9 group-hover:scale-110 transition-transform duration-300 flex items-center justify-center">
+              <Image src="/logo.png" alt="Effortless Crew" width={36} height={36} className="object-contain" />
             </div>
             <span className="font-display font-bold text-lg tracking-tight text-white">
               Effortless<span className="text-gradient-brand">Crew</span>
