@@ -73,7 +73,7 @@ export default function Navbar() {
           {/* Logo */}
           <Link href="/" className="flex items-center gap-2.5 group">
             <div className="group-hover:scale-110 transition-transform duration-300">
-              <SiteLogo defaultHeight={48} />
+              <SiteLogo />
             </div>
           </Link>
 

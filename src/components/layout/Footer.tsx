@@ -41,7 +41,7 @@ export default function Footer() {
           <div className="lg:col-span-2">
             <Link href="/" className="flex items-center gap-2.5 group mb-5">
               <div className="group-hover:scale-110 transition-transform">
-                <SiteLogo defaultHeight={44} />
+                <SiteLogo />
               </div>
               <span className="font-display font-bold text-lg tracking-tight text-white">
                 Effortless<span className="text-gradient-brand">Crew</span>
