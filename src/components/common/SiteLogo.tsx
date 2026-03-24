@@ -5,35 +5,45 @@ import { useEffect, useState } from "react";
 const CACHE_URL_KEY = "ec_logo_url";
 const CACHE_H_KEY = "ec_logo_height";
 const DEFAULT_HEIGHT = 100;
-const DEFAULT_SRC = "/logo.png";
 
 export default function SiteLogo({ className }: { className?: string }) {
-  // Start from localStorage cache instantly — no flash
-  const [src, setSrc] = useState(DEFAULT_SRC);
+  const [src, setSrc] = useState<string | null>(null);
   const [height, setHeight] = useState(DEFAULT_HEIGHT);
-  const [ready, setReady] = useState(false);
+  const [visible, setVisible] = useState(false);
 
   useEffect(() => {
-    // Apply cache before paint so there is zero visible jump
+    // Apply cache instantly (no flash), but only if a real URL was previously saved
     const cachedUrl = localStorage.getItem(CACHE_URL_KEY);
     const cachedH = localStorage.getItem(CACHE_H_KEY);
-    if (cachedUrl) setSrc(cachedUrl);
-    if (cachedH) setHeight(Number(cachedH));
-    setReady(true);
+    if (cachedUrl) {
+      setSrc(cachedUrl);
+      if (cachedH) setHeight(Number(cachedH));
+      // Small delay so the fade-in is perceivable even on cache hit
+      setTimeout(() => setVisible(true), 60);
+    }
 
-    // Refresh from API in background
+    // Always refresh from API
     fetch("/api/admin/branding")
       .then((r) => r.json())
       .then((data) => {
-        const url = data.logo_url || DEFAULT_SRC;
-        const h = data.logo_height || DEFAULT_HEIGHT;
-        setSrc(url);
-        setHeight(h);
-        localStorage.setItem(CACHE_URL_KEY, url);
-        localStorage.setItem(CACHE_H_KEY, String(h));
+        if (data.logo_url) {
+          setSrc(data.logo_url);
+          setHeight(data.logo_height || DEFAULT_HEIGHT);
+          localStorage.setItem(CACHE_URL_KEY, data.logo_url);
+          localStorage.setItem(CACHE_H_KEY, String(data.logo_height || DEFAULT_HEIGHT));
+          setVisible(true);
+        } else {
+          // No logo set — hide and clear cache
+          setSrc(null);
+          setVisible(false);
+          localStorage.removeItem(CACHE_URL_KEY);
+          localStorage.removeItem(CACHE_H_KEY);
+        }
       })
       .catch(() => {});
   }, []);
+
+  if (!src) return null;
 
   return (
     // eslint-disable-next-line @next/next/no-img-element
@@ -44,8 +54,8 @@ export default function SiteLogo({ className }: { className?: string }) {
         height: `${height}px`,
         width: "auto",
         display: "block",
-        // Hide until cache is read to avoid the 1-frame default flash
-        visibility: ready ? "visible" : "hidden",
+        opacity: visible ? 1 : 0,
+        transition: "opacity 0.6s ease",
       }}
       className={className}
     />
