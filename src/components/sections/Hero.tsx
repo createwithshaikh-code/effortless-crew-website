@@ -7,6 +7,26 @@ import { motion, AnimatePresence } from "framer-motion";
 import { Play, ArrowRight, ChevronDown, Sparkles, X } from "lucide-react";
 import HeroOrbit, { type Service, type ServiceData } from "@/components/sections/HeroOrbit";
 
+// Hero settings from DB
+interface HeroSettings {
+  hero_headline: string;
+  hero_subheadline: string;
+  hero_cta_text: string;
+  hero_cta_link: string;
+  hero_color_1: string;
+  hero_color_2: string;
+}
+
+const HERO_DEFAULTS: HeroSettings = {
+  hero_headline: "WORK LESS.\nGROW FASTER.\nDOMINATE.",
+  hero_subheadline:
+    "Forget the freelance chaos. Effortless Crew is your reliable, AI-powered solar system of content and design services. Work Less, Grow Faster, and let us supercharge your growth.",
+  hero_cta_text: "Claim Your Creative Freedom",
+  hero_cta_link: "/contact",
+  hero_color_1: "#C026D3",
+  hero_color_2: "#2563EB",
+};
+
 // Dynamic services from DB
 interface DbService {
   id: string;
@@ -225,6 +245,15 @@ export default function Hero() {
   const [zoomState, setZoomState] = useState<{ x: number; y: number; scale: number } | null>(null);
   const [hasAnimatedIn, setHasAnimatedIn] = useState(false);
   const [dbServices, setDbServices] = useState<DbService[] | null>(null);
+  const [heroSettings, setHeroSettings] = useState<HeroSettings>(HERO_DEFAULTS);
+
+  // Fetch hero settings from DB on mount
+  useEffect(() => {
+    fetch("/api/admin/hero-settings")
+      .then((res) => (res.ok ? res.json() : null))
+      .then((data: HeroSettings | null) => { if (data) setHeroSettings(data); })
+      .catch(() => {});
+  }, []);
 
   // Fetch services from DB on mount
   useEffect(() => {
@@ -430,11 +459,24 @@ export default function Hero() {
               className="font-display text-5xl sm:text-6xl lg:text-6xl xl:text-7xl font-black text-white leading-[1.05] tracking-tight mb-6"
               style={{ perspective: "1000px" }}
             >
-              {["WORK LESS.", "GROW FASTER.", "DOMINATE."].map((line, i) => (
-                <motion.span key={i} variants={wordVariant} className={`block ${i === 1 ? "text-gradient" : ""}`}>
-                  {line}
-                </motion.span>
-              ))}
+              {heroSettings.hero_headline.split("\n").map((line, i, arr) => {
+                const isGradient = arr.length >= 2 && i === 1;
+                return (
+                  <motion.span
+                    key={i}
+                    variants={wordVariant}
+                    className="block"
+                    style={isGradient ? {
+                      background: `linear-gradient(90deg, ${heroSettings.hero_color_1}, ${heroSettings.hero_color_2})`,
+                      WebkitBackgroundClip: "text",
+                      WebkitTextFillColor: "transparent",
+                      backgroundClip: "text",
+                    } : undefined}
+                  >
+                    {line}
+                  </motion.span>
+                );
+              })}
             </motion.h1>
 
             {/* Subheadline */}
@@ -444,10 +486,7 @@ export default function Hero() {
               transition={{ duration: 0.8, delay: 1.0 }}
               className="text-white/55 text-lg max-w-lg mb-10 leading-relaxed"
             >
-              Forget the freelance chaos. Effortless Crew is your reliable,
-              AI-powered solar system of content and design services.{" "}
-              <span className="text-white/80 font-medium">Work Less, Grow Faster,</span>{" "}
-              and let us supercharge your growth.
+              {heroSettings.hero_subheadline}
             </motion.p>
 
             {/* CTA Buttons */}
@@ -458,20 +497,20 @@ export default function Hero() {
               className="flex flex-col sm:flex-row items-start gap-4"
             >
               <Link
-                href="/contact"
+                href={heroSettings.hero_cta_link || "/contact"}
                 className="relative group flex items-center gap-2.5 px-8 py-4 rounded-2xl font-semibold text-white text-base overflow-hidden w-full sm:w-auto justify-center"
                 style={{
-                  background: "linear-gradient(135deg, #C026D3 0%, #2563EB 100%)",
-                  boxShadow: "0 0 30px rgba(192,38,211,0.4), 0 0 60px rgba(37,99,235,0.2)",
+                  background: `linear-gradient(135deg, ${heroSettings.hero_color_1} 0%, ${heroSettings.hero_color_2} 100%)`,
+                  boxShadow: `0 0 30px ${heroSettings.hero_color_1}66, 0 0 60px ${heroSettings.hero_color_2}33`,
                 }}
               >
                 <span className="relative z-10 flex items-center gap-2 uppercase tracking-wide text-sm">
-                  Claim Your Creative Freedom
+                  {heroSettings.hero_cta_text || "Claim Your Creative Freedom"}
                   <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
                 </span>
                 <span className="absolute inset-0 btn-shimmer" />
                 <span className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300"
-                  style={{ background: "linear-gradient(135deg, #D946EF 0%, #3B82F6 100%)" }} />
+                  style={{ background: `linear-gradient(135deg, ${heroSettings.hero_color_1}cc 0%, ${heroSettings.hero_color_2}cc 100%)` }} />
               </Link>
 
               <button

@@ -10,7 +10,6 @@ import {
 } from "lucide-react";
 // Image icon has naming conflict with Next Image - import as ImageIcon
 import { Image as ImageIcon } from "lucide-react";
-import { createClient } from "@/lib/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -322,15 +321,19 @@ function ServiceForm({
 export default function HeroAdminPage() {
   // ── Hero text state ──
   const [heroText, setHeroText] = useState({
-    hero_headline: "",
-    hero_subheadline: "",
-    hero_cta_text: "",
-    hero_cta_link: "",
+    hero_headline: "WORK LESS.\nGROW FASTER.\nDOMINATE.",
+    hero_subheadline:
+      "Forget the freelance chaos. Effortless Crew is your reliable, AI-powered solar system of content and design services. Work Less, Grow Faster, and let us supercharge your growth.",
+    hero_cta_text: "Claim Your Creative Freedom",
+    hero_cta_link: "/contact",
+    hero_color_1: "#C026D3",
+    hero_color_2: "#2563EB",
   });
   const [heroLoading, setHeroLoading] = useState(true);
   const [heroSaving, setHeroSaving] = useState(false);
   const [heroSaved, setHeroSaved] = useState(false);
   const [heroError, setHeroError] = useState<string | null>(null);
+  const [colorMigrationNeeded, setColorMigrationNeeded] = useState(false);
 
   // ── Services state ──
   const [services, setServices] = useState<HeroService[]>([]);
@@ -353,44 +356,41 @@ export default function HeroAdminPage() {
 
   // ── Load hero text ──
   useEffect(() => {
-    const supabase = createClient();
-    supabase.from("site_settings").select("hero_headline,hero_subheadline,hero_cta_text,hero_cta_link").single()
-      .then(({ data }) => {
+    fetch("/api/admin/hero-settings")
+      .then((r) => r.json())
+      .then((data) => {
         if (data) {
           setHeroText({
-            hero_headline: data.hero_headline ?? "",
+            hero_headline:    data.hero_headline    ?? "WORK LESS.\nGROW FASTER.\nDOMINATE.",
             hero_subheadline: data.hero_subheadline ?? "",
-            hero_cta_text: data.hero_cta_text ?? "",
-            hero_cta_link: data.hero_cta_link ?? "",
+            hero_cta_text:    data.hero_cta_text    ?? "",
+            hero_cta_link:    data.hero_cta_link    ?? "/contact",
+            hero_color_1:     data.hero_color_1     ?? "#C026D3",
+            hero_color_2:     data.hero_color_2     ?? "#2563EB",
           });
         }
         setHeroLoading(false);
-      });
+      })
+      .catch(() => setHeroLoading(false));
   }, []);
 
   // ── Save hero text ──
   const handleHeroSave = async () => {
     setHeroSaving(true);
     setHeroError(null);
-    const supabase = createClient();
-    const { count } = await supabase.from("site_settings").select("id", { count: "exact", head: true });
-    const payload = {
-      hero_headline: heroText.hero_headline,
-      hero_subheadline: heroText.hero_subheadline,
-      hero_cta_text: heroText.hero_cta_text,
-      hero_cta_link: heroText.hero_cta_link,
-      updated_at: new Date().toISOString(),
-    };
-    let err: string | null = null;
-    if ((count ?? 0) > 0) {
-      const { error } = await supabase.from("site_settings").update(payload).not("id", "is", null);
-      if (error) err = error.message;
-    } else {
-      const { error } = await supabase.from("site_settings").insert(payload);
-      if (error) err = error.message;
-    }
+    setColorMigrationNeeded(false);
+    const res = await fetch("/api/admin/hero-settings", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(heroText),
+    });
+    const data = await res.json();
     setHeroSaving(false);
-    if (err) { setHeroError(err); return; }
+    if (!res.ok && !data.colorMigrationNeeded) {
+      setHeroError(data.error ?? "Save failed");
+      return;
+    }
+    if (data.colorMigrationNeeded) setColorMigrationNeeded(true);
     setHeroSaved(true);
     setTimeout(() => setHeroSaved(false), 2500);
   };
@@ -573,12 +573,25 @@ export default function HeroAdminPage() {
                 </div>
               )}
 
+              {colorMigrationNeeded && (
+                <div className="rounded-lg border border-amber-500/40 bg-amber-500/10 px-4 py-3 text-sm text-amber-300">
+                  <strong>Colors not saved.</strong> Run this SQL then save again:
+                  <pre className="mt-1.5 font-mono text-[11px] bg-black/30 px-2 py-1.5 rounded whitespace-pre-wrap">
+{`ALTER TABLE site_settings
+  ADD COLUMN IF NOT EXISTS hero_color_1 TEXT DEFAULT '#C026D3',
+  ADD COLUMN IF NOT EXISTS hero_color_2 TEXT DEFAULT '#2563EB';`}
+                  </pre>
+                </div>
+              )}
+
               <div>
                 <Label>Main Headline</Label>
-                <Input
+                <p className="text-[11px] text-muted-foreground mt-0.5 mb-1.5">Each line on a new line. The 2nd line gets the gradient colour.</p>
+                <Textarea
                   value={heroText.hero_headline}
                   onChange={(e) => setHeroText((p) => ({ ...p, hero_headline: e.target.value }))}
-                  className="mt-1.5"
+                  rows={3}
+                  className="mt-1.5 font-mono text-sm"
                 />
               </div>
               <div>
@@ -606,6 +619,42 @@ export default function HeroAdminPage() {
                     onChange={(e) => setHeroText((p) => ({ ...p, hero_cta_link: e.target.value }))}
                     className="mt-1.5"
                   />
+                </div>
+              </div>
+
+              {/* Colour pickers */}
+              <div>
+                <Label>Gradient Colours</Label>
+                <p className="text-[11px] text-muted-foreground mt-0.5 mb-2">Applied to the 2nd headline line and the CTA button.</p>
+                <div className="flex items-center gap-4">
+                  <div className="flex items-center gap-2">
+                    <input
+                      type="color"
+                      value={heroText.hero_color_1}
+                      onChange={(e) => setHeroText((p) => ({ ...p, hero_color_1: e.target.value }))}
+                      className="w-10 h-10 rounded-lg border border-border cursor-pointer bg-transparent p-0.5"
+                    />
+                    <div>
+                      <p className="text-xs font-medium">Colour 1</p>
+                      <p className="text-[11px] text-muted-foreground font-mono">{heroText.hero_color_1}</p>
+                    </div>
+                  </div>
+                  <div
+                    className="flex-1 h-8 rounded-lg"
+                    style={{ background: `linear-gradient(90deg, ${heroText.hero_color_1}, ${heroText.hero_color_2})` }}
+                  />
+                  <div className="flex items-center gap-2">
+                    <div className="text-right">
+                      <p className="text-xs font-medium">Colour 2</p>
+                      <p className="text-[11px] text-muted-foreground font-mono">{heroText.hero_color_2}</p>
+                    </div>
+                    <input
+                      type="color"
+                      value={heroText.hero_color_2}
+                      onChange={(e) => setHeroText((p) => ({ ...p, hero_color_2: e.target.value }))}
+                      className="w-10 h-10 rounded-lg border border-border cursor-pointer bg-transparent p-0.5"
+                    />
+                  </div>
                 </div>
               </div>
 
