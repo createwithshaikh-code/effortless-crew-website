@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 
 const CACHE_URL_KEY = "ec_logo_url";
 const CACHE_H_KEY = "ec_logo_height";
-const DEFAULT_HEIGHT = 35;
+const DEFAULT_HEIGHT = 100;
 const DEFAULT_SRC = "/logo.png";
 
 export default function SiteLogo({ className }: { className?: string }) {
