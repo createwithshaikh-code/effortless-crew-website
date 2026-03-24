@@ -23,7 +23,7 @@ export async function GET() {
 
     return NextResponse.json({
       logo_url: data?.logo_url ?? null,
-      logo_height: data?.logo_height ?? 48,
+      logo_height: data?.logo_height ?? 35,
       favicon_url: data?.favicon_url ?? null,
     });
   } catch {
@@ -45,7 +45,7 @@ export async function POST(req: NextRequest) {
 
     const brandingData = {
       logo_url: logo_url ?? null,
-      logo_height: logo_height ?? 48,
+      logo_height: logo_height ?? 35,
       favicon_url: favicon_url ?? null,
       updated_at: new Date().toISOString(),
     };
@@ -68,7 +68,7 @@ export async function POST(req: NextRequest) {
           {
             error: "MIGRATION_NEEDED",
             message: "Run this SQL in your Supabase SQL Editor first:",
-            sql: `ALTER TABLE site_settings\n  ADD COLUMN IF NOT EXISTS logo_url TEXT,\n  ADD COLUMN IF NOT EXISTS logo_height INTEGER DEFAULT 48,\n  ADD COLUMN IF NOT EXISTS favicon_url TEXT;`,
+            sql: `ALTER TABLE site_settings\n  ADD COLUMN IF NOT EXISTS logo_url TEXT,\n  ADD COLUMN IF NOT EXISTS logo_height INTEGER DEFAULT 35,\n  ADD COLUMN IF NOT EXISTS favicon_url TEXT;`,
           },
           { status: 400 }
         );

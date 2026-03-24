@@ -48,7 +48,7 @@ const defaultSettings = {
   seo_og_image_url: "",
   footer_tagline: "Making creators legendary, one frame at a time.",
   logo_url: "",
-  logo_height: 48,
+  logo_height: 35,
   favicon_url: "",
 };
 
@@ -346,19 +346,31 @@ export default function AdminSettingsPage() {
             <h3 className="font-semibold">Site Logo</h3>
 
             {/* Preview */}
-            <div className="flex items-center gap-4 p-4 rounded-lg bg-background border border-border">
+            <div className="flex items-center justify-between gap-4 p-4 rounded-lg bg-background border border-border">
               {settings.logo_url ? (
-                // eslint-disable-next-line @next/next/no-img-element
-                <img
-                  src={settings.logo_url}
-                  alt="Logo preview"
-                  style={{ height: `${settings.logo_height}px`, width: "auto", maxWidth: 260 }}
-                />
+                <div className="flex items-center gap-3">
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img
+                    src={settings.logo_url}
+                    alt="Logo preview"
+                    style={{ height: `${settings.logo_height}px`, width: "auto", maxWidth: 260 }}
+                  />
+                </div>
               ) : (
                 <div className="flex items-center gap-2 text-muted-foreground text-sm">
                   <ImageIcon className="w-5 h-5" />
                   <span>No logo uploaded yet — using default</span>
                 </div>
+              )}
+              {settings.logo_url && (
+                <button
+                  type="button"
+                  onClick={() => setSettings((p) => ({ ...p, logo_url: "" }))}
+                  className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-destructive/40 bg-destructive/10 text-destructive hover:bg-destructive/20 text-xs font-medium transition-colors cursor-pointer shrink-0"
+                >
+                  <Trash2 className="w-3.5 h-3.5" />
+                  Remove
+                </button>
               )}
             </div>
 
@@ -419,10 +431,13 @@ export default function AdminSettingsPage() {
             <h3 className="font-semibold">Favicon</h3>
 
             {/* Preview */}
-            <div className="flex items-center gap-4 p-4 rounded-lg bg-background border border-border">
+            <div className="flex items-center justify-between gap-4 p-4 rounded-lg bg-background border border-border">
               {settings.favicon_url ? (
-                // eslint-disable-next-line @next/next/no-img-element
-                <img src={settings.favicon_url} alt="Favicon preview" style={{ width: 32, height: 32 }} />
+                <div className="flex items-center gap-3">
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img src={settings.favicon_url} alt="Favicon preview" style={{ width: 32, height: 32 }} />
+                  <span className="text-xs text-muted-foreground">32×32 preview</span>
+                </div>
               ) : (
                 <div className="flex items-center gap-2 text-muted-foreground text-sm">
                   <ImageIcon className="w-5 h-5" />
@@ -430,7 +445,14 @@ export default function AdminSettingsPage() {
                 </div>
               )}
               {settings.favicon_url && (
-                <span className="text-xs text-muted-foreground">Displayed at 32×32 for preview</span>
+                <button
+                  type="button"
+                  onClick={() => setSettings((p) => ({ ...p, favicon_url: "" }))}
+                  className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-destructive/40 bg-destructive/10 text-destructive hover:bg-destructive/20 text-xs font-medium transition-colors cursor-pointer shrink-0"
+                >
+                  <Trash2 className="w-3.5 h-3.5" />
+                  Remove
+                </button>
               )}
             </div>
 
