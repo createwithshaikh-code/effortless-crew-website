@@ -1,17 +1,13 @@
 "use client";
 
 import { useEffect } from "react";
-import { createClient } from "@/lib/supabase/client";
 
 export default function DynamicFavicon() {
   useEffect(() => {
-    const supabase = createClient();
-    supabase
-      .from("site_settings")
-      .select("favicon_url")
-      .single()
-      .then(({ data }) => {
-        if (data?.favicon_url) {
+    fetch("/api/admin/branding")
+      .then((r) => r.json())
+      .then((data) => {
+        if (data.favicon_url) {
           let link = document.querySelector("link[rel~='icon']") as HTMLLinkElement | null;
           if (!link) {
             link = document.createElement("link");
@@ -20,7 +16,8 @@ export default function DynamicFavicon() {
           }
           link.href = data.favicon_url;
         }
-      });
+      })
+      .catch(() => {});
   }, []);
 
   return null;

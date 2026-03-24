@@ -56,6 +56,9 @@ export default function AdminSettingsPage() {
   const [settings, setSettings] = useState(defaultSettings);
   const [logoUploading, setLogoUploading] = useState(false);
   const [faviconUploading, setFaviconUploading] = useState(false);
+  const [brandingSaving, setBrandingSaving] = useState(false);
+  const [brandingSaved, setBrandingSaved] = useState(false);
+  const [brandingError, setBrandingError] = useState<{ message: string; sql?: string } | null>(null);
   const [saving, setSaving] = useState(false);
   const [saved, setSaved] = useState(false);
   const [saveError, setSaveError] = useState<string | null>(null);
@@ -67,10 +70,10 @@ export default function AdminSettingsPage() {
   useEffect(() => {
     const fetchSettings = async () => {
       const supabase = createClient();
-      const { data } = await supabase
-        .from("site_settings")
-        .select("*")
-        .single();
+      const [{ data }, brandingRes] = await Promise.all([
+        supabase.from("site_settings").select("*").single(),
+        fetch("/api/admin/branding").then((r) => r.json()).catch(() => ({})),
+      ]);
       if (data) {
         setSettings({
           ...defaultSettings,
@@ -80,9 +83,9 @@ export default function AdminSettingsPage() {
           hero_bg_type: (data.hero_bg_type as HeroBgType) ?? defaultSettings.hero_bg_type,
           hero_bg_custom_html: data.hero_bg_custom_html ?? "",
           hero_bg_blur: data.hero_bg_blur ?? false,
-          logo_url: data.logo_url ?? "",
-          logo_height: data.logo_height ?? 48,
-          favicon_url: data.favicon_url ?? "",
+          logo_url: brandingRes.logo_url ?? "",
+          logo_height: brandingRes.logo_height ?? 48,
+          favicon_url: brandingRes.favicon_url ?? "",
         });
       }
       setLoading(false);
@@ -128,6 +131,33 @@ export default function AdminSettingsPage() {
     }
   };
 
+  const handleBrandingSave = async () => {
+    setBrandingSaving(true);
+    setBrandingError(null);
+    try {
+      const res = await fetch("/api/admin/branding", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          logo_url: settings.logo_url || null,
+          logo_height: settings.logo_height,
+          favicon_url: settings.favicon_url || null,
+        }),
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        setBrandingError({ message: data.message || data.error, sql: data.sql });
+      } else {
+        setBrandingSaved(true);
+        setTimeout(() => setBrandingSaved(false), 2500);
+      }
+    } catch (err) {
+      setBrandingError({ message: String(err) });
+    } finally {
+      setBrandingSaving(false);
+    }
+  };
+
   const handleSave = async () => {
     setSaving(true);
     setSaveError(null);
@@ -156,9 +186,6 @@ export default function AdminSettingsPage() {
       seo_description: settings.seo_description,
       seo_og_image_url: settings.seo_og_image_url,
       footer_tagline: settings.footer_tagline,
-      logo_url: settings.logo_url || null,
-      logo_height: settings.logo_height,
-      favicon_url: settings.favicon_url || null,
       updated_at: new Date().toISOString(),
     };
 
@@ -299,16 +326,20 @@ export default function AdminSettingsPage() {
         </TabsList>
 
         <TabsContent value="branding" className="space-y-4 mt-6">
-          {/* SQL migration notice */}
-          <div className="rounded-lg border border-amber-500/30 bg-amber-500/8 px-4 py-3 text-xs text-amber-300">
-            <strong>First time setup:</strong> Run this SQL once in your Supabase SQL Editor to add the branding columns.
-            <pre className="mt-2 font-mono bg-black/20 px-2 py-1.5 rounded text-[11px] leading-relaxed whitespace-pre-wrap">
-{`ALTER TABLE site_settings
-  ADD COLUMN IF NOT EXISTS logo_url TEXT,
-  ADD COLUMN IF NOT EXISTS logo_height INTEGER DEFAULT 48,
-  ADD COLUMN IF NOT EXISTS favicon_url TEXT;`}
-            </pre>
-          </div>
+          {/* Branding error / migration notice */}
+          {brandingError && (
+            <div className="rounded-lg border border-destructive/40 bg-destructive/10 px-4 py-3 text-sm text-destructive space-y-2">
+              <p><strong>{brandingError.message}</strong></p>
+              {brandingError.sql && (
+                <>
+                  <p className="text-xs opacity-80">Run this once in your Supabase SQL Editor, then try again:</p>
+                  <pre className="font-mono bg-black/20 px-2 py-1.5 rounded text-[11px] leading-relaxed whitespace-pre-wrap text-amber-300">
+                    {brandingError.sql}
+                  </pre>
+                </>
+              )}
+            </div>
+          )}
 
           {/* Logo upload */}
           <div className="rounded-xl border border-border bg-card p-5 space-y-5">
@@ -433,9 +464,21 @@ export default function AdminSettingsPage() {
             </div>
           </div>
 
-          <p className="text-xs text-muted-foreground">
-            Click <strong>Save Changes</strong> at the top to apply your branding updates to the live site.
-          </p>
+          <Button
+            variant="brand"
+            onClick={handleBrandingSave}
+            disabled={brandingSaving}
+            className="cursor-pointer"
+          >
+            {brandingSaving ? (
+              <Loader2 className="w-4 h-4 animate-spin" />
+            ) : brandingSaved ? (
+              <Check className="w-4 h-4" />
+            ) : (
+              <Save className="w-4 h-4" />
+            )}
+            {brandingSaving ? "Saving…" : brandingSaved ? "Branding Saved!" : "Save Branding"}
+          </Button>
         </TabsContent>
 
         <TabsContent value="hero" className="space-y-4 mt-6">
