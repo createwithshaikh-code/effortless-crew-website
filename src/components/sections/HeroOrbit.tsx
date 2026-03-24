@@ -131,16 +131,16 @@ export default function HeroOrbit({ onServiceClick, paused = false }: HeroOrbitP
         <div
           className="absolute rounded-full animate-ping"
           style={{
-            inset: -10,
-            background: "linear-gradient(135deg, rgba(192,38,211,0.22), rgba(37,99,235,0.14))",
+            inset: -12,
+            background: "linear-gradient(135deg, rgba(192,38,211,0.25), rgba(37,99,235,0.16))",
             animationDuration: "2.4s",
           }}
         />
         <div
           className="absolute rounded-full animate-ping"
           style={{
-            inset: -22,
-            background: "linear-gradient(135deg, rgba(192,38,211,0.09), rgba(37,99,235,0.06))",
+            inset: -26,
+            background: "linear-gradient(135deg, rgba(192,38,211,0.10), rgba(37,99,235,0.07))",
             animationDuration: "3.2s",
             animationDelay: "-0.7s",
           }}
@@ -148,14 +148,16 @@ export default function HeroOrbit({ onServiceClick, paused = false }: HeroOrbitP
         <div
           className="relative rounded-full flex items-center justify-center select-none overflow-hidden"
           style={{
-            width: 84, height: 84,
-            background: "linear-gradient(135deg, rgba(10,4,22,0.95) 0%, rgba(20,8,40,0.95) 100%)",
-            border: "1.5px solid rgba(192,38,211,0.35)",
+            width: 104, height: 104,
+            background: "radial-gradient(circle at 40% 40%, rgba(120,30,180,0.28) 0%, rgba(7,3,20,0.72) 60%, rgba(2,2,16,0.88) 100%)",
+            border: "1.5px solid rgba(192,38,211,0.45)",
+            boxShadow: "0 0 28px rgba(192,38,211,0.22), inset 0 0 20px rgba(120,30,180,0.12)",
+            backdropFilter: "blur(6px)",
             animation: "sun-pulse 3s ease-in-out infinite",
             willChange: "box-shadow",
           }}
         >
-          <NextImage src="/logo.png" alt="EC" width={60} height={60} className="object-contain" />
+          <NextImage src="/logo.png" alt="EC" width={80} height={80} className="object-contain" style={{ mixBlendMode: "screen" }} />
         </div>
       </div>
 
