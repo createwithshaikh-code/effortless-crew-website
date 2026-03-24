@@ -17,6 +17,7 @@ import {
   LayoutGrid,
   Clapperboard,
   Users,
+  Layers,
 } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
 import { useRouter } from "next/navigation";
@@ -28,6 +29,11 @@ const navItems = [
     href: "/admin",
     icon: LayoutDashboard,
     exact: true,
+  },
+  {
+    label: "Hero & Services",
+    href: "/admin/hero",
+    icon: Layers,
   },
   {
     label: "Blog Posts",

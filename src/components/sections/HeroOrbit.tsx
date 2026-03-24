@@ -5,6 +5,8 @@ import {
   Film, Image, Smartphone, FileText,
   Bot, Share2, Palette, Megaphone,
   Globe, ShoppingCart, Zap, BarChart3,
+  Youtube, Camera, Music, Code, TrendingUp, Users,
+  Star, Target, Wand2, Video, Mail, Shield, Search, Layout,
 } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
 
@@ -15,9 +17,24 @@ export interface Service {
   angle: number;
 }
 
+export interface ServiceData {
+  id?: string;
+  name: string;
+  iconName: string;
+  orbit: "inner" | "middle" | "outer";
+  angle: number;
+}
+
+const ICON_MAP: Record<string, LucideIcon> = {
+  Film, Image, Smartphone, FileText, Bot, Share2, Palette, Megaphone,
+  Globe, ShoppingCart, Zap, BarChart3, Youtube, Camera, Music, Code,
+  TrendingUp, Users, Star, Target, Wand2, Video, Mail, Shield, Search, Layout,
+};
+
 interface HeroOrbitProps {
   onServiceClick?: (service: Service, nodeEl: HTMLElement) => void;
   paused?: boolean;
+  services?: ServiceData[];
 }
 
 const services: Service[] = [
@@ -76,7 +93,17 @@ const particles = [
   { top: "42%", left: "92%", size: 2, delay: -1, dur: 10 },
 ];
 
-export default function HeroOrbit({ onServiceClick, paused = false }: HeroOrbitProps) {
+export default function HeroOrbit({ onServiceClick, paused = false, services: servicesProp }: HeroOrbitProps) {
+  // When servicesProp is provided, convert ServiceData[] -> Service[]
+  const resolvedServices: Service[] = servicesProp
+    ? servicesProp.map((sd) => ({
+        name: sd.name,
+        icon: ICON_MAP[sd.iconName] ?? Zap,
+        orbit: sd.orbit,
+        angle: sd.angle,
+      }))
+    : services;
+
   return (
     <div
       className={`relative pointer-events-none${paused ? " orbits-paused" : ""}`}
@@ -168,7 +195,7 @@ export default function HeroOrbit({ onServiceClick, paused = false }: HeroOrbitP
       </div>
 
       {/* ── Per-node ghost trail + orbiting node ── */}
-      {services.map((service) => {
+      {resolvedServices.map((service) => {
         const { radius, duration } = orbitConfig[service.orbit];
         const delay = -((service.angle / 360) * duration);
         const Icon = service.icon;

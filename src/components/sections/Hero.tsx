@@ -4,7 +4,22 @@ import Link from "next/link";
 import { useRef, useState, useCallback, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Play, ArrowRight, ChevronDown, Sparkles, X } from "lucide-react";
-import HeroOrbit, { type Service } from "@/components/sections/HeroOrbit";
+import HeroOrbit, { type Service, type ServiceData } from "@/components/sections/HeroOrbit";
+
+// Dynamic services from DB
+interface DbService {
+  id: string;
+  name: string;
+  icon_name: string;
+  orbit: "inner" | "middle" | "outer";
+  angle: number;
+  card_title: string;
+  card_desc: string;
+  card_sub_desc: string;
+  card_visual: string;
+  card_cta: string;
+  card_image_url: string | null;
+}
 
 /* ── Seeded pseudo-random ── */
 function sr(seed: number) {
@@ -148,7 +163,7 @@ const ORBIT_GLOW: Record<"inner" | "middle" | "outer", string> = {
 };
 
 /* ── Phone visual placeholder ── */
-function PhoneMockup({ text, glow }: { text: string; glow: string }) {
+function PhoneMockup({ text, glow, imageUrl }: { text: string; glow: string; imageUrl?: string }) {
   return (
     <div style={{
       width: 162, height: 268,
@@ -177,20 +192,30 @@ function PhoneMockup({ text, glow }: { text: string; glow: string }) {
         display: "flex",
         alignItems: "center",
         justifyContent: "center",
-        padding: 12,
+        padding: imageUrl ? 0 : 12,
         background: `linear-gradient(145deg, ${glow},0.14) 0%, rgba(0,0,0,0.4) 55%, ${glow},0.06) 100%)`,
+        overflow: "hidden",
       }}>
-        <div style={{
-          border: `1.5px dashed ${glow},0.40)`,
-          borderRadius: 10,
-          padding: "10px 8px",
-          textAlign: "center",
-          fontSize: 9,
-          color: `${glow},0.65)`,
-          lineHeight: 1.6,
-        }}>
-          {text}
-        </div>
+        {imageUrl ? (
+          // eslint-disable-next-line @next/next/no-img-element
+          <img
+            src={imageUrl}
+            alt=""
+            style={{ width: "100%", height: "100%", objectFit: "cover", borderRadius: 22 }}
+          />
+        ) : (
+          <div style={{
+            border: `1.5px dashed ${glow},0.40)`,
+            borderRadius: 10,
+            padding: "10px 8px",
+            textAlign: "center",
+            fontSize: 9,
+            color: `${glow},0.65)`,
+            lineHeight: 1.6,
+          }}>
+            {text}
+          </div>
+        )}
       </div>
     </div>
   );
@@ -203,6 +228,19 @@ export default function Hero() {
   const [selectedService, setSelectedService] = useState<Service | null>(null);
   const [zoomState, setZoomState] = useState<{ x: number; y: number; scale: number } | null>(null);
   const [hasAnimatedIn, setHasAnimatedIn] = useState(false);
+  const [dbServices, setDbServices] = useState<DbService[] | null>(null);
+
+  // Fetch services from DB on mount
+  useEffect(() => {
+    fetch("/api/admin/services")
+      .then((res) => (res.ok ? res.json() : null))
+      .then((data: DbService[] | null) => {
+        if (Array.isArray(data) && data.length > 0) {
+          setDbServices(data);
+        }
+      })
+      .catch(() => {/* silently fall back to static data */});
+  }, []);
 
   const handleServiceClick = useCallback((service: Service, nodeEl: HTMLElement) => {
     if (selectedService) return; // already zoomed
@@ -244,8 +282,40 @@ export default function Hero() {
     return () => window.removeEventListener("keydown", onKey);
   }, [handleClose]);
 
-  const cardData = selectedService ? SERVICE_CARDS[selectedService.name] : null;
+  // Build cardData: prefer DB data, fall back to static SERVICE_CARDS
+  const cardData: CardData | null = selectedService
+    ? (() => {
+        const dbSvc = dbServices?.find((s) => s.name === selectedService.name);
+        if (dbSvc && (dbSvc.card_title || dbSvc.card_desc)) {
+          return {
+            title: dbSvc.card_title,
+            desc: dbSvc.card_desc,
+            subDesc: dbSvc.card_sub_desc,
+            visual: dbSvc.card_visual,
+            cta: dbSvc.card_cta,
+          };
+        }
+        return SERVICE_CARDS[selectedService.name] ?? null;
+      })()
+    : null;
+
+  // imageUrl for PhoneMockup
+  const cardImageUrl: string | undefined = selectedService && dbServices
+    ? (dbServices.find((s) => s.name === selectedService.name)?.card_image_url ?? undefined)
+    : undefined;
+
   const orbitGlow = selectedService ? ORBIT_GLOW[selectedService.orbit] : ORBIT_GLOW.inner;
+
+  // Convert dbServices to ServiceData[] for HeroOrbit prop
+  const orbitServices: ServiceData[] | undefined = dbServices
+    ? dbServices.map((s) => ({
+        id: s.id,
+        name: s.name,
+        iconName: s.icon_name,
+        orbit: s.orbit,
+        angle: s.angle,
+      }))
+    : undefined;
 
   return (
     <section className="relative min-h-screen flex items-center overflow-hidden bg-dark-300">
@@ -454,6 +524,7 @@ export default function Hero() {
               <HeroOrbit
                 onServiceClick={handleServiceClick}
                 paused={!!selectedService}
+                services={orbitServices}
               />
             </motion.div>
           </div>
@@ -585,7 +656,7 @@ export default function Hero() {
                     background: `linear-gradient(160deg, ${orbitGlow},0.10) 0%, transparent 70%)`,
                   }}
                 >
-                  <PhoneMockup text={cardData.visual} glow={orbitGlow} />
+                  <PhoneMockup text={cardData.visual} glow={orbitGlow} imageUrl={cardImageUrl} />
                 </div>
 
                 {/* Right: Content */}
