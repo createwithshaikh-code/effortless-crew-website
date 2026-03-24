@@ -12,23 +12,23 @@ function sr(seed: number) {
   return x - Math.floor(x);
 }
 
-const BG_STARS = Array.from({ length: 70 }, (_, i) => ({
-  top:   `${(sr(i * 4.71 + 1.3)  * 100).toFixed(2)}%`,
-  left:  `${(sr(i * 8.93 + 2.7)  * 100).toFixed(2)}%`,
-  size:  sr(i * 12.1 + 0.3) > 0.82 ? 2 : 1,
-  delay: `${-(sr(i * 6.57 + 3.9) * 9).toFixed(1)}s`,
-  dur:   `${(sr(i * 2.83 + 1.1)  * 6 + 4).toFixed(1)}s`,
+/* Near layer — larger stars, clockwise rotation at 300s */
+const STARS_NEAR = Array.from({ length: 70 }, (_, i) => ({
+  top:   `${(sr(i * 4.71 + 1.3) * 100).toFixed(2)}%`,
+  left:  `${(sr(i * 8.93 + 2.7) * 100).toFixed(2)}%`,
+  size:  sr(i * 12.1 + 0.3) > 0.78 ? 2 : 1,
+  delay: `${-(sr(i * 6.57 + 3.9) * 14).toFixed(1)}s`,
+  dur:   `${(sr(i * 2.83 + 1.1)  *  8 + 6).toFixed(1)}s`,
 }));
 
-const ORBIT_STARS = Array.from({ length: 60 }, (_, i) => ({
-  top:   `${(sr(i * 19.3 + 7.1) * 88 + 6).toFixed(2)}%`,
-  left:  `${(sr(i * 11.7 + 4.9) * 55 + 45).toFixed(2)}%`,
+/* Far layer — tiny stars, counter-clockwise at 500s */
+const STARS_FAR = Array.from({ length: 90 }, (_, i) => ({
+  top:   `${(sr(i * 13.7 + 5.1) * 100).toFixed(2)}%`,
+  left:  `${(sr(i *  7.23 + 8.4) * 100).toFixed(2)}%`,
   size:  1,
-  delay: `${-(sr(i * 7.43 + 2.2) * 8).toFixed(1)}s`,
-  dur:   `${(sr(i * 3.61 + 0.8) * 5 + 3.5).toFixed(1)}s`,
+  delay: `${-(sr(i * 9.31 + 2.6) * 16).toFixed(1)}s`,
+  dur:   `${(sr(i *  5.17 + 0.9) * 10 + 8).toFixed(1)}s`,
 }));
-
-const ALL_STARS = [...BG_STARS, ...ORBIT_STARS];
 
 const SHOOTING = [
   { top: "8%",  left: "62%", delay: 0,  dur: 15 },
@@ -259,7 +259,7 @@ export default function Hero() {
         style={{ background: "radial-gradient(circle, rgba(37,99,235,0.08) 0%, transparent 70%)" }} />
 
 
-      {/* ── Star field — parallax + warp scale layer ── */}
+      {/* ── Star field — two counter-rotating layers, appear/disappear twinkle ── */}
       <motion.div
         className="absolute inset-0 pointer-events-none"
         animate={{
@@ -269,21 +269,32 @@ export default function Hero() {
         }}
         transition={{ duration: 0.9, ease: [0.22, 1, 0.36, 1] }}
       >
-        {ALL_STARS.map((s, i) => (
-          <div
-            key={i}
-            className="absolute rounded-full"
-            style={{
-              top: s.top,
-              left: s.left,
-              width: s.size,
-              height: s.size,
-              background: "white",
-              animation: `twinkle-slow ${s.dur}s ease-in-out ${s.delay}s infinite`,
-              willChange: "opacity, transform",
-            }}
-          />
-        ))}
+        {/* Near layer — clockwise 300s */}
+        <div
+          className="absolute"
+          style={{ top: "-30%", left: "-30%", width: "160%", height: "160%",
+            animation: "star-field-rotate 300s linear infinite" }}
+        >
+          {STARS_NEAR.map((s, i) => (
+            <div key={i} className="absolute rounded-full bg-white"
+              style={{ top: s.top, left: s.left, width: s.size, height: s.size,
+                animation: `star-appear ${s.dur}s ease-in-out ${s.delay}s infinite` }} />
+          ))}
+        </div>
+
+        {/* Far layer — counter-clockwise 500s, slightly dimmer */}
+        <div
+          className="absolute"
+          style={{ top: "-30%", left: "-30%", width: "160%", height: "160%",
+            animation: "star-field-rotate 500s linear infinite reverse" }}
+        >
+          {STARS_FAR.map((s, i) => (
+            <div key={i} className="absolute rounded-full"
+              style={{ top: s.top, left: s.left, width: s.size, height: s.size,
+                background: "rgba(255,255,255,0.75)",
+                animation: `star-appear ${s.dur}s ease-in-out ${s.delay}s infinite` }} />
+          ))}
+        </div>
       </motion.div>
 
       {/* ── Shooting stars ── */}
