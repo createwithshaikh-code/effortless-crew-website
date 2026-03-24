@@ -112,6 +112,11 @@ html {
   100% { transform: rotate(20deg) translateY(0px);   opacity: 0; }
 }
 
+/* Pause all CSS animations inside the orbit when a service is selected */
+.orbits-paused * {
+  animation-play-state: paused !important;
+}
+
 /* Custom scrollbar */
 ::-webkit-scrollbar {
   width: 5px;

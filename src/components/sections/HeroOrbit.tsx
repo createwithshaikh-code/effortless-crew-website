@@ -2,37 +2,41 @@
 
 import {
   Film, Image, Smartphone, FileText,
-  Sparkles, Bot, Share2, Palette, Megaphone,
-  Globe, ShoppingCart, Video, Zap, BarChart3,
+  Bot, Share2, Palette, Megaphone,
+  Globe, ShoppingCart, Zap, BarChart3,
 } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
 
-interface Service {
+export interface Service {
   name: string;
   icon: LucideIcon;
   orbit: "inner" | "middle" | "outer";
   angle: number;
-  tooltip?: string;
+}
+
+interface HeroOrbitProps {
+  onServiceClick?: (service: Service, nodeEl: HTMLElement) => void;
+  paused?: boolean;
 }
 
 const services: Service[] = [
   /* ── Ring 1 — Core Production ── */
-  { name: "YT Automation",    icon: Bot,        orbit: "inner",  angle: 0,   tooltip: "Forget the 2AM edits. Reaching for the stars became easier." },
-  { name: "Scriptwriting",    icon: FileText,   orbit: "inner",  angle: 120, tooltip: undefined },
-  { name: "Short-Form Video", icon: Smartphone, orbit: "inner",  angle: 240, tooltip: undefined },
+  { name: "YT Automation",    icon: Bot,          orbit: "inner",  angle: 0   },
+  { name: "Scriptwriting",    icon: FileText,     orbit: "inner",  angle: 120 },
+  { name: "Short-Form Video", icon: Smartphone,   orbit: "inner",  angle: 240 },
 
   /* ── Ring 2 — Web & Design ── */
-  { name: "Ecommerce Sites",  icon: ShoppingCart, orbit: "middle", angle: 0,   tooltip: undefined },
-  { name: "Logo Design",      icon: Palette,      orbit: "middle", angle: 90,  tooltip: undefined },
-  { name: "Portfolio Sites",  icon: Globe,        orbit: "middle", angle: 180, tooltip: undefined },
-  { name: "Thumbnails",       icon: Image,        orbit: "middle", angle: 270, tooltip: "Supercharge your growth with visuals that convert." },
+  { name: "Ecommerce Sites",  icon: ShoppingCart, orbit: "middle", angle: 0   },
+  { name: "Logo Design",      icon: Palette,      orbit: "middle", angle: 90  },
+  { name: "Portfolio Sites",  icon: Globe,        orbit: "middle", angle: 180 },
+  { name: "Thumbnails",       icon: Image,        orbit: "middle", angle: 270 },
 
   /* ── Ring 3 — Growth & Marketing ── */
-  { name: "Social Media Mgmt",  icon: Share2,     orbit: "outer",  angle: 0,   tooltip: undefined },
-  { name: "Trend Research",     icon: BarChart3,  orbit: "outer",  angle: 72,  tooltip: undefined },
-  { name: "Ad Production",      icon: Megaphone,  orbit: "outer",  angle: 144, tooltip: undefined },
-  { name: "AI Production",      icon: Zap,        orbit: "outer",  angle: 216, tooltip: undefined },
-  { name: "Video Editing",      icon: Film,       orbit: "outer",  angle: 288, tooltip: undefined },
+  { name: "Social Media Mgmt", icon: Share2,    orbit: "outer", angle: 0   },
+  { name: "Trend Research",    icon: BarChart3, orbit: "outer", angle: 72  },
+  { name: "Ad Production",     icon: Megaphone, orbit: "outer", angle: 144 },
+  { name: "AI Production",     icon: Zap,       orbit: "outer", angle: 216 },
+  { name: "Video Editing",     icon: Film,      orbit: "outer", angle: 288 },
 ];
 
 const orbitConfig = {
@@ -41,11 +45,10 @@ const orbitConfig = {
   outer:  { radius: 445, duration: 52 },
 };
 
-/* Trail & icon colour per orbit */
 const orbitColor = {
-  inner:  { r: 192, g: 38,  b: 211 }, // magenta
-  middle: { r: 167, g: 139, b: 250 }, // purple
-  outer:  { r: 96,  g: 165, b: 250 }, // blue
+  inner:  { r: 192, g: 38,  b: 211 },
+  middle: { r: 167, g: 139, b: 250 },
+  outer:  { r: 96,  g: 165, b: 250 },
 };
 
 const rgba = (c: { r: number; g: number; b: number }, a: number) =>
@@ -77,10 +80,12 @@ const particles = [
   { top: "42%", left: "92%", size: 2, delay: -1, dur: 10 },
 ];
 
-export default function HeroOrbit() {
+export default function HeroOrbit({ onServiceClick, paused = false }: HeroOrbitProps) {
   return (
-    <div className="relative" style={{ width: 1000, height: 1000, flexShrink: 0 }}>
-
+    <div
+      className={`relative${paused ? " orbits-paused" : ""}`}
+      style={{ width: 1000, height: 1000, flexShrink: 0 }}
+    >
       {/* Radial glow backdrop */}
       <div
         className="absolute inset-0 pointer-events-none"
@@ -126,7 +131,7 @@ export default function HeroOrbit() {
       })}
 
       {/* ── Center EC Sun ── */}
-      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-20">
+      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-20 pointer-events-none">
         <div
           className="absolute rounded-full animate-ping"
           style={{
@@ -153,27 +158,22 @@ export default function HeroOrbit() {
             willChange: "box-shadow",
           }}
         >
-          <span className="font-black text-white text-sm tracking-tight"
-                style={{ fontFamily: "var(--font-space-grotesk)" }}>
+          <span
+            className="font-black text-white text-sm tracking-tight"
+            style={{ fontFamily: "var(--font-space-grotesk)" }}
+          >
             EC
           </span>
         </div>
       </div>
 
-      {/* ── Per-node comet trail (ghost circles) + orbiting node ── */}
+      {/* ── Per-node ghost trail + orbiting node ── */}
       {services.map((service) => {
         const { radius, duration } = orbitConfig[service.orbit];
         const delay = -((service.angle / 360) * duration);
         const Icon = service.icon;
         const col = orbitColor[service.orbit];
 
-        /*
-         * Ghost circles trail behind the main node.
-         * A POSITIVE delta means the ghost's delay is less negative,
-         * so at render-time it is slightly behind the main node in CW orbit.
-         * delta is a fraction of the orbit period so visual spacing is
-         * consistent regardless of which orbit the service is on.
-         */
         const ghosts = [
           { delta: duration * 0.025, size: 28, alpha: 0.55 },
           { delta: duration * 0.055, size: 20, alpha: 0.30 },
@@ -182,8 +182,7 @@ export default function HeroOrbit() {
 
         return (
           <div key={service.name}>
-
-            {/* Ghost trail circles — no counter-rotation needed (symmetric) */}
+            {/* Ghost trail circles */}
             {ghosts.map((g, gi) => (
               <div
                 key={gi}
@@ -230,13 +229,21 @@ export default function HeroOrbit() {
                     willChange: "transform",
                   }}
                 >
-                  {/*
-                   * Centering wrapper = exactly 38×38px.
-                   * translate(-50%,-50%) = (-19px,-19px) always.
-                   * Circle center lands exactly on orbit point.
-                   */}
-                  <div style={{ position: "relative", width: 38, height: 38, transform: "translate(-50%, -50%)" }}>
-
+                  {/* Fixed 38×38 centering wrapper — click target */}
+                  <div
+                    style={{
+                      position: "relative",
+                      width: 38,
+                      height: 38,
+                      transform: "translate(-50%, -50%)",
+                      pointerEvents: "auto",
+                      cursor: "pointer",
+                    }}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      onServiceClick?.(service, e.currentTarget);
+                    }}
+                  >
                     {/* Circle */}
                     <div
                       style={{
@@ -250,7 +257,9 @@ export default function HeroOrbit() {
                         display: "flex",
                         alignItems: "center",
                         justifyContent: "center",
+                        transition: "box-shadow 0.2s, border-color 0.2s, transform 0.2s",
                       }}
+                      className="group-hover:scale-110"
                     >
                       <Icon style={{ width: 14, height: 14, color: rgba(col, 0.95), display: "block" }} />
                     </div>
@@ -268,48 +277,15 @@ export default function HeroOrbit() {
                         whiteSpace: "nowrap",
                         lineHeight: 1,
                         letterSpacing: "0.02em",
+                        pointerEvents: "none",
                       }}
                     >
                       {service.name}
                     </span>
-
-                    {/* Tooltip — shown on hover, floats above the circle */}
-                    {service.tooltip && (
-                      <div
-                        className="group/node"
-                        style={{ position: "absolute", inset: 0, cursor: "default" }}
-                      >
-                        <div
-                          style={{
-                            position: "absolute",
-                            bottom: "calc(100% + 10px)",
-                            left: "50%",
-                            transform: "translateX(-50%)",
-                            background: "rgba(8,8,28,0.92)",
-                            border: `1px solid ${rgba(col, 0.35)}`,
-                            borderRadius: 8,
-                            padding: "6px 10px",
-                            fontSize: 9,
-                            fontWeight: 500,
-                            color: "rgba(255,255,255,0.85)",
-                            whiteSpace: "nowrap",
-                            pointerEvents: "none",
-                            opacity: 0,
-                            boxShadow: `0 0 16px ${rgba(col, 0.2)}`,
-                            transition: "opacity 0.2s",
-                          }}
-                          className="group-hover/node:opacity-100"
-                        >
-                          {service.tooltip}
-                        </div>
-                      </div>
-                    )}
-
                   </div>
                 </div>
               </div>
             </div>
-
           </div>
         );
       })}
