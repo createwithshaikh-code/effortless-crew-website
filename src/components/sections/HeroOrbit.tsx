@@ -277,24 +277,32 @@ export default function HeroOrbit({ onServiceClick, paused = false }: HeroOrbitP
                       <Icon style={{ width: 14, height: 14, color: rgba(col, 0.95), display: "block" }} />
                     </div>
 
-                    {/* Label */}
-                    <span
-                      style={{
-                        position: "absolute",
-                        left: "calc(100% + 8px)",
-                        top: "50%",
-                        transform: "translateY(-50%)",
-                        fontSize: 10,
-                        fontWeight: 600,
-                        color: "rgba(255,255,255,0.72)",
-                        whiteSpace: "nowrap",
-                        lineHeight: 1,
-                        letterSpacing: "0.02em",
-                        pointerEvents: "none",
-                      }}
-                    >
-                      {service.name}
-                    </span>
+                    {/* Label — flips to left side when node starts on right half of orbit */}
+                    {(() => {
+                      const flipLeft = Math.sin(service.angle * Math.PI / 180) > 0.1;
+                      return (
+                        <span
+                          style={{
+                            position: "absolute",
+                            ...(flipLeft
+                              ? { right: "calc(100% + 8px)", textAlign: "right" as const }
+                              : { left:  "calc(100% + 8px)", textAlign: "left"  as const }
+                            ),
+                            top: "50%",
+                            transform: "translateY(-50%)",
+                            fontSize: 10,
+                            fontWeight: 600,
+                            color: "rgba(255,255,255,0.72)",
+                            whiteSpace: "nowrap",
+                            lineHeight: 1,
+                            letterSpacing: "0.02em",
+                            pointerEvents: "none",
+                          }}
+                        >
+                          {service.name}
+                        </span>
+                      );
+                    })()}
                   </div>
                 </div>
               </div>

@@ -148,24 +148,25 @@ const ORBIT_GLOW: Record<"inner" | "middle" | "outer", string> = {
 };
 
 /* ── Phone visual placeholder ── */
-function PhoneMockup({ text }: { text: string }) {
+function PhoneMockup({ text, glow }: { text: string; glow: string }) {
   return (
     <div style={{
-      width: 150, height: 240,
-      borderRadius: 22,
-      border: "1.5px solid rgba(255,255,255,0.10)",
-      background: "rgba(0,0,0,0.55)",
+      width: 162, height: 268,
+      borderRadius: 26,
+      border: `1.5px solid ${glow},0.35)`,
+      background: "rgba(2,2,14,0.80)",
       display: "flex",
       flexDirection: "column",
       overflow: "hidden",
       position: "relative",
+      boxShadow: `0 0 28px ${glow},0.22), inset 0 0 24px rgba(0,0,0,0.6)`,
     }}>
       {/* Notch */}
       <div style={{
         width: 52, height: 12,
         borderRadius: "0 0 8px 8px",
-        background: "rgba(0,0,0,0.9)",
-        border: "1.5px solid rgba(255,255,255,0.06)",
+        background: "rgba(0,0,0,0.95)",
+        border: `1px solid ${glow},0.12)`,
         borderTop: "none",
         alignSelf: "center",
         flexShrink: 0,
@@ -176,16 +177,16 @@ function PhoneMockup({ text }: { text: string }) {
         display: "flex",
         alignItems: "center",
         justifyContent: "center",
-        padding: 10,
-        background: "linear-gradient(135deg, rgba(192,38,211,0.07) 0%, rgba(37,99,235,0.07) 100%)",
+        padding: 12,
+        background: `linear-gradient(145deg, ${glow},0.14) 0%, rgba(0,0,0,0.4) 55%, ${glow},0.06) 100%)`,
       }}>
         <div style={{
-          border: "1.5px dashed rgba(255,255,255,0.16)",
+          border: `1.5px dashed ${glow},0.40)`,
           borderRadius: 10,
           padding: "10px 8px",
           textAlign: "center",
           fontSize: 9,
-          color: "rgba(255,255,255,0.40)",
+          color: `${glow},0.65)`,
           lineHeight: 1.6,
         }}>
           {text}
@@ -506,61 +507,79 @@ export default function Hero() {
               onClick={(e) => e.stopPropagation()}
               style={{
                 position: "relative",
-                width: "min(700px, 92vw)",
-                background: "rgba(6,6,22,0.88)",
-                backdropFilter: "blur(28px)",
-                WebkitBackdropFilter: "blur(28px)",
-                border: `1px solid ${orbitGlow},0.28)`,
-                borderRadius: 20,
-                boxShadow: `0 0 60px ${orbitGlow},0.18), 0 0 120px ${orbitGlow},0.08), 0 32px 80px rgba(0,0,0,0.7)`,
+                width: "min(820px, 94vw)",
+                background: `linear-gradient(135deg, ${orbitGlow},0.20) 0%, rgba(4,4,18,0.97) 50%, ${orbitGlow},0.07) 100%)`,
+                backdropFilter: "blur(36px)",
+                WebkitBackdropFilter: "blur(36px)",
+                border: `1px solid ${orbitGlow},0.50)`,
+                borderRadius: 24,
+                boxShadow: `0 0 0 1px ${orbitGlow},0.10), 0 0 50px ${orbitGlow},0.40), 0 0 120px ${orbitGlow},0.18), 0 50px 120px rgba(0,0,0,0.85)`,
                 overflow: "hidden",
               }}
             >
+              {/* Top-left radial hotspot */}
+              <div style={{
+                position: "absolute", top: -80, left: -80,
+                width: 320, height: 320, borderRadius: "50%",
+                background: `radial-gradient(circle, ${orbitGlow},0.28) 0%, transparent 70%)`,
+                pointerEvents: "none",
+              }} />
+              {/* Bottom-right accent */}
+              <div style={{
+                position: "absolute", bottom: -60, right: -60,
+                width: 220, height: 220, borderRadius: "50%",
+                background: `radial-gradient(circle, ${orbitGlow},0.12) 0%, transparent 70%)`,
+                pointerEvents: "none",
+              }} />
+
               {/* Return to Orbit button */}
               <button
                 onClick={handleClose}
-                className="absolute top-4 right-4 z-20 flex items-center gap-2 text-white/45 hover:text-white transition-colors text-xs font-semibold tracking-wide uppercase"
+                className="absolute top-5 right-5 z-20 flex items-center gap-2 text-white/50 hover:text-white transition-colors text-xs font-semibold tracking-wide uppercase"
               >
                 Return to Orbit
                 <span
                   className="w-6 h-6 rounded-full flex items-center justify-center"
-                  style={{ background: "rgba(255,255,255,0.08)", border: "1px solid rgba(255,255,255,0.12)" }}
+                  style={{ background: `${orbitGlow},0.15)`, border: `1px solid ${orbitGlow},0.35)` }}
                 >
                   <X className="w-3 h-3" />
                 </span>
               </button>
 
               {/* Card body */}
-              <div className="flex min-h-[320px]">
+              <div className="flex min-h-[380px] relative z-10">
 
                 {/* Left: Visual */}
                 <div
-                  className="hidden sm:flex w-[210px] flex-shrink-0 items-center justify-center p-6"
-                  style={{ borderRight: "1px solid rgba(255,255,255,0.05)" }}
+                  className="hidden sm:flex w-[230px] flex-shrink-0 items-center justify-center p-8"
+                  style={{
+                    borderRight: `1px solid ${orbitGlow},0.18)`,
+                    background: `linear-gradient(160deg, ${orbitGlow},0.10) 0%, transparent 70%)`,
+                  }}
                 >
-                  <PhoneMockup text={cardData.visual} />
+                  <PhoneMockup text={cardData.visual} glow={orbitGlow} />
                 </div>
 
                 {/* Right: Content */}
-                <div className="flex-1 flex flex-col justify-center p-8 pt-12">
+                <div className="flex-1 flex flex-col justify-center p-8 pt-14">
                   <h2
                     className="font-black text-white text-2xl lg:text-3xl leading-tight mb-4"
                     style={{ fontFamily: "var(--font-space-grotesk)" }}
                   >
                     {cardData.title}
                   </h2>
-                  <p className="text-white/65 text-sm leading-relaxed mb-3">
+                  <p className="text-white/75 text-sm leading-relaxed mb-3">
                     {cardData.desc}
                   </p>
-                  <p className="text-white/40 text-sm leading-relaxed mb-8">
+                  <p className="text-white/45 text-sm leading-relaxed mb-8">
                     {cardData.subDesc}
                   </p>
                   <Link
                     href="/contact"
-                    className="self-start flex items-center gap-2.5 px-6 py-3 rounded-full font-bold text-white text-xs uppercase tracking-widest"
+                    className="self-start flex items-center gap-2.5 px-7 py-3.5 rounded-full font-bold text-white text-xs uppercase tracking-widest"
                     style={{
                       background: `linear-gradient(135deg, ${orbitGlow},1) 0%, rgba(37,99,235,1) 100%)`,
-                      boxShadow: `0 0 24px ${orbitGlow},0.45), 0 0 48px ${orbitGlow},0.18)`,
+                      boxShadow: `0 0 30px ${orbitGlow},0.65), 0 0 60px ${orbitGlow},0.28), 0 4px 20px rgba(0,0,0,0.5)`,
                     }}
                   >
                     {cardData.cta}
