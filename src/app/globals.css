@@ -117,6 +117,16 @@ html {
   animation-play-state: paused !important;
 }
 
+/* Orbit node — hover glow + grow */
+.orbit-node-circle {
+  transition: transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease;
+}
+.orbit-node:hover .orbit-node-circle {
+  transform: scale(1.22);
+  border-color: var(--node-glow-hi) !important;
+  box-shadow: 0 0 20px var(--node-glow-hi), 0 0 42px var(--node-glow-lo), 0 4px 14px rgba(0,0,0,0.6) !important;
+}
+
 /* Custom scrollbar */
 ::-webkit-scrollbar {
   width: 5px;

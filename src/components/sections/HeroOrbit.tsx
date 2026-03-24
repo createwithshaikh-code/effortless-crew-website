@@ -20,18 +20,13 @@ interface HeroOrbitProps {
 }
 
 const services: Service[] = [
-  /* ── Ring 1 — Core Production ── */
   { name: "YT Automation",    icon: Bot,          orbit: "inner",  angle: 0   },
   { name: "Scriptwriting",    icon: FileText,     orbit: "inner",  angle: 120 },
   { name: "Short-Form Video", icon: Smartphone,   orbit: "inner",  angle: 240 },
-
-  /* ── Ring 2 — Web & Design ── */
   { name: "Ecommerce Sites",  icon: ShoppingCart, orbit: "middle", angle: 0   },
   { name: "Logo Design",      icon: Palette,      orbit: "middle", angle: 90  },
   { name: "Portfolio Sites",  icon: Globe,        orbit: "middle", angle: 180 },
   { name: "Thumbnails",       icon: Image,        orbit: "middle", angle: 270 },
-
-  /* ── Ring 3 — Growth & Marketing ── */
   { name: "Social Media Mgmt", icon: Share2,    orbit: "outer", angle: 0   },
   { name: "Trend Research",    icon: BarChart3, orbit: "outer", angle: 72  },
   { name: "Ad Production",     icon: Megaphone, orbit: "outer", angle: 144 },
@@ -83,12 +78,12 @@ const particles = [
 export default function HeroOrbit({ onServiceClick, paused = false }: HeroOrbitProps) {
   return (
     <div
-      className={`relative${paused ? " orbits-paused" : ""}`}
+      className={`relative pointer-events-none${paused ? " orbits-paused" : ""}`}
       style={{ width: 1000, height: 1000, flexShrink: 0 }}
     >
       {/* Radial glow backdrop */}
       <div
-        className="absolute inset-0 pointer-events-none"
+        className="absolute inset-0"
         style={{
           background:
             "radial-gradient(circle at center, rgba(192,38,211,0.08) 0%, rgba(37,99,235,0.05) 40%, transparent 68%)",
@@ -99,7 +94,7 @@ export default function HeroOrbit({ onServiceClick, paused = false }: HeroOrbitP
       {particles.map((p, i) => (
         <div
           key={i}
-          className="absolute rounded-full pointer-events-none"
+          className="absolute rounded-full"
           style={{
             top: p.top, left: p.left,
             width: p.size, height: p.size,
@@ -116,7 +111,7 @@ export default function HeroOrbit({ onServiceClick, paused = false }: HeroOrbitP
         return (
           <div
             key={key}
-            className="absolute rounded-full pointer-events-none"
+            className="absolute rounded-full"
             style={{
               width: radius * 2,
               height: radius * 2,
@@ -131,7 +126,7 @@ export default function HeroOrbit({ onServiceClick, paused = false }: HeroOrbitP
       })}
 
       {/* ── Center EC Sun ── */}
-      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-20 pointer-events-none">
+      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-20">
         <div
           className="absolute rounded-full animate-ping"
           style={{
@@ -186,7 +181,7 @@ export default function HeroOrbit({ onServiceClick, paused = false }: HeroOrbitP
             {ghosts.map((g, gi) => (
               <div
                 key={gi}
-                className="absolute pointer-events-none"
+                className="absolute"
                 style={{
                   top: "50%", left: "50%",
                   width: 0, height: 0,
@@ -229,23 +224,43 @@ export default function HeroOrbit({ onServiceClick, paused = false }: HeroOrbitP
                     willChange: "transform",
                   }}
                 >
-                  {/* Fixed 38×38 centering wrapper — click target */}
+                  {/*
+                   * 38×38 layout anchor — translate(-50%,-50%) centers node on orbit point.
+                   * Hover class "orbit-node" enables CSS glow/scale on the inner circle.
+                   * Enlarged hit area (inset -13px = ~64px zone) for easy clicking.
+                   */}
                   <div
+                    className="orbit-node"
                     style={{
                       position: "relative",
                       width: 38,
                       height: 38,
                       transform: "translate(-50%, -50%)",
                       pointerEvents: "auto",
-                      cursor: "pointer",
-                    }}
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      onServiceClick?.(service, e.currentTarget);
-                    }}
+                      /* CSS vars used by .orbit-node:hover in globals.css */
+                      "--node-glow-hi": rgba(col, 0.72),
+                      "--node-glow-lo": rgba(col, 0.28),
+                    } as React.CSSProperties}
                   >
-                    {/* Circle */}
+                    {/* Enlarged invisible hit area — 64×64 centered over the 38×38 circle */}
                     <div
+                      style={{
+                        position: "absolute",
+                        inset: -13,
+                        borderRadius: "50%",
+                        cursor: "pointer",
+                        zIndex: 10,
+                      }}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        const wrapper = e.currentTarget.parentElement;
+                        if (wrapper) onServiceClick?.(service, wrapper);
+                      }}
+                    />
+
+                    {/* Visual circle */}
+                    <div
+                      className="orbit-node-circle"
                       style={{
                         width: 38, height: 38,
                         borderRadius: "50%",
@@ -257,9 +272,7 @@ export default function HeroOrbit({ onServiceClick, paused = false }: HeroOrbitP
                         display: "flex",
                         alignItems: "center",
                         justifyContent: "center",
-                        transition: "box-shadow 0.2s, border-color 0.2s, transform 0.2s",
                       }}
-                      className="group-hover:scale-110"
                     >
                       <Icon style={{ width: 14, height: 14, color: rgba(col, 0.95), display: "block" }} />
                     </div>

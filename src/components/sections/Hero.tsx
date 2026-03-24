@@ -310,49 +310,9 @@ export default function Hero() {
         />
       ))}
 
-      {/* ── Solar orbit ── */}
-      <div
-        className="hidden lg:flex absolute pointer-events-none items-center"
-        style={{ right: "-60px", top: 0, bottom: 0 }}
-      >
-        <motion.div
-          ref={orbitContainerRef}
-          style={{
-            maskImage: selectedService
-              ? "none"
-              : "linear-gradient(to right, transparent 0%, black 13%)",
-            WebkitMaskImage: selectedService
-              ? "none"
-              : "linear-gradient(to right, transparent 0%, black 13%)",
-          }}
-          initial={{ opacity: 0, scale: 0.85, x: 0, y: 0 }}
-          animate={
-            zoomState
-              ? { opacity: 1, scale: zoomState.scale, x: zoomState.x, y: zoomState.y }
-              : { opacity: 1, scale: 1, x: 0, y: 0 }
-          }
-          transition={
-            !hasAnimatedIn
-              ? { duration: 1.0, delay: 0.6, ease: [0.22, 1, 0.36, 1] }
-              : { duration: 0.8, ease: [0.22, 1, 0.36, 1] }
-          }
-          onAnimationComplete={() => {
-            if (!hasAnimatedInRef.current) {
-              hasAnimatedInRef.current = true;
-              setHasAnimatedIn(true);
-            }
-          }}
-        >
-          <HeroOrbit
-            onServiceClick={handleServiceClick}
-            paused={!!selectedService}
-          />
-        </motion.div>
-      </div>
-
       {/* ── Main split layout ── */}
       <div className="relative z-10 w-full container mx-auto px-4 sm:px-6 lg:px-8 py-24 lg:py-0">
-        <div className="flex flex-col lg:flex-row items-center gap-12 lg:gap-4 lg:min-h-screen">
+        <div className="flex flex-col lg:flex-row items-center gap-12 lg:gap-0 lg:min-h-screen">
 
           {/* LEFT: Text — scales up, drifts left, fades out on zoom */}
           <motion.div
@@ -452,6 +412,43 @@ export default function Hero() {
               </button>
             </motion.div>
           </motion.div>
+
+          {/* RIGHT: Orbit — inside layout so position is stable at any viewport width */}
+          <div className="hidden lg:flex flex-1 items-center justify-center">
+            <motion.div
+              ref={orbitContainerRef}
+              style={{
+                maskImage: selectedService
+                  ? "none"
+                  : "linear-gradient(to right, transparent 0%, black 13%)",
+                WebkitMaskImage: selectedService
+                  ? "none"
+                  : "linear-gradient(to right, transparent 0%, black 13%)",
+              }}
+              initial={{ opacity: 0, scale: 0.85, x: 0, y: 0 }}
+              animate={
+                zoomState
+                  ? { opacity: 1, scale: zoomState.scale, x: zoomState.x, y: zoomState.y }
+                  : { opacity: 1, scale: 1, x: 0, y: 0 }
+              }
+              transition={
+                !hasAnimatedIn
+                  ? { duration: 1.0, delay: 0.6, ease: [0.22, 1, 0.36, 1] }
+                  : { duration: 0.8, ease: [0.22, 1, 0.36, 1] }
+              }
+              onAnimationComplete={() => {
+                if (!hasAnimatedInRef.current) {
+                  hasAnimatedInRef.current = true;
+                  setHasAnimatedIn(true);
+                }
+              }}
+            >
+              <HeroOrbit
+                onServiceClick={handleServiceClick}
+                paused={!!selectedService}
+              />
+            </motion.div>
+          </div>
 
         </div>
       </div>
