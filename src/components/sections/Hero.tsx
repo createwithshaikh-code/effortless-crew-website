@@ -177,7 +177,7 @@ function CardVisual({ glow, images, icon: Icon }: { glow: string; images: string
   // Advance every 11s (8s pan + 3s pause). Works for 1 or more images.
   useEffect(() => {
     if (!images.length) return;
-    const timer = setTimeout(() => { setCycle((c) => c + 1); }, 11000);
+    const timer = setTimeout(() => { setCycle((c) => c + 1); }, 21000);
     return () => clearTimeout(timer);
   }, [cycle, images]);
 
@@ -209,7 +209,7 @@ function CardVisual({ glow, images, icon: Icon }: { glow: string; images: string
             position: "absolute", inset: 0,
             width: "100%", height: "100%",
             objectFit: "cover",
-            animation: "pan-lr 11s linear forwards",
+            animation: "pan-lr 21s linear forwards",
           }}
         />
       </AnimatePresence>

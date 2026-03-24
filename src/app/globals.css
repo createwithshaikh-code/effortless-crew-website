@@ -394,10 +394,10 @@ html {
   100% { transform: translate(0,0) scale(1); }
 }
 
-/* Service card image pan: left→right over 8s, hold right for 3s (total 11s) */
+/* Service card image pan: left→right over 18s, hold right for 3s (total 21s) */
 @keyframes pan-lr {
   0%      { object-position: 0% center; }
-  72.72%  { object-position: 100% center; }
+  85.71%  { object-position: 100% center; }
   100%    { object-position: 100% center; }
 }
 
