@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import Image from "next/image";
+import NextImage from "next/image";
 import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 import {
@@ -124,7 +124,7 @@ export default function AdminSidebar() {
       <div className="p-6 border-b border-border">
         <Link href="/" className="flex items-center gap-2">
           <div className="w-8 h-8 flex items-center justify-center">
-            <Image src="/logo.png" alt="Effortless Crew" width={32} height={32} className="object-contain" />
+            <NextImage src="/logo.png" alt="Effortless Crew" width={32} height={32} className="object-contain" />
           </div>
           <div>
             <div className="font-bold text-sm">EffortlessCrew</div>
