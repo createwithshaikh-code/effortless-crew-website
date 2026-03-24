@@ -1,5 +1,6 @@
 "use client";
 
+import React from "react";
 import Link from "next/link";
 import { useRef, useState, useCallback, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
@@ -162,61 +163,35 @@ const ORBIT_GLOW: Record<"inner" | "middle" | "outer", string> = {
   outer:  "rgba(96,165,250",
 };
 
-/* ── Phone visual placeholder ── */
-function PhoneMockup({ text, glow, imageUrl }: { text: string; glow: string; imageUrl?: string }) {
+/* ── Left panel: full-bleed image or icon placeholder ── */
+function CardVisual({ glow, imageUrl, icon: Icon }: { glow: string; imageUrl?: string; icon: React.ElementType }) {
   return (
-    <div style={{
-      width: 162, height: 268,
-      borderRadius: 26,
-      border: `1.5px solid ${glow},0.35)`,
-      background: "rgba(2,2,14,0.80)",
-      display: "flex",
-      flexDirection: "column",
-      overflow: "hidden",
-      position: "relative",
-      boxShadow: `0 0 28px ${glow},0.22), inset 0 0 24px rgba(0,0,0,0.6)`,
-    }}>
-      {/* Notch */}
-      <div style={{
-        width: 52, height: 12,
-        borderRadius: "0 0 8px 8px",
-        background: "rgba(0,0,0,0.95)",
-        border: `1px solid ${glow},0.12)`,
-        borderTop: "none",
-        alignSelf: "center",
-        flexShrink: 0,
-      }} />
-      {/* Screen */}
-      <div style={{
-        flex: 1,
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "center",
-        padding: imageUrl ? 0 : 12,
-        background: `linear-gradient(145deg, ${glow},0.14) 0%, rgba(0,0,0,0.4) 55%, ${glow},0.06) 100%)`,
-        overflow: "hidden",
-      }}>
-        {imageUrl ? (
-          // eslint-disable-next-line @next/next/no-img-element
+    <div style={{ position: "relative", width: "100%", height: "100%", overflow: "hidden" }}>
+      {imageUrl ? (
+        <>
+          {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
             src={imageUrl}
             alt=""
-            style={{ width: "100%", height: "100%", objectFit: "cover", borderRadius: 22 }}
+            style={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "cover" }}
           />
-        ) : (
+          {/* Right-edge fade to blend into card body */}
           <div style={{
-            border: `1.5px dashed ${glow},0.40)`,
-            borderRadius: 10,
-            padding: "10px 8px",
-            textAlign: "center",
-            fontSize: 9,
-            color: `${glow},0.65)`,
-            lineHeight: 1.6,
-          }}>
-            {text}
-          </div>
-        )}
-      </div>
+            position: "absolute", inset: 0,
+            background: "linear-gradient(to right, transparent 55%, rgba(4,4,18,0.85) 100%)",
+            pointerEvents: "none",
+          }} />
+        </>
+      ) : (
+        /* No image — show glowing icon placeholder */
+        <div style={{
+          position: "absolute", inset: 0,
+          display: "flex", alignItems: "center", justifyContent: "center",
+          background: `linear-gradient(160deg, ${glow},0.13) 0%, transparent 70%)`,
+        }}>
+          <Icon style={{ width: 56, height: 56, color: `${glow},0.30)` }} />
+        </div>
+      )}
     </div>
   );
 }
@@ -607,7 +582,17 @@ export default function Hero() {
               {(() => {
                 const Icon = selectedService.icon;
                 return (
-                  <div className="absolute top-5 left-5 z-20 flex items-center gap-2.5">
+                  <div
+                    className="absolute top-5 left-5 z-20 flex items-center gap-2.5"
+                    style={{
+                      background: "rgba(0,0,0,0.52)",
+                      backdropFilter: "blur(12px)",
+                      WebkitBackdropFilter: "blur(12px)",
+                      borderRadius: 999,
+                      padding: "5px 12px 5px 5px",
+                      border: "1px solid rgba(255,255,255,0.07)",
+                    }}
+                  >
                     <div
                       style={{
                         width: 32, height: 32,
@@ -648,15 +633,21 @@ export default function Hero() {
               {/* Card body */}
               <div className="flex min-h-[380px] relative z-10">
 
-                {/* Left: Visual */}
+                {/* Left: Visual — full-bleed image or icon placeholder */}
                 <div
-                  className="hidden sm:flex w-[230px] flex-shrink-0 items-center justify-center p-8"
+                  className="hidden sm:block flex-shrink-0"
                   style={{
+                    width: 280,
                     borderRight: `1px solid ${orbitGlow},0.18)`,
-                    background: `linear-gradient(160deg, ${orbitGlow},0.10) 0%, transparent 70%)`,
+                    position: "relative",
+                    overflow: "hidden",
                   }}
                 >
-                  <PhoneMockup text={cardData.visual} glow={orbitGlow} imageUrl={cardImageUrl} />
+                  <CardVisual
+                    glow={orbitGlow}
+                    imageUrl={cardImageUrl}
+                    icon={selectedService.icon}
+                  />
                 </div>
 
                 {/* Right: Content */}
