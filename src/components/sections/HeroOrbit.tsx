@@ -149,9 +149,9 @@ export default function HeroOrbit({ onServiceClick, paused = false }: HeroOrbitP
           className="relative rounded-full flex items-center justify-center select-none overflow-hidden"
           style={{
             width: 118, height: 118,
-            background: "radial-gradient(circle at center, rgba(255,255,255,0.92) 0%, rgba(186,235,255,0.75) 38%, rgba(80,190,255,0.22) 65%, rgba(7,3,20,0.55) 100%)",
-            border: "1.5px solid rgba(100,210,255,0.55)",
-            boxShadow: "0 0 32px rgba(80,200,255,0.40), 0 0 70px rgba(80,200,255,0.18), inset 0 0 22px rgba(160,230,255,0.18)",
+            background: "radial-gradient(circle at center, rgba(10,20,50,0.95) 0%, rgba(5,10,35,0.98) 60%, rgba(2,2,16,1) 100%)",
+            border: "1.5px solid rgba(80,200,255,0.50)",
+            boxShadow: "0 0 32px rgba(80,200,255,0.35), 0 0 70px rgba(80,200,255,0.15), inset 0 0 18px rgba(30,80,160,0.25)",
             animation: "sun-pulse 3s ease-in-out infinite",
             willChange: "box-shadow",
           }}
@@ -162,7 +162,7 @@ export default function HeroOrbit({ onServiceClick, paused = false }: HeroOrbitP
             width={94}
             height={94}
             className="object-contain"
-            style={{ mixBlendMode: "multiply" }}
+            style={{ mixBlendMode: "screen" }}
           />
         </div>
       </div>
