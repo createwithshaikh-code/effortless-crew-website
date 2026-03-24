@@ -1,5 +1,6 @@
 "use client";
 
+import NextImage from "next/image";
 import {
   Film, Image, Smartphone, FileText,
   Bot, Share2, Palette, Megaphone,
@@ -145,20 +146,16 @@ export default function HeroOrbit({ onServiceClick, paused = false }: HeroOrbitP
           }}
         />
         <div
-          className="relative rounded-full flex items-center justify-center select-none"
+          className="relative rounded-full flex items-center justify-center select-none overflow-hidden"
           style={{
             width: 84, height: 84,
-            background: "linear-gradient(135deg, #C026D3 0%, #7C3AED 50%, #2563EB 100%)",
+            background: "linear-gradient(135deg, rgba(10,4,22,0.95) 0%, rgba(20,8,40,0.95) 100%)",
+            border: "1.5px solid rgba(192,38,211,0.35)",
             animation: "sun-pulse 3s ease-in-out infinite",
             willChange: "box-shadow",
           }}
         >
-          <span
-            className="font-black text-white text-sm tracking-tight"
-            style={{ fontFamily: "var(--font-space-grotesk)" }}
-          >
-            EC
-          </span>
+          <NextImage src="/logo.png" alt="EC" width={60} height={60} className="object-contain" />
         </div>
       </div>
 
