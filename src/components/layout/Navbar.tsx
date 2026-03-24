@@ -75,9 +75,6 @@ export default function Navbar() {
             <div className="group-hover:scale-110 transition-transform duration-300 flex items-center justify-center">
               <Image src="/logo.png" alt="Effortless Crew" width={72} height={72} className="object-contain" />
             </div>
-            <span className="font-display font-bold text-lg tracking-tight text-white">
-              Effortless<span className="text-gradient-brand">Crew</span>
-            </span>
           </Link>
 
           {/* Desktop Nav */}
