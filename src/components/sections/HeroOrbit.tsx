@@ -132,7 +132,7 @@ export default function HeroOrbit({ onServiceClick, paused = false }: HeroOrbitP
           className="absolute rounded-full animate-ping"
           style={{
             inset: -12,
-            background: "linear-gradient(135deg, rgba(192,38,211,0.25), rgba(37,99,235,0.16))",
+            background: "linear-gradient(135deg, rgba(80,200,255,0.28), rgba(37,99,235,0.18))",
             animationDuration: "2.4s",
           }}
         />
@@ -140,7 +140,7 @@ export default function HeroOrbit({ onServiceClick, paused = false }: HeroOrbitP
           className="absolute rounded-full animate-ping"
           style={{
             inset: -26,
-            background: "linear-gradient(135deg, rgba(192,38,211,0.10), rgba(37,99,235,0.07))",
+            background: "linear-gradient(135deg, rgba(80,200,255,0.11), rgba(37,99,235,0.07))",
             animationDuration: "3.2s",
             animationDelay: "-0.7s",
           }}
@@ -148,16 +148,22 @@ export default function HeroOrbit({ onServiceClick, paused = false }: HeroOrbitP
         <div
           className="relative rounded-full flex items-center justify-center select-none overflow-hidden"
           style={{
-            width: 104, height: 104,
-            background: "radial-gradient(circle at 40% 40%, rgba(120,30,180,0.28) 0%, rgba(7,3,20,0.72) 60%, rgba(2,2,16,0.88) 100%)",
-            border: "1.5px solid rgba(192,38,211,0.45)",
-            boxShadow: "0 0 28px rgba(192,38,211,0.22), inset 0 0 20px rgba(120,30,180,0.12)",
-            backdropFilter: "blur(6px)",
+            width: 118, height: 118,
+            background: "radial-gradient(circle at center, rgba(255,255,255,0.92) 0%, rgba(186,235,255,0.75) 38%, rgba(80,190,255,0.22) 65%, rgba(7,3,20,0.55) 100%)",
+            border: "1.5px solid rgba(100,210,255,0.55)",
+            boxShadow: "0 0 32px rgba(80,200,255,0.40), 0 0 70px rgba(80,200,255,0.18), inset 0 0 22px rgba(160,230,255,0.18)",
             animation: "sun-pulse 3s ease-in-out infinite",
             willChange: "box-shadow",
           }}
         >
-          <NextImage src="/logo.png" alt="EC" width={80} height={80} className="object-contain" style={{ mixBlendMode: "screen" }} />
+          <NextImage
+            src="/orbit-logo.png"
+            alt="EC"
+            width={94}
+            height={94}
+            className="object-contain"
+            style={{ mixBlendMode: "multiply" }}
+          />
         </div>
       </div>
 
