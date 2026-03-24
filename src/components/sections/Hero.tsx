@@ -263,12 +263,13 @@ export default function Hero() {
       {/* Grid overlay */}
       <div className="absolute inset-0 bg-grid opacity-100" />
 
-      {/* ── Star field — parallax layer ── */}
+      {/* ── Star field — parallax + warp scale layer ── */}
       <motion.div
         className="absolute inset-0 pointer-events-none"
         animate={{
-          x: zoomState ? -(zoomState.x * 0.10) : 0,
-          y: zoomState ? -(zoomState.y * 0.10) : 0,
+          x:     zoomState ? -(zoomState.x * 0.10) : 0,
+          y:     zoomState ? -(zoomState.y * 0.10) : 0,
+          scale: zoomState ? 1.35 : 1,
         }}
         transition={{ duration: 0.9, ease: [0.22, 1, 0.36, 1] }}
       >
@@ -353,8 +354,16 @@ export default function Hero() {
       <div className="relative z-10 w-full container mx-auto px-4 sm:px-6 lg:px-8 py-24 lg:py-0">
         <div className="flex flex-col lg:flex-row items-center gap-12 lg:gap-4 lg:min-h-screen">
 
-          {/* LEFT: Text */}
-          <div className="flex-1 flex flex-col justify-center lg:py-24 lg:pr-8">
+          {/* LEFT: Text — scales up, drifts left, fades out on zoom */}
+          <motion.div
+            className="flex-1 flex flex-col justify-center lg:py-24 lg:pr-8"
+            animate={
+              selectedService
+                ? { opacity: 0, x: -90, scale: 1.06 }
+                : { opacity: 1, x: 0,   scale: 1    }
+            }
+            transition={{ duration: 0.65, ease: [0.22, 1, 0.36, 1] }}
+          >
 
             {/* Pre-headline badge */}
             <motion.div
@@ -442,7 +451,7 @@ export default function Hero() {
                 </span>
               </button>
             </motion.div>
-          </div>
+          </motion.div>
 
         </div>
       </div>
