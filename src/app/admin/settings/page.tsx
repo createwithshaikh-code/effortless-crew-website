@@ -90,16 +90,14 @@ export default function AdminSettingsPage() {
     fetchSettings();
   }, []);
 
-  const uploadBrandingFile = async (file: File, type: "logo" | "favicon") => {
-    const supabase = createClient();
-    const ext = file.name.split(".").pop();
-    const filename = `${type}-${Date.now()}.${ext}`;
-    const { error } = await supabase.storage
-      .from("branding")
-      .upload(filename, file, { upsert: true });
-    if (error) throw new Error(error.message);
-    const { data } = supabase.storage.from("branding").getPublicUrl(filename);
-    return data.publicUrl;
+  const uploadBrandingFile = async (file: File) => {
+    const form = new FormData();
+    form.append("file", file);
+    form.append("folder", "branding");
+    const res = await fetch("/api/admin/upload", { method: "POST", body: form });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.error || "Upload failed");
+    return data.url as string;
   };
 
   const handleLogoUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -107,7 +105,7 @@ export default function AdminSettingsPage() {
     if (!file) return;
     setLogoUploading(true);
     try {
-      const url = await uploadBrandingFile(file, "logo");
+      const url = await uploadBrandingFile(file);
       setSettings((p) => ({ ...p, logo_url: url }));
     } catch (err) {
       alert("Upload failed: " + (err as Error).message);
@@ -121,7 +119,7 @@ export default function AdminSettingsPage() {
     if (!file) return;
     setFaviconUploading(true);
     try {
-      const url = await uploadBrandingFile(file, "favicon");
+      const url = await uploadBrandingFile(file);
       setSettings((p) => ({ ...p, favicon_url: url }));
     } catch (err) {
       alert("Upload failed: " + (err as Error).message);
@@ -303,7 +301,7 @@ export default function AdminSettingsPage() {
         <TabsContent value="branding" className="space-y-4 mt-6">
           {/* SQL migration notice */}
           <div className="rounded-lg border border-amber-500/30 bg-amber-500/8 px-4 py-3 text-xs text-amber-300">
-            <strong>First time setup:</strong> Run this SQL in your Supabase SQL Editor to add the branding columns, then create a Storage bucket named <code className="font-mono bg-black/20 px-1 rounded">branding</code> with public access.
+            <strong>First time setup:</strong> Run this SQL once in your Supabase SQL Editor to add the branding columns.
             <pre className="mt-2 font-mono bg-black/20 px-2 py-1.5 rounded text-[11px] leading-relaxed whitespace-pre-wrap">
 {`ALTER TABLE site_settings
   ADD COLUMN IF NOT EXISTS logo_url TEXT,
