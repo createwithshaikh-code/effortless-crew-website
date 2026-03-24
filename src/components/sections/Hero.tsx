@@ -532,6 +532,34 @@ export default function Hero() {
                 pointerEvents: "none",
               }} />
 
+              {/* Service identity — top left */}
+              {(() => {
+                const Icon = selectedService.icon;
+                return (
+                  <div className="absolute top-5 left-5 z-20 flex items-center gap-2.5">
+                    <div
+                      style={{
+                        width: 32, height: 32,
+                        borderRadius: "50%",
+                        background: `${orbitGlow},0.18)`,
+                        border: `1.5px solid ${orbitGlow},0.50)`,
+                        boxShadow: `0 0 12px ${orbitGlow},0.35)`,
+                        display: "flex", alignItems: "center", justifyContent: "center",
+                        flexShrink: 0,
+                      }}
+                    >
+                      <Icon style={{ width: 13, height: 13, color: `${orbitGlow},0.95)` }} />
+                    </div>
+                    <span
+                      className="text-xs font-bold uppercase tracking-widest"
+                      style={{ color: `${orbitGlow},0.80)` }}
+                    >
+                      {selectedService.name}
+                    </span>
+                  </div>
+                );
+              })()}
+
               {/* Return to Orbit button */}
               <button
                 onClick={handleClose}
