@@ -258,8 +258,6 @@ export default function Hero() {
       <div className="absolute bottom-[-15%] left-[-5%] w-[420px] h-[420px] rounded-full pointer-events-none"
         style={{ background: "radial-gradient(circle, rgba(37,99,235,0.08) 0%, transparent 70%)" }} />
 
-      {/* Grid overlay */}
-      <div className="absolute inset-0 bg-grid opacity-100" />
 
       {/* ── Star field — parallax + warp scale layer ── */}
       <motion.div

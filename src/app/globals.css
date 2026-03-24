@@ -101,8 +101,8 @@ html {
   50%       { opacity: 0.60; transform: scale(1.2); }
 }
 @keyframes twinkle-slow {
-  0%, 100% { opacity: 0.08; transform: scale(0.9); }
-  50%       { opacity: 0.42; transform: scale(1.1); }
+  0%, 100% { opacity: 0.08; transform: scale(0.75); }
+  50%       { opacity: 1;    transform: scale(1.5);  }
 }
 @keyframes shooting-star {
   0%   { transform: rotate(20deg) translateY(0px);   opacity: 0; }
