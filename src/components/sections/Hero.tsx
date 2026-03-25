@@ -571,10 +571,10 @@ export default function Hero() {
               style={{
                 maskImage: selectedService
                   ? "none"
-                  : "linear-gradient(to right, transparent 0%, black 13%, black 78%, transparent 100%)",
+                  : "linear-gradient(to right, transparent 0%, black 13%, black 88%, transparent 100%)",
                 WebkitMaskImage: selectedService
                   ? "none"
-                  : "linear-gradient(to right, transparent 0%, black 13%, black 78%, transparent 100%)",
+                  : "linear-gradient(to right, transparent 0%, black 13%, black 88%, transparent 100%)",
               }}
               initial={{ opacity: 0, scale: 0.85, x: 0, y: 0 }}
               animate={
