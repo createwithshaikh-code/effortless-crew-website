@@ -20,9 +20,9 @@ const defaultSettings = {
   about_body: "We're a team of passionate video editors and content strategists who've spent years perfecting the craft of storytelling through video.",
   about_image_url: "",
   stats_json: [
-    { label: "Projects Done", value: "3000", suffix: "+" },
-    { label: "Happy Clients", value: "500", suffix: "+" },
-    { label: "Views Generated", value: "550", suffix: "M+" },
+    { label: "Projects Done", value: "1500", suffix: "+" },
+    { label: "Happy Clients", value: "100", suffix: "+" },
+    { label: "Views Generated", value: "200", suffix: "M+" },
     { label: "Average Rating", value: "5.0", suffix: "/5" },
   ] as StatItem[],
   social_links: { youtube: "", instagram: "", twitter: "", linkedin: "", tiktok: "" },

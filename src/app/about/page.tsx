@@ -35,9 +35,9 @@ const values = [
 ];
 
 const stats = [
-  { value: "3000", suffix: "+", label: "Projects Done" },
-  { value: "500", suffix: "+", label: "Clients Served" },
-  { value: "550", suffix: "M+", label: "Views Generated" },
+  { value: "1500", suffix: "+", label: "Projects Done" },
+  { value: "100", suffix: "+", label: "Clients Served" },
+  { value: "200", suffix: "M+", label: "Views Generated" },
   { value: "5.0", suffix: "/5", label: "Average Rating" },
 ];
 

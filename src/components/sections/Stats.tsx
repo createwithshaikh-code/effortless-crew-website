@@ -8,7 +8,7 @@ import { Video, Users, TrendingUp, Star } from "lucide-react";
 const stats = [
   {
     icon: Video,
-    value: "3000",
+    value: "1500",
     suffix: "+",
     label: "Projects Done",
     description: "Across all formats & platforms",
@@ -19,7 +19,7 @@ const stats = [
   },
   {
     icon: Users,
-    value: "500",
+    value: "100",
     suffix: "+",
     label: "Happy Clients",
     description: "From solo creators to brands",
@@ -30,7 +30,7 @@ const stats = [
   },
   {
     icon: TrendingUp,
-    value: "550",
+    value: "200",
     suffix: "M+",
     label: "Views Generated",
     description: "Combined across client channels",

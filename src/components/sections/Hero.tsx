@@ -507,8 +507,8 @@ export default function Hero() {
               className="flex items-center gap-6 mb-10"
             >
               {[
-                { value: "3000+", label: "Projects Done" },
-                { value: "550M+", label: "Views Generated" },
+                { value: "1500+", label: "Projects Done" },
+                { value: "200M+", label: "Views Generated" },
                 { value: "100%", label: "Client Satisfaction" },
               ].map((stat, i) => (
                 <div key={i} className="flex flex-col">
