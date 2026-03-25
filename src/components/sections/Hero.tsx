@@ -464,13 +464,10 @@ export default function Hero() {
                 return (
                   <motion.span key={i} variants={wordVariant} className="block">
                     {isGradient ? (
-                      <span style={{
-                        background: `linear-gradient(90deg, ${heroSettings.hero_color_1}, ${heroSettings.hero_color_2})`,
-                        WebkitBackgroundClip: "text",
-                        WebkitTextFillColor: "transparent",
-                        backgroundClip: "text",
-                        display: "inline-block",
-                      }}>
+                      <span
+                        className="text-gradient-custom"
+                        style={{ "--gc1": heroSettings.hero_color_1, "--gc2": heroSettings.hero_color_2 } as React.CSSProperties}
+                      >
                         {line}
                       </span>
                     ) : line}

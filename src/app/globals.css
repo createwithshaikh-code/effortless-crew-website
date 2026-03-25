@@ -215,6 +215,13 @@ html {
   background-clip: text;
 }
 
+.text-gradient-custom {
+  background: linear-gradient(90deg, var(--gc1, #C026D3), var(--gc2, #2563EB));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
 .text-gradient-brand {
   background: linear-gradient(135deg, #C026D3 0%, #2563EB 100%);
   -webkit-background-clip: text;
