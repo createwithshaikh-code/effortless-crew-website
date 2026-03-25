@@ -35,10 +35,10 @@ const values = [
 ];
 
 const stats = [
-  { value: "500", suffix: "+", label: "Videos Edited" },
-  { value: "50", suffix: "+", label: "Clients Served" },
-  { value: "100", suffix: "M+", label: "Views Generated" },
-  { value: "3", suffix: "+", label: "Years Experience" },
+  { value: "3000", suffix: "+", label: "Projects Done" },
+  { value: "500", suffix: "+", label: "Clients Served" },
+  { value: "550", suffix: "M+", label: "Views Generated" },
+  { value: "5.0", suffix: "/5", label: "Average Rating" },
 ];
 
 export default function AboutPage() {
