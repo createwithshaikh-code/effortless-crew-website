@@ -48,6 +48,7 @@ interface DbService {
   card_cta: string;
   card_image_url: string | null;
   card_images: string[] | null;
+  card_cta_link: string | null;
 }
 
 /* ── Seeded pseudo-random ── */
@@ -331,15 +332,20 @@ export default function Hero() {
       })()
     : null;
 
-  // Resolve images for CardVisual: prefer card_images array, fall back to card_image_url
+  // Resolve images: if card_images column exists (even empty array), use it; only fall back to
+  // card_image_url when card_images is null/undefined (pre-migration rows).
   const cardImages: string[] = selectedService && dbServices
     ? (() => {
         const dbSvc = dbServices.find((s) => s.name === selectedService.name);
-        if (dbSvc?.card_images?.length) return dbSvc.card_images;
+        if (dbSvc?.card_images != null) return dbSvc.card_images;
         if (dbSvc?.card_image_url) return [dbSvc.card_image_url];
         return [];
       })()
     : [];
+
+  const cardCtaLink: string = selectedService && dbServices
+    ? (dbServices.find((s) => s.name === selectedService.name)?.card_cta_link ?? "/contact")
+    : "/contact";
 
   const orbitGlow = selectedService ? ORBIT_GLOW[selectedService.orbit] : ORBIT_GLOW.inner;
 
@@ -734,7 +740,7 @@ export default function Hero() {
                     {cardData.subDesc}
                   </p>
                   <Link
-                    href="/contact"
+                    href={cardCtaLink}
                     className="self-start flex items-center gap-2.5 px-7 py-3.5 rounded-full font-bold text-white text-xs uppercase tracking-widest"
                     style={{
                       background: `linear-gradient(135deg, ${orbitGlow},1) 0%, rgba(37,99,235,1) 100%)`,

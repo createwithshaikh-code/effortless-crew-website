@@ -30,6 +30,7 @@ interface HeroService {
   card_sub_desc: string;
   card_visual: string;
   card_cta: string;
+  card_cta_link: string | null;
   card_image_url: string | null;
   card_images: string[] | null;
   sort_order: number;
@@ -56,7 +57,7 @@ const ICON_OPTIONS = [
 
 // ── Default services ───────────────────────────────────────────────────────────
 
-const DEFAULT_SERVICES: Omit<ServiceDraft, "card_title" | "card_desc" | "card_sub_desc" | "card_visual" | "card_cta" | "card_image_url" | "card_images">[] = [
+const DEFAULT_SERVICES: Omit<ServiceDraft, "card_title" | "card_desc" | "card_sub_desc" | "card_visual" | "card_cta" | "card_cta_link" | "card_image_url" | "card_images">[] = [
   { name: "YT Automation",     icon_name: "Bot",          orbit: "inner",  angle: 0   },
   { name: "Scriptwriting",     icon_name: "FileText",     orbit: "inner",  angle: 120 },
   { name: "Short-Form Video",  icon_name: "Smartphone",   orbit: "inner",  angle: 240 },
@@ -93,9 +94,10 @@ CREATE TABLE IF NOT EXISTS hero_services (
   created_at TIMESTAMPTZ DEFAULT NOW()
 );
 
--- If table already exists, add the column:
+-- If table already exists, add columns:
 ALTER TABLE hero_services
-  ADD COLUMN IF NOT EXISTS card_images TEXT[] DEFAULT ARRAY[]::TEXT[];`;
+  ADD COLUMN IF NOT EXISTS card_images TEXT[] DEFAULT ARRAY[]::TEXT[],
+  ADD COLUMN IF NOT EXISTS card_cta_link TEXT DEFAULT '/contact';`;
 
 // ── Blank draft ────────────────────────────────────────────────────────────────
 
@@ -110,6 +112,7 @@ function blankDraft(): ServiceDraft {
     card_sub_desc: "",
     card_visual: "",
     card_cta: "",
+    card_cta_link: "/contact",
     card_image_url: null,
     card_images: [],
   };
@@ -248,13 +251,25 @@ function ServiceForm({
           className="mt-1.5"
         />
       </div>
-      <div>
-        <Label>Card CTA Text</Label>
-        <Input
-          value={draft.card_cta}
-          onChange={(e) => onChange({ ...draft, card_cta: e.target.value })}
-          className="mt-1.5"
-        />
+      <div className="grid grid-cols-2 gap-4">
+        <div>
+          <Label>Card CTA Text</Label>
+          <Input
+            value={draft.card_cta}
+            onChange={(e) => onChange({ ...draft, card_cta: e.target.value })}
+            placeholder="e.g. BUILD MY EMPIRE"
+            className="mt-1.5"
+          />
+        </div>
+        <div>
+          <Label>Card CTA Link</Label>
+          <Input
+            value={draft.card_cta_link ?? "/contact"}
+            onChange={(e) => onChange({ ...draft, card_cta_link: e.target.value })}
+            placeholder="/contact"
+            className="mt-1.5"
+          />
+        </div>
       </div>
 
       {/* Card Images (up to 5) */}
@@ -434,6 +449,7 @@ export default function HeroAdminPage() {
       card_sub_desc: service.card_sub_desc,
       card_visual: service.card_visual,
       card_cta: service.card_cta,
+      card_cta_link: service.card_cta_link ?? "/contact",
       card_image_url: service.card_image_url,
       card_images: service.card_images ?? [],
     });
@@ -527,6 +543,7 @@ export default function HeroAdminPage() {
           card_sub_desc: "",
           card_visual: "",
           card_cta: "",
+          card_cta_link: "/contact",
           card_image_url: null,
           card_images: [],
         }),
