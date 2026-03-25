@@ -471,6 +471,8 @@ export default function Hero() {
                       WebkitBackgroundClip: "text",
                       WebkitTextFillColor: "transparent",
                       backgroundClip: "text",
+                      display: "inline-block",
+                      width: "100%",
                     } : undefined}
                   >
                     {line}
