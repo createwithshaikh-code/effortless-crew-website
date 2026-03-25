@@ -43,7 +43,7 @@ export default function CTA() {
           </h2>
 
           <p className="text-white/45 text-lg max-w-xl mx-auto mb-12 leading-relaxed">
-            Join 50+ creators and brands who trust Effortless Crew to make their
+            Join 50+ creators and brands who trust <span className="ec-highlight">Effortless Crew</span> to make their
             content stand out. Let&apos;s talk about your project.
           </p>
 

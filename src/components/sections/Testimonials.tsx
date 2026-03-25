@@ -6,6 +6,13 @@ import { Star, ChevronLeft, ChevronRight, Quote } from "lucide-react";
 import ScrollReveal from "@/components/common/ScrollReveal";
 import { cn } from "@/lib/utils";
 
+function highlightEC(text: string) {
+  const parts = text.split("Effortless Crew");
+  return parts.map((part, i) => (
+    <span key={i}>{part}{i < parts.length - 1 && <span className="ec-highlight">Effortless Crew</span>}</span>
+  ));
+}
+
 const testimonials = [
   {
     id: "1",
@@ -134,7 +141,7 @@ export default function Testimonials() {
 
                     {/* Content */}
                     <p className="text-white/55 text-sm leading-relaxed mb-6 flex-1">
-                      &ldquo;{testimonial.content}&rdquo;
+                      &ldquo;{highlightEC(testimonial.content)}&rdquo;
                     </p>
 
                     {/* Author */}

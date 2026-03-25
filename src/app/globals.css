@@ -222,6 +222,16 @@ html {
   background-clip: text;
 }
 
+/* "Effortless Crew" brand highlight — bold white text with purple glow */
+.ec-highlight {
+  font-weight: 800;
+  color: #ffffff;
+  text-shadow:
+    0 0 8px  rgba(192, 38, 211, 0.90),
+    0 0 20px rgba(192, 38, 211, 0.55),
+    0 0 40px rgba(37,  99, 235, 0.30);
+}
+
 .text-gradient-brand {
   background: linear-gradient(135deg, #C026D3 0%, #2563EB 100%);
   -webkit-background-clip: text;

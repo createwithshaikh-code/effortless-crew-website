@@ -92,7 +92,7 @@ export default function Footer() {
         {/* Bottom bar */}
         <div className="mt-12 pt-6 border-t border-white/5 flex flex-col sm:flex-row items-center justify-between gap-4">
           <p className="text-white/25 text-sm">
-            © {new Date().getFullYear()} Effortless Crew. All rights reserved.
+            © {new Date().getFullYear()} <span className="ec-highlight">Effortless Crew</span>. All rights reserved.
           </p>
           <p className="text-white/25 text-sm">
             Making creators legendary, one frame at a time.

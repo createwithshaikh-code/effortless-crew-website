@@ -55,7 +55,7 @@ export default function AboutPage() {
               <span className="text-gradient">for Creators</span>
             </h1>
             <p className="text-muted-foreground text-xl leading-relaxed mb-8">
-              Effortless Crew was born from a simple frustration: finding a
+              <span className="ec-highlight">Effortless Crew</span> was born from a simple frustration: finding a
               video editor who actually understood the YouTube algorithm, the
               importance of hooks, and what it takes to make content that
               doesn&apos;t just look good — but performs.

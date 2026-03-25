@@ -7,6 +7,13 @@ import { motion, AnimatePresence } from "framer-motion";
 import { Play, ArrowRight, ChevronDown, Sparkles, X } from "lucide-react";
 import HeroOrbit, { type Service, type ServiceData } from "@/components/sections/HeroOrbit";
 
+function highlightEC(text: string) {
+  const parts = text.split("Effortless Crew");
+  return parts.map((part, i) => (
+    <span key={i}>{part}{i < parts.length - 1 && <span className="ec-highlight">Effortless Crew</span>}</span>
+  ));
+}
+
 // Hero settings from DB
 interface HeroSettings {
   hero_headline: string;
@@ -483,7 +490,7 @@ export default function Hero() {
               transition={{ duration: 0.8, delay: 1.0 }}
               className="text-white/55 text-lg max-w-lg mb-10 leading-relaxed"
             >
-              {heroSettings.hero_subheadline}
+              {highlightEC(heroSettings.hero_subheadline)}
             </motion.p>
 
             {/* CTA Buttons */}
