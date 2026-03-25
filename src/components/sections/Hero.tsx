@@ -462,20 +462,18 @@ export default function Hero() {
               {heroSettings.hero_headline.split("\n").map((line, i, arr) => {
                 const isGradient = arr.length >= 2 && i === 1;
                 return (
-                  <motion.span
-                    key={i}
-                    variants={wordVariant}
-                    className="block"
-                    style={isGradient ? {
-                      background: `linear-gradient(90deg, ${heroSettings.hero_color_1}, ${heroSettings.hero_color_2})`,
-                      WebkitBackgroundClip: "text",
-                      WebkitTextFillColor: "transparent",
-                      backgroundClip: "text",
-                      display: "inline-block",
-                      width: "100%",
-                    } : undefined}
-                  >
-                    {line}
+                  <motion.span key={i} variants={wordVariant} className="block">
+                    {isGradient ? (
+                      <span style={{
+                        background: `linear-gradient(90deg, ${heroSettings.hero_color_1}, ${heroSettings.hero_color_2})`,
+                        WebkitBackgroundClip: "text",
+                        WebkitTextFillColor: "transparent",
+                        backgroundClip: "text",
+                        display: "inline-block",
+                      }}>
+                        {line}
+                      </span>
+                    ) : line}
                   </motion.span>
                 );
               })}
