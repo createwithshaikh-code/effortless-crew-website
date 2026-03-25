@@ -523,17 +523,17 @@ export default function Hero() {
               initial={{ opacity: 0, y: 24 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.8, delay: 1.3 }}
-              className="flex flex-col sm:flex-row items-start gap-4"
+              className="flex flex-row items-center gap-3"
             >
               <Link
                 href={heroSettings.hero_cta_link || "/contact"}
-                className="relative group flex items-center gap-2.5 px-8 py-4 rounded-2xl font-semibold text-white text-base overflow-hidden w-full sm:w-auto justify-center"
+                className="relative group flex items-center gap-2 px-5 py-3 sm:px-8 sm:py-4 rounded-2xl font-semibold text-white overflow-hidden whitespace-nowrap justify-center"
                 style={{
                   background: `linear-gradient(135deg, ${heroSettings.hero_color_1} 0%, ${heroSettings.hero_color_2} 100%)`,
                   boxShadow: `0 0 30px ${heroSettings.hero_color_1}66, 0 0 60px ${heroSettings.hero_color_2}33`,
                 }}
               >
-                <span className="relative z-10 flex items-center gap-2 uppercase tracking-wide text-sm">
+                <span className="relative z-10 flex items-center gap-2 uppercase tracking-wide text-xs sm:text-sm whitespace-nowrap">
                   {heroSettings.hero_cta_text || "Claim Your Creative Freedom"}
                   <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
                 </span>
@@ -543,7 +543,7 @@ export default function Hero() {
               </Link>
 
               <motion.button
-                className="flex items-center gap-3 group cursor-pointer w-full sm:w-auto px-5 py-3 rounded-2xl transition-all duration-300"
+                className="flex items-center gap-2 group cursor-pointer px-4 py-3 sm:px-5 rounded-2xl transition-all duration-300 whitespace-nowrap"
                 style={{
                   background: "rgba(255,255,255,0.06)",
                   border: "1px solid rgba(255,255,255,0.18)",
