@@ -8,7 +8,7 @@ function adminClient() {
   );
 }
 
-export const HERO_DEFAULTS = {
+const HERO_DEFAULTS = {
   hero_headline: "WORK LESS.\nGROW FASTER.\nDOMINATE.",
   hero_subheadline:
     "Forget the freelance chaos. Effortless Crew is your reliable, AI-powered solar system of content and design services. Work Less, Grow Faster, and let us supercharge your growth.",
