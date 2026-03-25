@@ -75,6 +75,10 @@ export default function Navbar() {
             <div className="group-hover:scale-110 transition-transform duration-300">
               <SiteLogo />
             </div>
+            <span className="hidden sm:block text-white leading-tight select-none">
+              <span className="block text-sm font-semibold tracking-tight">Effortless</span>
+              <span className="block text-sm font-light tracking-widest text-white/60">CREW</span>
+            </span>
           </Link>
 
           {/* Desktop Nav */}
@@ -113,8 +117,8 @@ export default function Navbar() {
                   else setNavPill((p) => ({ ...p, opacity: 0 }));
                 }}
                 className={cn(
-                  "relative z-10 px-4 py-2 rounded-xl text-sm font-medium transition-colors duration-150 whitespace-nowrap",
-                  pathname === link.href ? "text-white" : "text-white/45 hover:text-white/75"
+                  "relative z-10 px-4 py-2 rounded-xl text-sm font-semibold transition-colors duration-150 whitespace-nowrap",
+                  pathname === link.href ? "text-white" : "text-white/65 hover:text-white"
                 )}
               >
                 {link.label}

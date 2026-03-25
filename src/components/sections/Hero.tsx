@@ -499,11 +499,30 @@ export default function Hero() {
               {highlightEC(heroSettings.hero_subheadline)}
             </motion.p>
 
+            {/* Trust stats */}
+            <motion.div
+              initial={{ opacity: 0, y: 16 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.7, delay: 1.1 }}
+              className="flex items-center gap-6 mb-10"
+            >
+              {[
+                { value: "50+",  label: "Projects Done" },
+                { value: "1M+",  label: "Views Generated" },
+                { value: "100%", label: "Client Satisfaction" },
+              ].map((stat, i) => (
+                <div key={i} className="flex flex-col">
+                  <span className="text-lg font-black text-white leading-none">{stat.value}</span>
+                  <span className="text-[11px] text-white/40 uppercase tracking-widest mt-0.5">{stat.label}</span>
+                </div>
+              ))}
+            </motion.div>
+
             {/* CTA Buttons */}
             <motion.div
               initial={{ opacity: 0, y: 24 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.8, delay: 1.2 }}
+              transition={{ duration: 0.8, delay: 1.3 }}
               className="flex flex-col sm:flex-row items-start gap-4"
             >
               <Link
@@ -523,21 +542,25 @@ export default function Hero() {
                   style={{ background: `linear-gradient(135deg, ${heroSettings.hero_color_1}cc 0%, ${heroSettings.hero_color_2}cc 100%)` }} />
               </Link>
 
-              <button
-                className="flex items-center gap-3 group cursor-pointer w-full sm:w-auto"
+              <motion.button
+                className="flex items-center gap-3 group cursor-pointer w-full sm:w-auto px-5 py-3 rounded-2xl transition-all duration-300"
+                style={{
+                  background: "rgba(255,255,255,0.06)",
+                  border: "1px solid rgba(255,255,255,0.18)",
+                  backdropFilter: "blur(8px)",
+                }}
+                whileHover={{ scale: 1.03, backgroundColor: "rgba(255,255,255,0.10)" }}
+                whileTap={{ scale: 0.97 }}
                 onClick={() => document.getElementById("portfolio")?.scrollIntoView({ behavior: "smooth" })}
               >
-                <motion.span
-                  className="w-12 h-12 rounded-full glass border border-white/15 flex items-center justify-center group-hover:border-brand/40 transition-all flex-shrink-0"
-                  whileHover={{ scale: 1.1 }}
-                  whileTap={{ scale: 0.95 }}
-                >
-                  <Play className="w-4 h-4 fill-white ml-0.5 text-white" />
-                </motion.span>
-                <span className="text-sm font-semibold text-white/60 group-hover:text-white transition-colors">
+                <span className="w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0"
+                  style={{ background: "rgba(192,38,211,0.20)", border: "1px solid rgba(192,38,211,0.35)" }}>
+                  <Play className="w-3.5 h-3.5 fill-white ml-0.5 text-white" />
+                </span>
+                <span className="text-sm font-semibold text-white/80 group-hover:text-white transition-colors">
                   View Our Work
                 </span>
-              </button>
+              </motion.button>
             </motion.div>
           </motion.div>
 
