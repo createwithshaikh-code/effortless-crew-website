@@ -383,7 +383,7 @@ export default function Hero() {
     : undefined;
 
   return (
-    <section className="relative min-h-screen flex items-center overflow-hidden bg-dark-300">
+    <section ref={sectionRef} className="relative min-h-screen flex items-center overflow-hidden bg-dark-300">
 
       {/* Base bg */}
       <div className="absolute inset-0 section-bg-1" />
