@@ -502,24 +502,25 @@ export default function Hero() {
               {highlightEC(heroSettings.hero_subheadline)}
             </motion.p>
 
-            {/* Trust stats */}
-            <motion.div
-              initial={{ opacity: 0, y: 16 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.7, delay: 1.1 }}
-              className="flex items-center gap-6 mb-10"
-            >
+            {/* Trust stats — staggered entry */}
+            <div className="flex items-center gap-6 mb-10">
               {[
                 { value: "1500+", label: "Projects Done" },
                 { value: "200M+", label: "Views Generated" },
-                { value: "100%", label: "Client Satisfaction" },
+                { value: "100%",  label: "Client Satisfaction" },
               ].map((stat, i) => (
-                <div key={i} className="flex flex-col">
+                <motion.div
+                  key={i}
+                  initial={{ opacity: 0, y: 12 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.5, delay: 1.05 + i * 0.07, ease: EASE_OUT }}
+                  className="flex flex-col"
+                >
                   <span className="text-lg font-black text-white leading-none">{stat.value}</span>
                   <span className="text-[11px] text-white/40 uppercase tracking-widest mt-0.5">{stat.label}</span>
-                </div>
+                </motion.div>
               ))}
-            </motion.div>
+            </div>
 
             {/* CTA Buttons */}
             <motion.div
