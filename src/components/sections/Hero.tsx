@@ -517,9 +517,10 @@ export default function Hero() {
 
             {/* CTA Buttons */}
             <motion.div
-              initial={{ opacity: 0, y: 24 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.8, delay: 1.3 }}
+              style={{ opacity: 0 }}
+              initial={{ opacity: 0 }}
+              animate={settingsReady ? { opacity: 1 } : { opacity: 0 }}
+              transition={{ duration: 0.7, delay: 1.25 }}
               className="flex flex-row items-center gap-3"
             >
               <MotionLink
