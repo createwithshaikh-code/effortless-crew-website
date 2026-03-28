@@ -373,13 +373,6 @@ export default function Hero() {
       {/* Base bg */}
       <div className="absolute inset-0 section-bg-1" />
 
-      {/* Soft glow blobs */}
-      <div className="absolute top-[-15%] right-[-5%] w-[480px] h-[480px] rounded-full pointer-events-none"
-        style={{ background: "radial-gradient(circle, rgba(192,38,211,0.10) 0%, transparent 70%)" }} />
-      <div className="absolute bottom-[-15%] left-[-5%] w-[420px] h-[420px] rounded-full pointer-events-none"
-        style={{ background: "radial-gradient(circle, rgba(37,99,235,0.08) 0%, transparent 70%)" }} />
-
-
       {/* ── Star field: rotating stars + counter-rotating grid overlay ── */}
       <div className="absolute inset-0 pointer-events-none overflow-hidden">
         {/* Stars — clockwise 360s, oversized so edges never show */}
