@@ -566,8 +566,8 @@ export default function Hero() {
             </motion.div>
           </motion.div>
 
-          {/* RIGHT: Orbit — inside layout so position is stable at any viewport width */}
-          <div className="hidden lg:flex flex-1 items-center justify-center">
+          {/* RIGHT: Orbit — only rendered when width > height (landscape / desktop) */}
+          {showOrbit && <div className="flex flex-1 items-center justify-center">
             <motion.div
               ref={orbitContainerRef}
               style={{
