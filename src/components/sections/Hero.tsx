@@ -241,8 +241,22 @@ function CardVisual({ glow, images, icon: Icon }: { glow: string; images: string
 }
 
 export default function Hero() {
+  const sectionRef        = useRef<HTMLElement>(null);
   const orbitContainerRef = useRef<HTMLDivElement>(null);
   const hasAnimatedInRef  = useRef(false);
+
+  // ── Parallax scroll ──────────────────────────────────────────────
+  const { scrollYProgress } = useScroll({
+    target: sectionRef,
+    offset: ["start start", "end start"],
+  });
+  // Spring smoothing — slight cinematic lag, auto-pauses at 0/1 bounds
+  const smooth = useSpring(scrollYProgress, { stiffness: 80, damping: 30, restDelta: 0.001 });
+
+  const starsY      = useTransform(smooth, [0, 1], [0, -160]); // farthest — most movement
+  const orbitY      = useTransform(smooth, [0, 1], [0, -220]); // middle
+  const textY       = useTransform(smooth, [0, 1], [0, -90]);  // closest (subtle)
+  const textOpacity = useTransform(smooth, [0, 0.6], [1, 0]);  // fades out at 60% scroll
 
   const [selectedService, setSelectedService] = useState<Service | null>(null);
   const [zoomState, setZoomState] = useState<{ x: number; y: number; scale: number } | null>(null);
