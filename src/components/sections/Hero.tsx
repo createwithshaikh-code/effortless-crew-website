@@ -457,6 +457,7 @@ export default function Hero() {
 
             {/* Headline */}
             <motion.h1
+              style={{ opacity: 0 }}
               variants={container}
               initial="hidden"
               animate={settingsReady ? "visible" : "hidden"}
