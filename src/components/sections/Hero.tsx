@@ -413,6 +413,12 @@ export default function Hero() {
         />
       </div>
 
+      {/* Soft glow blobs — sit above grid, below content */}
+      <div className="absolute top-[-15%] right-[-5%] w-[480px] h-[480px] rounded-full pointer-events-none"
+        style={{ background: "radial-gradient(circle, rgba(192,38,211,0.10) 0%, transparent 70%)" }} />
+      <div className="absolute bottom-[-15%] left-[-5%] w-[420px] h-[420px] rounded-full pointer-events-none"
+        style={{ background: "radial-gradient(circle, rgba(37,99,235,0.08) 0%, transparent 70%)" }} />
+
       {/* ── Shooting stars ── */}
       {SHOOTING.map((s, i) => (
         <div
