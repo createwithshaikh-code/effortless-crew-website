@@ -650,10 +650,10 @@ export default function Hero() {
             {/* Card */}
             <motion.div
               key={selectedService.name}
-              initial={{ opacity: 0, scale: 0.88, y: 24 }}
+              initial={{ opacity: 0, scale: 0.95, y: 16 }}
               animate={{ opacity: 1, scale: 1, y: 0 }}
-              exit={{ opacity: 0, scale: 0.92, y: 12 }}
-              transition={{ duration: 0.45, delay: 0.15, ease: [0.22, 1, 0.36, 1] }}
+              exit={{ opacity: 0, scale: 0.97, y: 8 }}
+              transition={{ type: "spring", duration: 0.5, bounce: 0.1, delay: 0.1 }}
               onClick={(e) => e.stopPropagation()}
               style={{
                 position: "relative",
