@@ -560,17 +560,6 @@ html {
    PERFORMANCE: reduced-motion + mobile
    ========================================== */
 
-/* Disable expensive decorative animations on low-power / motion-sensitive devices */
-@media (prefers-reduced-motion: reduce) {
-  *,
-  *::before,
-  *::after {
-    animation-duration: 0.01ms !important;
-    animation-iteration-count: 1 !important;
-    transition-duration: 0.01ms !important;
-  }
-}
-
 /* On mobile, cut backdrop-filter blurs that kill GPU performance */
 @media (max-width: 768px) {
   .glass {
