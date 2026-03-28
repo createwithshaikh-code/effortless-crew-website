@@ -442,9 +442,10 @@ export default function Hero() {
       <div className="relative z-10 w-full container mx-auto px-4 sm:px-6 lg:px-8 py-24 lg:py-0">
         <div className="flex flex-col lg:flex-row items-center gap-12 lg:gap-0 lg:min-h-screen">
 
-          {/* LEFT: Text — scales up, drifts left, fades out on zoom */}
+          {/* LEFT: Text — parallax wrapper handles scroll y+fade; inner handles zoom */}
+          <motion.div style={{ y: textY, opacity: textOpacity }} className="flex-1">
           <motion.div
-            className="flex-1 flex flex-col justify-center lg:py-24 lg:pr-8"
+            className="flex flex-col justify-center lg:py-24 lg:pr-8"
             animate={
               selectedService
                 ? { opacity: 0, x: -60, scale: 1.03 }
