@@ -43,9 +43,7 @@ export default function Footer() {
               <div className="group-hover:scale-110 transition-transform">
                 <SiteLogo />
               </div>
-              <span className="font-display font-bold text-lg tracking-tight text-white">
-                Effortless<span className="text-gradient-brand">Crew</span>
-              </span>
+              <span className="ec-highlight text-lg tracking-tight">Effortless Crew</span>
             </Link>
             <p className="text-white/40 text-sm leading-relaxed mb-6 max-w-xs">
               We make creators look legendary. Premium video editing and content
