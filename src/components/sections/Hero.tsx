@@ -374,9 +374,8 @@ export default function Hero() {
       {/* Base bg */}
       <div className="absolute inset-0 section-bg-1" />
 
-      {/* ── Star field: rotating stars + counter-rotating grid overlay ── */}
+      {/* ── Star field: rotating container + per-star opacity twinkle ── */}
       <div className="absolute inset-0 pointer-events-none overflow-hidden">
-        {/* Stars — clockwise 360s, oversized so edges never show */}
         <div
           className="absolute"
           style={{
@@ -392,26 +391,11 @@ export default function Hero() {
               style={{
                 top: s.top, left: s.left,
                 width: s.size, height: s.size,
-                opacity: s.opacity,
+                animation: `star-appear ${s.dur} ease-in-out ${s.delay} infinite`,
               }}
             />
           ))}
         </div>
-
-        {/* Grid overlay — counter-clockwise 487s (irrational ratio = never syncs with stars) */}
-        {/* Semi-transparent so stars dim rather than fully vanish */}
-        <div
-          className="absolute"
-          style={{
-            top: "-30%", left: "-30%",
-            width: "160%", height: "160%",
-            animation: "star-field-rotate 487s linear infinite reverse",
-            backgroundImage: [
-              "repeating-linear-gradient(0deg, transparent 0px, transparent 28px, rgba(2,2,16,0.52) 28px, rgba(2,2,16,0.52) 30px)",
-              "repeating-linear-gradient(90deg, transparent 0px, transparent 28px, rgba(2,2,16,0.52) 28px, rgba(2,2,16,0.52) 30px)",
-            ].join(", "),
-          }}
-        />
       </div>
 
       {/* Soft glow blobs — sit above grid, below content */}
