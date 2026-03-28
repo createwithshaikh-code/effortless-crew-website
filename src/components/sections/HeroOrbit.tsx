@@ -294,9 +294,7 @@ export default function HeroOrbit({ onServiceClick, paused = false, services: se
                       style={{
                         width: 38, height: 38,
                         borderRadius: "50%",
-                        background: "rgba(8,8,28,0.82)",
-                        backdropFilter: "blur(12px)",
-                        WebkitBackdropFilter: "blur(12px)",
+                        background: "rgba(8,8,28,0.90)",
                         border: `1.5px solid ${rgba(col, 0.42)}`,
                         boxShadow: `0 0 12px ${rgba(col, 0.28)}, 0 0 24px ${rgba(col, 0.12)}, 0 4px 14px rgba(0,0,0,0.6)`,
                         display: "flex",
