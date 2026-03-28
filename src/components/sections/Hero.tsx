@@ -315,9 +315,9 @@ export default function Hero() {
     return () => window.removeEventListener("keydown", onKey);
   }, [handleClose]);
 
-  // Show orbit only when viewport is wider than it is tall (landscape / desktop)
+  // Show orbit only on real desktop screens (≥1024px) — never on mobile/tablet
   useEffect(() => {
-    const check = () => setShowOrbit(window.innerWidth > window.innerHeight);
+    const check = () => setShowOrbit(window.innerWidth >= 1024);
     check();
     window.addEventListener("resize", check);
     return () => window.removeEventListener("resize", check);
