@@ -53,21 +53,12 @@ export const metadata: Metadata = {
     title: "Effortless Crew — Premium Video Editing Agency",
     description:
       "We make creators look legendary. Premium video editing, YouTube automation, motion graphics, and short-form content for YouTubers and brands.",
-    images: [
-      {
-        url: "/og-image.png",
-        width: 1200,
-        height: 630,
-        alt: "Effortless Crew — AI-Powered Creative Super-Team",
-      },
-    ],
   },
   twitter: {
     card: "summary_large_image",
     title: "Effortless Crew — Premium Video Editing Agency",
     description:
       "We make creators look legendary. Premium video editing, YouTube automation, motion graphics, and short-form content for YouTubers and brands.",
-    images: ["/og-image.png"],
   },
 };
 
