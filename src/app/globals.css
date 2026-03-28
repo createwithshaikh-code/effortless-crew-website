@@ -555,3 +555,42 @@ html {
   margin: 1.5rem 0;
   overflow-x: auto;
 }
+
+/* ==========================================
+   PERFORMANCE: reduced-motion + mobile
+   ========================================== */
+
+/* Disable expensive decorative animations on low-power / motion-sensitive devices */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* On mobile, cut backdrop-filter blurs that kill GPU performance */
+@media (max-width: 768px) {
+  .glass {
+    backdrop-filter: blur(6px);
+    -webkit-backdrop-filter: blur(6px);
+  }
+  .glass-strong {
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+  }
+  .glass-card {
+    backdrop-filter: blur(6px);
+    -webkit-backdrop-filter: blur(6px);
+  }
+  .glass-pill {
+    backdrop-filter: blur(6px);
+    -webkit-backdrop-filter: blur(6px);
+  }
+  .orb {
+    filter: blur(20px);
+    opacity: 0.6;
+  }
+}
