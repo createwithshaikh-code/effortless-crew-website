@@ -503,9 +503,10 @@ export default function Hero() {
               ].map((stat, i) => (
                 <motion.div
                   key={i}
-                  initial={{ opacity: 0, y: 12 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.5, delay: 1.05 + i * 0.07, ease: EASE_OUT }}
+                  style={{ opacity: 0 }}
+                  initial={{ opacity: 0 }}
+                  animate={settingsReady ? { opacity: 1 } : { opacity: 0 }}
+                  transition={{ duration: 0.5, delay: 1.05 + i * 0.08, ease: EASE_OUT }}
                   className="flex flex-col"
                 >
                   <span className="text-lg font-black text-white leading-none">{stat.value}</span>
