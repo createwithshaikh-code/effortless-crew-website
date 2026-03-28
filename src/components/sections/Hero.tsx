@@ -485,9 +485,10 @@ export default function Hero() {
 
             {/* Subheadline */}
             <motion.p
-              initial={{ opacity: 0, y: 24 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.8, delay: 1.0 }}
+              style={{ opacity: 0 }}
+              initial={{ opacity: 0 }}
+              animate={settingsReady ? { opacity: 1 } : { opacity: 0 }}
+              transition={{ duration: 0.7, delay: 0.9 }}
               className="text-white/55 text-lg max-w-lg mb-10 leading-relaxed"
             >
               {highlightEC(heroSettings.hero_subheadline)}
