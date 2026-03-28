@@ -314,6 +314,14 @@ export default function Hero() {
     return () => window.removeEventListener("keydown", onKey);
   }, [handleClose]);
 
+  // Show orbit only when viewport is wider than it is tall (landscape / desktop)
+  useEffect(() => {
+    const check = () => setShowOrbit(window.innerWidth > window.innerHeight);
+    check();
+    window.addEventListener("resize", check);
+    return () => window.removeEventListener("resize", check);
+  }, []);
+
   // Build cardData: prefer DB data, fall back to static SERVICE_CARDS
   const cardData: CardData | null = selectedService
     ? (() => {
