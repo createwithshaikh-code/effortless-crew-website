@@ -202,9 +202,7 @@ export default function HeroOrbit({ onServiceClick, paused = false, services: se
         const col = orbitColor[service.orbit];
 
         const ghosts = [
-          { delta: duration * 0.025, size: 28, alpha: 0.55 },
-          { delta: duration * 0.055, size: 20, alpha: 0.30 },
-          { delta: duration * 0.095, size: 13, alpha: 0.14 },
+          { delta: duration * 0.04, size: 18, alpha: 0.30 },
         ];
 
         return (
