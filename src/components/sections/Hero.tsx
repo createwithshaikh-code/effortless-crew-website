@@ -371,20 +371,44 @@ export default function Hero() {
         style={{ background: "radial-gradient(circle, rgba(37,99,235,0.08) 0%, transparent 70%)" }} />
 
 
-      {/* ── Star field — single static layer, opacity twinkle only ── */}
-      <div className="absolute inset-0 pointer-events-none">
-        {STARS.map((s, i) => (
-          <div
-            key={i}
-            className="absolute rounded-full"
-            style={{
-              top: s.top, left: s.left,
-              width: s.size, height: s.size,
-              background: s.dim ? "rgba(255,255,255,0.65)" : "rgba(255,255,255,0.90)",
-              animation: `star-appear ${s.dur}s ease-in-out ${s.delay}s infinite`,
-            }}
-          />
-        ))}
+      {/* ── Star field: rotating stars + counter-rotating grid overlay ── */}
+      <div className="absolute inset-0 pointer-events-none overflow-hidden">
+        {/* Stars — clockwise 360s, oversized so edges never show */}
+        <div
+          className="absolute"
+          style={{
+            top: "-30%", left: "-30%",
+            width: "160%", height: "160%",
+            animation: "star-field-rotate 360s linear infinite",
+          }}
+        >
+          {STARS.map((s, i) => (
+            <div
+              key={i}
+              className="absolute rounded-full bg-white"
+              style={{
+                top: s.top, left: s.left,
+                width: s.size, height: s.size,
+                opacity: s.opacity,
+              }}
+            />
+          ))}
+        </div>
+
+        {/* Grid overlay — counter-clockwise 487s (irrational ratio = never syncs with stars) */}
+        {/* Semi-transparent so stars dim rather than fully vanish */}
+        <div
+          className="absolute"
+          style={{
+            top: "-30%", left: "-30%",
+            width: "160%", height: "160%",
+            animation: "star-field-rotate 487s linear infinite reverse",
+            backgroundImage: [
+              "repeating-linear-gradient(0deg, transparent 0px, transparent 28px, rgba(2,2,16,0.52) 28px, rgba(2,2,16,0.52) 30px)",
+              "repeating-linear-gradient(90deg, transparent 0px, transparent 28px, rgba(2,2,16,0.52) 28px, rgba(2,2,16,0.52) 30px)",
+            ].join(", "),
+          }}
+        />
       </div>
 
       {/* ── Shooting stars ── */}
