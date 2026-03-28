@@ -373,43 +373,21 @@ export default function Hero() {
         style={{ background: "radial-gradient(circle, rgba(37,99,235,0.08) 0%, transparent 70%)" }} />
 
 
-      {/* ── Star field — two counter-rotating layers, appear/disappear twinkle ── */}
-      <motion.div
-        className="absolute inset-0 pointer-events-none"
-        animate={{
-          x:     zoomState ? -(zoomState.x * 0.10) : 0,
-          y:     zoomState ? -(zoomState.y * 0.10) : 0,
-          scale: zoomState ? 1.35 : 1,
-        }}
-        transition={{ duration: 0.9, ease: [0.22, 1, 0.36, 1] }}
-      >
-        {/* Near layer — clockwise 300s */}
-        <div
-          className="absolute"
-          style={{ top: "-30%", left: "-30%", width: "160%", height: "160%",
-            animation: "star-field-rotate 300s linear infinite" }}
-        >
-          {STARS_NEAR.map((s, i) => (
-            <div key={i} className="absolute rounded-full bg-white"
-              style={{ top: s.top, left: s.left, width: s.size, height: s.size,
-                animation: `star-appear ${s.dur}s ease-in-out ${s.delay}s infinite` }} />
-          ))}
-        </div>
-
-        {/* Far layer — counter-clockwise 500s, slightly dimmer */}
-        <div
-          className="absolute"
-          style={{ top: "-30%", left: "-30%", width: "160%", height: "160%",
-            animation: "star-field-rotate 500s linear infinite" }}
-        >
-          {STARS_FAR.map((s, i) => (
-            <div key={i} className="absolute rounded-full"
-              style={{ top: s.top, left: s.left, width: s.size, height: s.size,
-                background: "rgba(255,255,255,0.75)",
-                animation: `star-appear ${s.dur}s ease-in-out ${s.delay}s infinite` }} />
-          ))}
-        </div>
-      </motion.div>
+      {/* ── Star field — single static layer, opacity twinkle only ── */}
+      <div className="absolute inset-0 pointer-events-none">
+        {STARS.map((s, i) => (
+          <div
+            key={i}
+            className="absolute rounded-full"
+            style={{
+              top: s.top, left: s.left,
+              width: s.size, height: s.size,
+              background: s.dim ? "rgba(255,255,255,0.65)" : "rgba(255,255,255,0.90)",
+              animation: `star-appear ${s.dur}s ease-in-out ${s.delay}s infinite`,
+            }}
+          />
+        ))}
+      </div>
 
       {/* ── Shooting stars ── */}
       {SHOOTING.map((s, i) => (
