@@ -3,7 +3,7 @@
 import React from "react";
 import Link from "next/link";
 import { useRef, useState, useCallback, useEffect } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion, AnimatePresence, useScroll, useTransform, useSpring } from "framer-motion";
 import { Play, ArrowRight, ChevronDown, X } from "lucide-react";
 import HeroOrbit, { type Service, type ServiceData } from "@/components/sections/HeroOrbit";
 
