@@ -258,13 +258,17 @@ export default function Hero() {
   const [hasAnimatedIn, setHasAnimatedIn] = useState(false);
   const [dbServices, setDbServices] = useState<DbService[] | null>(null);
   const [heroSettings, setHeroSettings] = useState<HeroSettings>(HERO_DEFAULTS);
+  const [settingsReady, setSettingsReady] = useState(false);
 
-  // Fetch hero settings from DB on mount
+  // Fetch hero settings — animate headline only once settings confirmed
   useEffect(() => {
+    const fallback = setTimeout(() => setSettingsReady(true), 600);
     fetch("/api/admin/hero-settings")
       .then((res) => (res.ok ? res.json() : null))
       .then((data: HeroSettings | null) => { if (data) setHeroSettings(data); })
-      .catch(() => {});
+      .catch(() => {})
+      .finally(() => { clearTimeout(fallback); setSettingsReady(true); });
+    return () => clearTimeout(fallback);
   }, []);
 
   // Fetch services from DB on mount
