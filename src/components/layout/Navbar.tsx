@@ -75,9 +75,8 @@ export default function Navbar() {
             <div className="group-hover:scale-110 transition-transform duration-300">
               <SiteLogo />
             </div>
-            <span className="hidden sm:block text-white leading-tight select-none">
-              <span className="block text-sm font-semibold tracking-tight">Effortless</span>
-              <span className="block text-sm font-light tracking-widest text-white/60">CREW</span>
+            <span className="hidden sm:block text-white text-sm font-semibold tracking-tight select-none whitespace-nowrap">
+              Effortless Crew
             </span>
           </Link>
 

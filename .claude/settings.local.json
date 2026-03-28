@@ -16,7 +16,10 @@
       "Bash(grep -r \"\"\"lucide-react\"\"\" package.json)",
       "Read(//c/Users/jassim/**)",
       "Read(//c/Users/jassim/Desktop/**)",
-      "Bash(grep -rn \"cloudinary\\\\|CLOUDINARY\" 'c:/Users/jassim/WEBSITE x MUHIB/effortless crew website/src' --include=*.ts --include=*.tsx --include=*.env*)"
+      "Bash(grep -rn \"cloudinary\\\\|CLOUDINARY\" 'c:/Users/jassim/WEBSITE x MUHIB/effortless crew website/src' --include=*.ts --include=*.tsx --include=*.env*)",
+      "Bash(npm list:*)",
+      "Bash(cp \"C:\\\\Users\\\\jassim\\\\Pictures\\\\logo\\\\canva transparent new logo.png\" \"c:\\\\Users\\\\jassim\\\\WEBSITE x MUHIB\\\\effortless crew website\\\\public\\\\logo.png\")",
+      "Bash(cp \"C:\\\\Users\\\\jassim\\\\Pictures\\\\logo\\\\canva transparent new logo.png\" \"c:\\\\Users\\\\jassim\\\\WEBSITE x MUHIB\\\\effortless crew website\\\\public\\\\orbit-logo.png\")"
     ],
     "additionalDirectories": [
       "C:\\Users\\jassim\\Pictures\\logo",
