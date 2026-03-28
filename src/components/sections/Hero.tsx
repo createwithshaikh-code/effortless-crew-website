@@ -81,13 +81,15 @@ const SHOOTING = [
   { top: "12%", left: "88%", delay: 10, dur: 15 },
 ];
 
+const EASE_OUT = [0.23, 1, 0.32, 1] as const;
+
 const wordVariant = {
-  hidden:  { opacity: 0, y: 60, rotateX: -15 },
-  visible: { opacity: 1, y: 0, rotateX: 0, transition: { duration: 0.8, ease: [0.22, 1, 0.36, 1] } },
+  hidden:  { opacity: 0, y: 32, rotateX: -10 },
+  visible: { opacity: 1, y: 0, rotateX: 0, transition: { duration: 0.75, ease: EASE_OUT } },
 };
 const container = {
   hidden:  {},
-  visible: { transition: { staggerChildren: 0.18, delayChildren: 0.5 } },
+  visible: { transition: { staggerChildren: 0.16, delayChildren: 0.4 } },
 };
 
 /* ── Service card content ── */

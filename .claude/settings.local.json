@@ -19,7 +19,11 @@
       "Bash(grep -rn \"cloudinary\\\\|CLOUDINARY\" 'c:/Users/jassim/WEBSITE x MUHIB/effortless crew website/src' --include=*.ts --include=*.tsx --include=*.env*)",
       "Bash(npm list:*)",
       "Bash(cp \"C:\\\\Users\\\\jassim\\\\Pictures\\\\logo\\\\canva transparent new logo.png\" \"c:\\\\Users\\\\jassim\\\\WEBSITE x MUHIB\\\\effortless crew website\\\\public\\\\logo.png\")",
-      "Bash(cp \"C:\\\\Users\\\\jassim\\\\Pictures\\\\logo\\\\canva transparent new logo.png\" \"c:\\\\Users\\\\jassim\\\\WEBSITE x MUHIB\\\\effortless crew website\\\\public\\\\orbit-logo.png\")"
+      "Bash(cp \"C:\\\\Users\\\\jassim\\\\Pictures\\\\logo\\\\canva transparent new logo.png\" \"c:\\\\Users\\\\jassim\\\\WEBSITE x MUHIB\\\\effortless crew website\\\\public\\\\orbit-logo.png\")",
+      "WebSearch",
+      "WebFetch(domain:github.com)",
+      "WebFetch(domain:emilkowal.ski)",
+      "Bash(npx skills:*)"
     ],
     "additionalDirectories": [
       "C:\\Users\\jassim\\Pictures\\logo",
