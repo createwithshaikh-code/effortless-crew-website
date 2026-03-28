@@ -25,7 +25,10 @@
       "WebFetch(domain:emilkowal.ski)",
       "Bash(npx skills:*)",
       "Bash(grep -n \"^\\\\..*{\" \"/c/Users/jassim/WEBSITE x MUHIB/effortless crew website/src/app/globals.css\")",
-      "Bash(grep -r \"Ticker\\\\|from .*Ticker\" '/c/Users/jassim/WEBSITE x MUHIB/effortless crew website/src' --include=*.tsx)"
+      "Bash(grep -r \"Ticker\\\\|from .*Ticker\" '/c/Users/jassim/WEBSITE x MUHIB/effortless crew website/src' --include=*.tsx)",
+      "Bash(find '/c/Users/jassim/WEBSITE x MUHIB/effortless crew website/public' -type f \\\\\\(-name *.png -o -name *.jpg -o -name *.webp \\\\\\))",
+      "Bash(/tmp/analyze.txt:*)",
+      "Read(//tmp/**)"
     ],
     "additionalDirectories": [
       "C:\\Users\\jassim\\Pictures\\logo",

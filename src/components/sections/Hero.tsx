@@ -59,22 +59,14 @@ function sr(seed: number) {
   return x - Math.floor(x);
 }
 
-/* Near layer — larger stars, clockwise rotation at 300s */
-const STARS_NEAR = Array.from({ length: 70 }, (_, i) => ({
+/* Single static star layer — opacity twinkle only, no rotation containers */
+const STARS = Array.from({ length: 55 }, (_, i) => ({
   top:   `${(sr(i * 4.71 + 1.3) * 100).toFixed(2)}%`,
   left:  `${(sr(i * 8.93 + 2.7) * 100).toFixed(2)}%`,
-  size:  sr(i * 12.1 + 0.3) > 0.78 ? 2 : 1,
+  size:  sr(i * 12.1 + 0.3) > 0.80 ? 2 : 1,
   delay: `${-(sr(i * 6.57 + 3.9) * 14).toFixed(1)}s`,
-  dur:   `${(sr(i * 2.83 + 1.1)  *  8 + 6).toFixed(1)}s`,
-}));
-
-/* Far layer — tiny stars, counter-clockwise at 500s */
-const STARS_FAR = Array.from({ length: 90 }, (_, i) => ({
-  top:   `${(sr(i * 13.7 + 5.1) * 100).toFixed(2)}%`,
-  left:  `${(sr(i *  7.23 + 8.4) * 100).toFixed(2)}%`,
-  size:  1,
-  delay: `${-(sr(i * 9.31 + 2.6) * 16).toFixed(1)}s`,
-  dur:   `${(sr(i *  5.17 + 0.9) * 10 + 8).toFixed(1)}s`,
+  dur:   `${(sr(i * 2.83 + 1.1) * 8 + 6).toFixed(1)}s`,
+  dim:   sr(i * 3.17 + 0.7) > 0.5,
 }));
 
 const SHOOTING = [
