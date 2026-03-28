@@ -23,7 +23,9 @@
       "WebSearch",
       "WebFetch(domain:github.com)",
       "WebFetch(domain:emilkowal.ski)",
-      "Bash(npx skills:*)"
+      "Bash(npx skills:*)",
+      "Bash(grep -n \"^\\\\..*{\" \"/c/Users/jassim/WEBSITE x MUHIB/effortless crew website/src/app/globals.css\")",
+      "Bash(grep -r \"Ticker\\\\|from .*Ticker\" '/c/Users/jassim/WEBSITE x MUHIB/effortless crew website/src' --include=*.tsx)"
     ],
     "additionalDirectories": [
       "C:\\Users\\jassim\\Pictures\\logo",

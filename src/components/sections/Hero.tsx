@@ -2,9 +2,10 @@
 
 import React from "react";
 import Link from "next/link";
-const MotionLink = motion(Link);
 import { useRef, useState, useCallback, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
+
+const MotionLink = motion(Link);
 import { Play, ArrowRight, ChevronDown, Sparkles, X } from "lucide-react";
 import HeroOrbit, { type Service, type ServiceData } from "@/components/sections/HeroOrbit";
 
