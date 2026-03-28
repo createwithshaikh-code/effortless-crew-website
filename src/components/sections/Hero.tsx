@@ -410,7 +410,7 @@ export default function Hero() {
             />
           ))}
         </div>
-      </div>
+      </motion.div>
 
       {/* Soft glow blobs — sit above grid, below content */}
       <div className="absolute top-[-15%] right-[-5%] w-[480px] h-[480px] rounded-full pointer-events-none"
