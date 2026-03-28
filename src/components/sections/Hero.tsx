@@ -564,9 +564,10 @@ export default function Hero() {
               </motion.button>
             </motion.div>
           </motion.div>
+          </motion.div>
 
-          {/* RIGHT: Orbit — only rendered when width > height (landscape / desktop) */}
-          {showOrbit && <div className="flex flex-1 items-center justify-center">
+          {/* RIGHT: Orbit — parallax wrapper; only on desktop */}
+          {showOrbit && <motion.div style={{ y: orbitY }} className="flex flex-1 items-center justify-center">
             <motion.div
               ref={orbitContainerRef}
               style={{
