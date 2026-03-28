@@ -389,7 +389,7 @@ export default function Hero() {
       <div className="absolute inset-0 section-bg-1" />
 
       {/* ── Star field: rotating container + per-star opacity twinkle ── */}
-      <div className="absolute inset-0 pointer-events-none overflow-hidden">
+      <motion.div style={{ y: starsY }} className="absolute inset-0 pointer-events-none overflow-hidden">
         <div
           className="absolute"
           style={{
