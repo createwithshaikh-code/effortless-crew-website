@@ -59,12 +59,13 @@ function sr(seed: number) {
   return x - Math.floor(x);
 }
 
-/* Stars placed in a 160%-sized space so rotation never exposes bare edges */
+/* Stars with per-star twinkle — placed in 160%-oversized space so rotation never exposes edges */
 const STARS = Array.from({ length: 70 }, (_, i) => ({
-  top:  `${(sr(i * 4.71 + 1.3) * 100).toFixed(2)}%`,
-  left: `${(sr(i * 8.93 + 2.7) * 100).toFixed(2)}%`,
-  size: sr(i * 12.1 + 0.3) > 0.78 ? 2 : 1,
-  opacity: 0.55 + sr(i * 3.17 + 0.7) * 0.40,   // 0.55–0.95
+  top:     `${(sr(i * 4.71 + 1.3) * 100).toFixed(2)}%`,
+  left:    `${(sr(i * 8.93 + 2.7) * 100).toFixed(2)}%`,
+  size:    sr(i * 12.1 + 0.3) > 0.78 ? 2 : 1,
+  dur:     `${(sr(i * 2.83 + 1.1) * 5 + 4).toFixed(1)}s`,   // 4–9s twinkle cycle
+  delay:   `${-(sr(i * 6.57 + 3.9) * 12).toFixed(1)}s`,     // negative = mid-cycle on load
 }));
 
 const SHOOTING = [
