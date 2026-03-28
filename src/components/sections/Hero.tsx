@@ -59,14 +59,12 @@ function sr(seed: number) {
   return x - Math.floor(x);
 }
 
-/* Single static star layer — opacity twinkle only, no rotation containers */
-const STARS = Array.from({ length: 55 }, (_, i) => ({
-  top:   `${(sr(i * 4.71 + 1.3) * 100).toFixed(2)}%`,
-  left:  `${(sr(i * 8.93 + 2.7) * 100).toFixed(2)}%`,
-  size:  sr(i * 12.1 + 0.3) > 0.80 ? 2 : 1,
-  delay: `${-(sr(i * 6.57 + 3.9) * 14).toFixed(1)}s`,
-  dur:   `${(sr(i * 2.83 + 1.1) * 8 + 6).toFixed(1)}s`,
-  dim:   sr(i * 3.17 + 0.7) > 0.5,
+/* Stars placed in a 160%-sized space so rotation never exposes bare edges */
+const STARS = Array.from({ length: 70 }, (_, i) => ({
+  top:  `${(sr(i * 4.71 + 1.3) * 100).toFixed(2)}%`,
+  left: `${(sr(i * 8.93 + 2.7) * 100).toFixed(2)}%`,
+  size: sr(i * 12.1 + 0.3) > 0.78 ? 2 : 1,
+  opacity: 0.55 + sr(i * 3.17 + 0.7) * 0.40,   // 0.55–0.95
 }));
 
 const SHOOTING = [
