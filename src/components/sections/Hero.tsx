@@ -443,10 +443,10 @@ export default function Hero() {
             className="flex-1 flex flex-col justify-center lg:py-24 lg:pr-8"
             animate={
               selectedService
-                ? { opacity: 0, x: -90, scale: 1.06 }
+                ? { opacity: 0, x: -60, scale: 1.03 }
                 : { opacity: 1, x: 0,   scale: 1    }
             }
-            transition={{ duration: 0.65, ease: [0.22, 1, 0.36, 1] }}
+            transition={{ duration: 0.55, ease: EASE_OUT }}
           >
 
             {/* Pre-headline badge */}
