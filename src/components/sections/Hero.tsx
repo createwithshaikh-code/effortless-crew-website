@@ -602,7 +602,7 @@ export default function Hero() {
                 services={orbitServices}
               />
             </motion.div>
-          </div>
+          </div>}
 
         </div>
       </div>
