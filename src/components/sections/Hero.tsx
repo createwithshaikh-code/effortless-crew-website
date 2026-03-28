@@ -481,8 +481,12 @@ export default function Hero() {
                   <motion.span key={i} variants={wordVariant} className="block">
                     {isGradient ? (
                       <span
-                        className="text-gradient-custom"
-                        style={{ "--gc1": heroSettings.hero_color_1, "--gc2": heroSettings.hero_color_2 } as React.CSSProperties}
+                        className="text-gradient-custom whitespace-nowrap"
+                        style={{
+                          "--gc1": heroSettings.hero_color_1,
+                          "--gc2": heroSettings.hero_color_2,
+                          fontSize: "0.85em",
+                        } as React.CSSProperties}
                       >
                         {line}
                       </span>
