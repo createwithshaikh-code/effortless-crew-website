@@ -249,6 +249,7 @@ export default function Hero() {
   const [dbServices, setDbServices] = useState<DbService[] | null>(null);
   const [heroSettings, setHeroSettings] = useState<HeroSettings>(HERO_DEFAULTS);
   const [settingsReady, setSettingsReady] = useState(false);
+  const [showOrbit, setShowOrbit] = useState(false);
 
   // Fetch hero settings — animate headline only once settings confirmed
   useEffect(() => {
