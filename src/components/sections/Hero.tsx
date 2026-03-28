@@ -454,23 +454,6 @@ export default function Hero() {
             transition={{ duration: 0.55, ease: EASE_OUT }}
           >
 
-            {/* Pre-headline badge */}
-            <motion.div
-              initial={{ opacity: 0, y: 16, scale: 0.95 }}
-              animate={{ opacity: 1, y: 0, scale: 1 }}
-              transition={{ duration: 0.5, delay: 0.1, ease: EASE_OUT }}
-              className="inline-flex self-start items-center gap-2.5 px-5 py-2 rounded-full glass border border-brand/25 mb-8"
-            >
-              <motion.span
-                className="w-2 h-2 rounded-full bg-brand"
-                animate={{ scale: [1, 1.4, 1], opacity: [1, 0.5, 1] }}
-                transition={{ duration: 1.5, repeat: Infinity }}
-              />
-              <span className="text-sm font-semibold bg-gradient-to-r from-brand-300 to-royal-300 bg-clip-text text-transparent">
-                AI-Powered Creative Super-Team
-              </span>
-              <Sparkles className="w-3.5 h-3.5 text-brand-400 animate-sparkle" />
-            </motion.div>
 
             {/* Headline */}
             <motion.h1
