@@ -478,7 +478,6 @@ export default function Hero() {
               initial="hidden"
               animate={settingsReady ? "visible" : "hidden"}
               className="font-display text-5xl sm:text-6xl lg:text-6xl xl:text-7xl font-black text-white leading-[1.05] tracking-tight mb-6"
-              style={{ perspective: "1000px" }}
             >
               {heroSettings.hero_headline.split("\n").map((line, i, arr) => {
                 const isGradient = arr.length >= 2 && i === 1;
