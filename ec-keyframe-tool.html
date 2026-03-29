@@ -571,9 +571,9 @@ function sl(rangeId, numId, min, max, fn){
 sl('scx','vcx',-1500,1500, v=>{CAM.x=v});
 sl('scy','vcy',-1500,1500, v=>{CAM.y=v});
 sl('scz','vcz',-300, 2500, v=>{CAM.z=v});
-sl('syaw','vyaw',-180,180,  v=>{CAM.yaw=v});
-sl('spitch','vpitch',-89,89,v=>{CAM.pitch=v});
-sl('sroll','vroll',-180,180,v=>{CAM.roll=v});
+sl('syaw','vyaw',-180,180,  v=>{CAM.yaw=v;   rebuildBasisFromEuler();});
+sl('spitch','vpitch',-89,89,v=>{CAM.pitch=v; rebuildBasisFromEuler();});
+sl('sroll','vroll',-180,180,v=>{CAM.roll=v;  rebuildBasisFromEuler();});
 sl('sssx','vssx',-800,800,  v=>{SYS.x=v});
 sl('sssy','vssy',-800,800,  v=>{SYS.y=v});
 sl('sssz','vssz',-800,800,  v=>{SYS.z=v});
