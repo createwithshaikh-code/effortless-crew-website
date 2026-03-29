@@ -736,6 +736,30 @@ commentArea.addEventListener('input', ()=>{
   if(kf){kf.comment=commentArea.value; renderKFs();}
 });
 
+// ── KF dot indicators ──
+// Inject a small dot into every ctrl-lbl so user can see recording state
+function injectKFDots(){
+  document.querySelectorAll('.ctrl-lbl').forEach(lbl=>{
+    if(lbl.querySelector('.kf-dot')) return; // already added
+    const dot=document.createElement('span');
+    dot.className='kf-dot';
+    lbl.insertBefore(dot, lbl.firstChild);
+  });
+}
+
+function updateKFDots(){
+  injectKFDots();
+  const onKF      = keyframes.some(k=>Math.abs(k.t-curT)<0.08);
+  const betweenKF = !onKF && keyframes.length>=2 && (()=>{
+    const kfs=[...keyframes].sort((a,b)=>a.t-b.t);
+    return curT>kfs[0].t && curT<kfs[kfs.length-1].t;
+  })();
+  document.querySelectorAll('.kf-dot').forEach(dot=>{
+    dot.classList.toggle('live',    onKF);
+    dot.classList.toggle('between', betweenKF);
+  });
+}
+
 function seek(t){
   curT=Math.max(0,Math.min(DURATION,t));
   document.getElementById('tl-head').style.left=(curT/DURATION*100)+'%';
