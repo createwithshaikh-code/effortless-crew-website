@@ -663,14 +663,21 @@ function renderKFs(){
     const m=document.createElement('div');
     m.className='kfm'+(kf.id===selKF?' sel':'');
     m.style.background=`rgb(192,38,211)`;
-    m.title=kf.t.toFixed(2)+'s';
+    m.title=(kf.comment||kf.t.toFixed(2)+'s');
+    // Comment label above marker
+    if(kf.comment){
+      const cl=document.createElement('div');
+      cl.className='kfm-comment';
+      cl.textContent=kf.comment.length>18?kf.comment.slice(0,16)+'…':kf.comment;
+      wrap.appendChild(cl);
+    }
     // Delete button (blue dot)
     const del=document.createElement('button');
     del.className='kfm-del';del.textContent='✕';
     del.onclick=e=>{e.stopPropagation();keyframes=keyframes.filter(k=>k.id!==kf.id);
-      if(selKF===kf.id)selKF=null;renderKFs();updateKFInfo();};
+      if(selKF===kf.id){selKF=null;showCommentBox(null);}renderKFs();updateKFInfo();};
     // Click to select & seek
-    m.onclick=e=>{e.stopPropagation();selKF=kf.id;seek(kf.t);renderKFs();};
+    m.onclick=e=>{e.stopPropagation();selKF=kf.id;seek(kf.t);renderKFs();showCommentBox(kf);};
     // Drag to reposition in time
     let dg=false,dx0=0,t0=0;
     m.addEventListener('mousedown',e=>{dg=true;dx0=e.clientX;t0=kf.t;e.stopPropagation();});
