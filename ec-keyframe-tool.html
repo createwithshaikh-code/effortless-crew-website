@@ -216,6 +216,14 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:12px;heigh
       <input type="range" id="sec2" min="20" max="200" value="88"></div>
   </div>
 
+  <!-- Comment box — shows when a KF is selected -->
+  <div id="kf-comment-box">
+    <label>💬 KEYFRAME NOTE</label>
+    <small>Describe what's happening — this gets exported so Claude can read it.</small>
+    <textarea id="kf-comment" placeholder="e.g. Camera starts top-down, solar system fully visible, all rings spinning…"></textarea>
+    <div id="kf-comment-time"></div>
+  </div>
+
   <div id="panel-footer">
     <button class="pfbtn" id="btn-reset" onclick="resetCam()">↺ Reset to Default</button>
     <button class="pfbtn" id="btn-copy" onclick="copyJSON()">📋 Copy Animation JSON</button>
