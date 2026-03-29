@@ -132,6 +132,13 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:12px;heigh
   text-align:center;font-family:inherit;transition:background .2s}
 .ease-opt.active{background:rgba(192,38,211,.25);border-color:rgba(192,38,211,.5);color:#fff}
 
+/* ── KF dot indicator on each slider ── */
+.kf-dot{display:inline-block;width:7px;height:7px;border-radius:50%;
+  background:rgba(255,255,255,.12);margin-right:7px;flex-shrink:0;vertical-align:middle;
+  transition:background .25s,box-shadow .25s;cursor:default}
+.kf-dot.live{background:#3B82F6;box-shadow:0 0 5px rgba(59,130,246,.9)}
+.kf-dot.between{background:rgba(59,130,246,.4);box-shadow:none}
+
 /* ── KF comment panel ── */
 #kf-comment-box{display:none;padding:10px 14px;border-bottom:1px solid rgba(255,255,255,.06);
   flex-shrink:0}
