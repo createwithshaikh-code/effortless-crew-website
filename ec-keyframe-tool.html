@@ -784,6 +784,7 @@ function copyJSON(){
     keyframes:kfs.map((kf,i)=>({
       '#':i+1,
       time_sec:parseFloat(kf.t.toFixed(2)),
+      note: kf.comment||'(no comment)',
       camera:{x:Math.round(kf.s.cx),y:Math.round(kf.s.cy),z:Math.round(kf.s.cz)},
       lookat:{x:Math.round(kf.s.lx),y:Math.round(kf.s.ly)},
       rings:{
