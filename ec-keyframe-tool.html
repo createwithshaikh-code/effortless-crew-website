@@ -881,6 +881,7 @@ function tick(ts){
       document.getElementById('tl-fill').style.width=(curT/DURATION*100)+'%';
       document.getElementById('t-disp').textContent=curT.toFixed(1)+'s';
       applyState(stateAt(curT));
+      updateKFDots();
     }
   }
 
