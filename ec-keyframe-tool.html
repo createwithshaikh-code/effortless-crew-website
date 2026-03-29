@@ -503,29 +503,38 @@ function updateElements(){
 })();
 
 // ── Mouse drag / scroll ───────────────────────────────
-// Drag: rotate camera (yaw/pitch)
-// Shift+drag: strafe camera (move along world XY)
-// Scroll: dolly along camera forward axis
-let drag={on:false,x:0,y:0,shift:false,yaw0:0,pitch0:0,cx0:0,cy0:0};
+// Drag: rotate camera locally (left/right = local yaw, up/down = local pitch)
+// Shift+drag: strafe (pan) camera along its local right/up
+// Scroll: dolly along camera forward
+let drag={on:false,x:0,y:0,shift:false};
 
 vp.addEventListener('mousedown',e=>{
-  drag={on:true,x:e.clientX,y:e.clientY,shift:e.shiftKey,
-    yaw0:CAM.yaw,pitch0:CAM.pitch,cx0:CAM.x,cy0:CAM.y};
+  drag={on:true,x:e.clientX,y:e.clientY,shift:e.shiftKey};
   vp.classList.add('drag');
 });
 window.addEventListener('mousemove',e=>{
   if(!drag.on) return;
   const dx=e.clientX-drag.x, dy=e.clientY-drag.y;
+  drag.x=e.clientX; drag.y=e.clientY; // incremental delta each event
   if(drag.shift){
-    // Pan: strafe along world X and Y (simple, no need to follow camera orientation for pan)
-    CAM.x=drag.cx0-dx*0.8;
-    CAM.y=drag.cy0+dy*0.8;
+    // Pan along camera's local right and up axes
+    const speed=0.8;
+    CAM.x -= CAM.right[0]*dx*speed - CAM.up[0]*dy*speed;
+    CAM.y -= CAM.right[1]*dx*speed - CAM.up[1]*dy*speed;
+    CAM.z -= CAM.right[2]*dx*speed - CAM.up[2]*dy*speed;
   } else {
-    // Rotate: yaw left/right, pitch up/down
-    CAM.yaw  = drag.yaw0  + dx * 0.3;
-    CAM.pitch = Math.max(-89, Math.min(89, drag.pitch0 - dy * 0.3));
-    // Wrap yaw to -180..180
-    CAM.yaw = ((CAM.yaw + 180) % 360 + 360) % 360 - 180;
+    const sens=0.004;
+    // Local yaw: rotate around camera's own UP axis (left/right)
+    CAM.fwd   = v3.norm(rotateVec(CAM.fwd,   CAM.up, -dx*sens));
+    CAM.right = v3.norm(rotateVec(CAM.right,  CAM.up, -dx*sens));
+    // Local pitch: rotate around camera's own RIGHT axis (up/down)
+    CAM.fwd = v3.norm(rotateVec(CAM.fwd, CAM.right, -dy*sens));
+    CAM.up  = v3.norm(rotateVec(CAM.up,  CAM.right, -dy*sens));
+    // Re-orthogonalise to prevent drift
+    CAM.fwd   = v3.norm(CAM.fwd);
+    CAM.right = v3.norm(v3.cross(CAM.fwd, CAM.up));
+    CAM.up    = v3.norm(v3.cross(CAM.right, CAM.fwd));
+    extractEulerFromBasis();
   }
   syncPanelFromCam();
 });
