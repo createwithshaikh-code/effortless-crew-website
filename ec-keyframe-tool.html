@@ -736,11 +736,13 @@ track.addEventListener('click',e=>{
 // KEYFRAME ACTIONS
 // ════════════════════════════════════════════════════
 function addKF(){
-  // Replace if too close in time
   const ex=keyframes.find(k=>Math.abs(k.t-curT)<0.12);
-  if(ex){ex.s=captureState();selKF=ex.id;}
-  else{const kf={id:kfId++,t:curT,s:captureState()};keyframes.push(kf);selKF=kf.id;}
-  renderKFs();
+  if(ex){ex.s=captureState();selKF=ex.id;renderKFs();showCommentBox(ex);}
+  else{
+    const kf={id:kfId++,t:curT,s:captureState(),comment:''};
+    keyframes.push(kf);selKF=kf.id;
+    renderKFs();showCommentBox(kf);
+  }
 }
 function prevKF(){
   const sorted=[...keyframes].sort((a,b)=>a.t-b.t);
