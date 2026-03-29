@@ -525,6 +525,15 @@ function sl(id, valId, suffix, fn){
   el.addEventListener('input',()=>{
     document.getElementById(valId).textContent=el.value+(suffix||'');
     fn(parseFloat(el.value));
+    // Auto-add KF when scrubber is between existing keyframes and user tweaks a slider
+    if(keyframes.length>=2){
+      const kfs=[...keyframes].sort((a,b)=>a.t-b.t);
+      const inRange = curT>kfs[0].t && curT<kfs[kfs.length-1].t;
+      const onKF    = keyframes.some(k=>Math.abs(k.t-curT)<0.12);
+      if(inRange && !onKF){ addKF(); } // creates KF at curT capturing current state
+      else if(onKF){ const kf=keyframes.find(k=>Math.abs(k.t-curT)<0.12); if(kf) kf.s=captureState(); renderKFs(); }
+    }
+    updateKFDots();
   });
 }
 sl('sx','vx','',  v=>{CAM.x=v});
