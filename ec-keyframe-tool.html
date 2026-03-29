@@ -7,221 +7,232 @@
 <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
-body{background:#020210;color:#fff;font-family:'Space Grotesk',sans-serif;overflow:hidden;
-  height:100vh;width:100vw;display:flex;flex-direction:column}
+body{background:#020210;color:#fff;font-family:'Space Grotesk',sans-serif;
+  overflow:hidden;height:100vh;width:100vw;display:flex;flex-direction:column;user-select:none}
 
-/* ── Canvas area ── */
-#viewport{position:relative;flex:1;overflow:hidden;cursor:grab}
-#viewport.dragging{cursor:grabbing}
+/* ── Viewport ── */
+#vp{position:relative;flex:1;overflow:hidden;cursor:grab}
+#vp.drag{cursor:grabbing}
 canvas{position:absolute;inset:0;z-index:2;pointer-events:none}
-#starwrap{position:absolute;inset:0;z-index:1;pointer-events:none;overflow:hidden}
-.sf{position:absolute;top:-30%;left:-30%;width:160%;height:160%;animation:spincw 360s linear infinite}
-@keyframes spincw{to{transform:rotate(360deg)}}
-@keyframes twinkle{0%,100%{opacity:.8}50%{opacity:.05}}
-.blob{position:absolute;border-radius:50%;filter:blur(55px);pointer-events:none;z-index:1}
-#ec-center{position:absolute;transform:translate(-50%,-50%);border-radius:50%;
+#starwrap{position:absolute;inset:0;z-index:1;overflow:hidden;pointer-events:none}
+.sf{position:absolute;top:-30%;left:-30%;width:160%;height:160%;animation:spin 360s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+@keyframes tw{0%,100%{opacity:.8}50%{opacity:.05}}
+.blob{position:absolute;border-radius:50%;filter:blur(60px);z-index:1;pointer-events:none;
+  transition:opacity .4s}
+
+/* ── EC logo ── */
+#ec{position:absolute;border-radius:50%;
   background:radial-gradient(circle at 38% 38%,rgba(10,20,55,.97),rgba(2,2,16,1));
   border:1.5px solid rgba(80,200,255,.5);
   display:flex;align-items:center;justify-content:center;
-  font-weight:900;letter-spacing:-1.5px;text-shadow:0 0 18px rgba(80,200,255,.8);
-  animation:spulse 3s ease-in-out infinite;z-index:15;user-select:none;
-  font-size:22px;width:90px;height:90px}
-@keyframes spulse{
-  0%,100%{box-shadow:0 0 30px rgba(80,200,255,.35),0 0 65px rgba(80,200,255,.15)}
+  font-weight:900;letter-spacing:-1.5px;
+  text-shadow:0 0 18px rgba(80,200,255,.8);
+  animation:glow 3s ease-in-out infinite;z-index:15;pointer-events:none;
+  transform:translate(-50%,-50%)}
+@keyframes glow{
+  0%,100%{box-shadow:0 0 28px rgba(80,200,255,.35),0 0 65px rgba(80,200,255,.15)}
   50%{box-shadow:0 0 50px rgba(80,200,255,.6),0 0 100px rgba(80,200,255,.28)}}
-.node{position:absolute;z-index:20;pointer-events:none}
-.node-wrap{display:flex;align-items:center;gap:7px;transform:translate(-50%,-50%)}
-.node-circle{border-radius:50%;background:rgba(8,8,28,.92);
-  display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:14px;
-  width:30px;height:30px;border:1.5px solid}
-.node-label{font-size:11px;font-weight:600;color:rgba(255,255,255,.72);
+
+/* ── Nodes ── */
+.nd{position:absolute;pointer-events:none;transform:translate(-50%,-50%);z-index:20}
+.nd-wrap{display:flex;align-items:center;gap:5px}
+.nd-circle{border-radius:50%;background:rgba(8,8,28,.92);
+  display:flex;align-items:center;justify-content:center;flex-shrink:0;border:1.5px solid}
+.nd-label{font-size:10px;font-weight:600;color:rgba(255,255,255,.72);
   white-space:nowrap;text-shadow:0 1px 6px rgba(0,0,0,.9)}
 
-/* ── Hint overlay ── */
-#hint{position:absolute;top:12px;left:50%;transform:translateX(-50%);z-index:200;
+/* ── Hint ── */
+#hint{position:absolute;top:10px;left:50%;transform:translateX(-50%);z-index:200;
   font-size:11px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;
-  color:rgba(255,255,255,.3);pointer-events:none;white-space:nowrap}
+  color:rgba(255,255,255,.28);pointer-events:none;white-space:nowrap}
 
-/* ── Controls Panel ── */
-#panel{
-  position:absolute;top:0;right:0;bottom:140px;width:260px;z-index:300;
-  background:rgba(4,4,20,.92);border-left:1px solid rgba(255,255,255,.08);
-  overflow-y:auto;padding:12px 0;backdrop-filter:blur(20px)
-}
-#panel::-webkit-scrollbar{width:4px}
-#panel::-webkit-scrollbar-thumb{background:rgba(255,255,255,.15);border-radius:2px}
-.sec{padding:10px 14px;border-bottom:1px solid rgba(255,255,255,.06)}
-.sec-title{font-size:10px;font-weight:700;letter-spacing:.18em;text-transform:uppercase;
-  color:rgba(255,255,255,.35);margin-bottom:10px;display:flex;align-items:center;
+/* ── Panel ── */
+#panel{position:absolute;top:0;right:0;bottom:150px;width:268px;z-index:300;
+  background:rgba(3,3,18,.95);border-left:1px solid rgba(255,255,255,.07);
+  overflow-y:auto;display:flex;flex-direction:column}
+#panel::-webkit-scrollbar{width:3px}
+#panel::-webkit-scrollbar-thumb{background:rgba(255,255,255,.14);border-radius:2px}
+.sec{padding:10px 14px;border-bottom:1px solid rgba(255,255,255,.06);flex-shrink:0}
+.sec-hd{font-size:9px;font-weight:700;letter-spacing:.2em;text-transform:uppercase;
+  color:rgba(255,255,255,.32);margin-bottom:10px;display:flex;align-items:center;
   justify-content:space-between}
-.ctrl{margin-bottom:8px}
-.ctrl label{font-size:11px;font-weight:600;color:rgba(255,255,255,.55);
+.ctrl{margin-bottom:9px}
+.ctrl-lbl{font-size:11px;font-weight:600;color:rgba(255,255,255,.52);
   display:flex;justify-content:space-between;margin-bottom:4px}
-.ctrl label span{color:rgba(255,255,255,.9);font-weight:700}
+.ctrl-lbl b{color:rgba(255,255,255,.92);font-weight:700}
 input[type=range]{width:100%;height:4px;-webkit-appearance:none;appearance:none;
-  background:rgba(255,255,255,.12);border-radius:2px;cursor:pointer;outline:none}
+  background:rgba(255,255,255,.11);border-radius:2px;cursor:pointer;outline:none}
 input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:12px;height:12px;
-  border-radius:50%;background:#C026D3;cursor:pointer;box-shadow:0 0 6px rgba(192,38,211,.6)}
-.pause-btn{font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;
-  background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.14);
-  color:rgba(255,255,255,.6);padding:3px 8px;border-radius:4px;cursor:pointer;
-  font-family:inherit;transition:background .2s,color .2s}
-.pause-btn.paused{background:rgba(192,38,211,.2);border-color:rgba(192,38,211,.4);
-  color:rgba(255,255,255,.9)}
-#btn-copy{width:calc(100% - 28px);margin:12px 14px 4px;
-  background:linear-gradient(135deg,#C026D3,#2563EB);border:none;color:#fff;
-  padding:10px;border-radius:10px;font-weight:700;font-size:12px;letter-spacing:.06em;
-  text-transform:uppercase;cursor:pointer;font-family:inherit}
-#btn-copy:active{opacity:.8}
+  border-radius:50%;background:#C026D3;cursor:pointer;
+  box-shadow:0 0 6px rgba(192,38,211,.6)}
+.pb{font-size:9px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;
+  background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.13);
+  color:rgba(255,255,255,.55);padding:3px 8px;border-radius:4px;
+  cursor:pointer;font-family:inherit;transition:background .2s}
+.pb.on{background:rgba(192,38,211,.22);border-color:rgba(192,38,211,.45);color:#fff}
+#panel-footer{padding:12px 14px;display:flex;flex-direction:column;gap:8px;margin-top:auto}
+.pfbtn{width:100%;border:none;padding:10px;border-radius:10px;
+  font-weight:700;font-size:12px;letter-spacing:.06em;text-transform:uppercase;
+  cursor:pointer;font-family:inherit}
+#btn-reset{background:rgba(255,255,255,.07);color:rgba(255,255,255,.7);
+  border:1px solid rgba(255,255,255,.12)}
+#btn-copy{background:linear-gradient(135deg,#C026D3,#2563EB);color:#fff}
 
 /* ── Timeline ── */
-#timeline{
-  height:140px;background:rgba(4,4,22,.95);
-  border-top:1px solid rgba(255,255,255,.08);
-  display:flex;flex-direction:column;
-  padding-right:260px /* leave room for panel */
-}
-#tl-track{
-  position:relative;flex:1;margin:10px 16px 0;
-  background:rgba(255,255,255,.04);border-radius:4px;cursor:pointer;
-  overflow:visible
-}
-#tl-fill{position:absolute;left:0;top:0;bottom:0;
-  background:rgba(192,38,211,.12);border-radius:4px;pointer-events:none}
-#tl-playhead{position:absolute;top:-6px;bottom:-4px;width:2px;
+#tl{height:150px;background:rgba(3,3,18,.98);border-top:1px solid rgba(255,255,255,.07);
+  display:flex;flex-direction:column;padding-right:268px;flex-shrink:0}
+#tl-track{position:relative;margin:12px 16px 0;height:36px;
+  background:rgba(255,255,255,.04);border-radius:6px;cursor:pointer;flex-shrink:0}
+#tl-fill{position:absolute;inset:0;right:auto;background:rgba(192,38,211,.10);
+  border-radius:6px;pointer-events:none}
+#tl-head{position:absolute;top:-8px;bottom:-4px;width:2px;margin-left:-1px;
   background:#C026D3;pointer-events:none;z-index:10;
-  box-shadow:0 0 8px rgba(192,38,211,.8)}
-#tl-playhead::before{content:'';position:absolute;top:-1px;left:-4px;
+  box-shadow:0 0 8px rgba(192,38,211,.9)}
+#tl-head::before{content:'';position:absolute;top:0;left:-4px;
   width:10px;height:10px;border-radius:50%;background:#C026D3;
-  box-shadow:0 0 8px rgba(192,38,211,.8)}
-.kf-marker{position:absolute;top:50%;width:12px;height:12px;border-radius:50%;
-  background:#fff;transform:translate(-50%,-50%);cursor:pointer;z-index:5;
-  border:2px solid rgba(0,0,0,.5);transition:transform .15s,box-shadow .15s}
-.kf-marker:hover{transform:translate(-50%,-50%) scale(1.4)}
-.kf-marker.selected{transform:translate(-50%,-50%) scale(1.3);
-  box-shadow:0 0 10px rgba(255,255,255,.8)}
-.kf-marker.kf-inner {background:#C026D3}
-.kf-marker.kf-middle{background:#A78BFA}
-.kf-marker.kf-outer {background:#60A5FA}
-.kf-marker.kf-mixed {background:#fff}
-/* ruler ticks */
+  box-shadow:0 0 8px rgba(192,38,211,.9)}
+.kfm{position:absolute;top:50%;transform:translate(-50%,-50%);
+  width:11px;height:11px;border-radius:50%;cursor:pointer;z-index:5;border:2px solid rgba(0,0,0,.4);
+  transition:transform .15s}
+.kfm:hover{transform:translate(-50%,-50%) scale(1.5)}
+.kfm.sel{transform:translate(-50%,-50%) scale(1.3);outline:2px solid rgba(255,255,255,.5)}
+/* delete button on keyframe */
+.kfm-del{position:absolute;top:-12px;left:50%;transform:translateX(-50%);
+  width:12px;height:12px;border-radius:50%;background:#3B82F6;border:none;
+  color:#fff;font-size:8px;font-weight:900;cursor:pointer;
+  display:none;align-items:center;justify-content:center;z-index:6;
+  box-shadow:0 0 6px rgba(59,130,246,.7);line-height:1}
+.kfm-wrap:hover .kfm-del{display:flex}
+.kfm-wrap{position:absolute;top:50%;transform:translateY(-50%)}
+/* ticks */
 .tick{position:absolute;bottom:0;transform:translateX(-50%);pointer-events:none}
-.tick-line{width:1px;background:rgba(255,255,255,.12);margin:0 auto}
-.tick-label{font-size:9px;color:rgba(255,255,255,.3);text-align:center;margin-top:2px;
-  font-family:'Space Grotesk',sans-serif}
+.tick-ln{background:rgba(255,255,255,.10);width:1px;margin:0 auto}
+.tick-lb{font-size:9px;color:rgba(255,255,255,.28);text-align:center;
+  font-family:'Space Grotesk',sans-serif;margin-top:1px}
 /* controls bar */
-#tl-controls{display:flex;align-items:center;gap:8px;padding:8px 16px}
-.tl-btn{background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.12);
-  color:rgba(255,255,255,.75);padding:6px 14px;border-radius:6px;
+#tl-bar{display:flex;align-items:center;gap:7px;padding:8px 16px}
+.tb{background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.12);
+  color:rgba(255,255,255,.7);padding:6px 13px;border-radius:6px;
   font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;
   cursor:pointer;font-family:inherit;transition:background .2s,color .2s;white-space:nowrap}
-.tl-btn:hover{background:rgba(255,255,255,.12);color:#fff}
-.tl-btn.primary{background:linear-gradient(135deg,rgba(192,38,211,.3),rgba(37,99,235,.3));
-  border-color:rgba(192,38,211,.4);color:#fff}
-.tl-btn.danger{background:rgba(220,38,38,.15);border-color:rgba(220,38,38,.3);
-  color:rgba(255,100,100,.9)}
-#time-display{font-size:13px;font-weight:800;color:rgba(255,255,255,.9);
-  letter-spacing:.05em;min-width:52px;text-align:right;margin-left:auto}
-#kf-count{font-size:11px;color:rgba(255,255,255,.35);white-space:nowrap}
+.tb:hover{background:rgba(255,255,255,.12);color:#fff}
+.tb.go{background:linear-gradient(135deg,rgba(192,38,211,.3),rgba(37,99,235,.3));
+  border-color:rgba(192,38,211,.45);color:#fff}
+.tb.del{background:rgba(220,38,38,.13);border-color:rgba(220,38,38,.3);color:rgba(255,120,120,.9)}
+#t-disp{font-size:13px;font-weight:800;color:rgba(255,255,255,.9);
+  letter-spacing:.05em;min-width:44px;text-align:right;margin-left:auto}
+#kf-info{font-size:10px;color:rgba(255,255,255,.3);white-space:nowrap}
+
+/* ── Easing selector ── */
+.ease-row{display:flex;gap:4px;margin-top:4px}
+.ease-opt{flex:1;padding:3px 0;border-radius:4px;border:1px solid rgba(255,255,255,.12);
+  background:rgba(255,255,255,.04);color:rgba(255,255,255,.5);
+  font-size:9px;font-weight:700;letter-spacing:.04em;cursor:pointer;
+  text-align:center;font-family:inherit;transition:background .2s}
+.ease-opt.active{background:rgba(192,38,211,.25);border-color:rgba(192,38,211,.5);color:#fff}
 </style>
 </head>
 <body>
 
-<div id="viewport">
+<div id="vp">
   <canvas id="canvas"></canvas>
   <div id="starwrap"><div class="sf" id="sf"></div></div>
-  <div class="blob" id="b1" style="width:480px;height:480px;background:rgba(192,38,211,.12)"></div>
-  <div class="blob" id="b2" style="width:560px;height:560px;background:rgba(37,99,235,.09)"></div>
-  <div id="ec-center">EC</div>
-  <div id="nodes-container"></div>
-  <div id="hint">Drag to rotate &nbsp;·&nbsp; Shift+drag to pan &nbsp;·&nbsp; Scroll to zoom</div>
+  <div class="blob" id="b1" style="width:500px;height:500px;background:rgba(192,38,211,.11)"></div>
+  <div class="blob" id="b2" style="width:580px;height:580px;background:rgba(37,99,235,.09)"></div>
+  <div id="ec">EC</div>
+  <div id="nodes"></div>
+  <div id="hint">Drag = rotate &nbsp;·&nbsp; Shift+drag = pan &nbsp;·&nbsp; Scroll = zoom</div>
 </div>
 
-<!-- ── Controls Panel ── -->
+<!-- ── Panel ── -->
 <div id="panel">
   <div class="sec">
-    <div class="sec-title">CAMERA</div>
-    <div class="ctrl">
-      <label>Scale <span id="v-zoom">600</span></label>
-      <input type="range" id="sl-zoom" min="0" max="1500" value="600">
-    </div>
-    <div class="ctrl">
-      <label>X Position <span id="v-x">0</span></label>
-      <input type="range" id="sl-x" min="-600" max="600" value="0">
-    </div>
-    <div class="ctrl">
-      <label>Y Position <span id="v-y">0</span></label>
-      <input type="range" id="sl-y" min="-600" max="600" value="0">
-    </div>
-    <div class="ctrl">
-      <label>Tilt (0°=top · 90°=side) <span id="v-tilt">0°</span></label>
-      <input type="range" id="sl-tilt" min="0" max="90" value="0">
-    </div>
-    <div class="ctrl">
-      <label>Rotation <span id="v-rot">0°</span></label>
-      <input type="range" id="sl-rot" min="-180" max="180" value="0">
-    </div>
+    <div class="sec-hd">📷 CAMERA POSITION</div>
+    <div class="ctrl"><div class="ctrl-lbl">X (left / right) <b id="vx">0</b></div>
+      <input type="range" id="sx" min="-1000" max="1000" value="0"></div>
+    <div class="ctrl"><div class="ctrl-lbl">Y (up / down) <b id="vy">0</b></div>
+      <input type="range" id="sy" min="-1000" max="1000" value="0"></div>
+    <div class="ctrl"><div class="ctrl-lbl">Z (forward / back) <b id="vz">800</b></div>
+      <input type="range" id="sz" min="-300" max="2000" value="800"></div>
+    <div class="ctrl"><div class="ctrl-lbl">Look-at X <b id="vlx">0</b></div>
+      <input type="range" id="slx" min="-600" max="600" value="0"></div>
+    <div class="ctrl"><div class="ctrl-lbl">Look-at Y <b id="vly">0</b></div>
+      <input type="range" id="sly" min="-600" max="600" value="0"></div>
   </div>
 
-  <div class="sec" id="sec-inner">
-    <div class="sec-title" style="color:rgba(192,38,211,.8)">
-      INNER RING
-      <button class="pause-btn" id="pb-inner" onclick="togglePause('inner')">⏸ PAUSE</button>
-    </div>
-    <div class="ctrl">
-      <label>Ring Position <span id="v-inner">0°</span></label>
-      <input type="range" id="sl-inner" min="0" max="360" value="0">
-    </div>
+  <div class="sec">
+    <div class="sec-hd" style="color:rgba(192,38,211,.75)">INNER RING
+      <button class="pb" id="pb-i" onclick="togglePause('inner')">⏸ PAUSE</button></div>
+    <div class="ctrl"><div class="ctrl-lbl">Ring offset <b id="vi">0°</b></div>
+      <input type="range" id="si" min="0" max="360" value="0"></div>
+    <div class="ctrl"><div class="ctrl-lbl">Icon base size <b id="vii">30</b></div>
+      <input type="range" id="sii" min="5" max="90" value="30"></div>
   </div>
 
-  <div class="sec" id="sec-middle">
-    <div class="sec-title" style="color:rgba(167,139,250,.9)">
-      MIDDLE RING
-      <button class="pause-btn" id="pb-middle" onclick="togglePause('middle')">⏸ PAUSE</button>
-    </div>
-    <div class="ctrl">
-      <label>Ring Position <span id="v-middle">0°</span></label>
-      <input type="range" id="sl-middle" min="0" max="360" value="0">
-    </div>
+  <div class="sec">
+    <div class="sec-hd" style="color:rgba(167,139,250,.85)">MIDDLE RING
+      <button class="pb" id="pb-m" onclick="togglePause('middle')">⏸ PAUSE</button></div>
+    <div class="ctrl"><div class="ctrl-lbl">Ring offset <b id="vm">0°</b></div>
+      <input type="range" id="sm" min="0" max="360" value="0"></div>
+    <div class="ctrl"><div class="ctrl-lbl">Icon base size <b id="vim">30</b></div>
+      <input type="range" id="sim" min="5" max="90" value="30"></div>
   </div>
 
-  <div class="sec" id="sec-outer">
-    <div class="sec-title" style="color:rgba(96,165,250,.9)">
-      OUTER RING
-      <button class="pause-btn" id="pb-outer" onclick="togglePause('outer')">⏸ PAUSE</button>
-    </div>
-    <div class="ctrl">
-      <label>Ring Position <span id="v-outer">0°</span></label>
-      <input type="range" id="sl-outer" min="0" max="360" value="0">
-    </div>
+  <div class="sec">
+    <div class="sec-hd" style="color:rgba(96,165,250,.85)">OUTER RING
+      <button class="pb" id="pb-o" onclick="togglePause('outer')">⏸ PAUSE</button></div>
+    <div class="ctrl"><div class="ctrl-lbl">Ring offset <b id="vo">0°</b></div>
+      <input type="range" id="so" min="0" max="360" value="0"></div>
+    <div class="ctrl"><div class="ctrl-lbl">Icon base size <b id="vio">30</b></div>
+      <input type="range" id="sio" min="5" max="90" value="30"></div>
   </div>
 
-  <button id="btn-copy" onclick="copyJSON()">📋 Copy Animation JSON</button>
+  <div class="sec">
+    <div class="sec-hd">⚡ EC CENTER SIZE</div>
+    <div class="ctrl"><div class="ctrl-lbl">Base size <b id="vec">88</b></div>
+      <input type="range" id="sec2" min="20" max="200" value="88"></div>
+  </div>
+
+  <div id="panel-footer">
+    <button class="pfbtn" id="btn-reset" onclick="resetCam()">↺ Reset to Default</button>
+    <button class="pfbtn" id="btn-copy" onclick="copyJSON()">📋 Copy Animation JSON</button>
+  </div>
 </div>
 
 <!-- ── Timeline ── -->
-<div id="timeline">
-  <div id="tl-track" id="tl-track">
+<div id="tl">
+  <div id="tl-track">
     <div id="tl-fill"></div>
-    <div id="tl-playhead"></div>
-    <!-- ruler + keyframes injected by JS -->
+    <div id="tl-head"></div>
   </div>
-  <div id="tl-controls">
-    <button class="tl-btn primary" onclick="addKeyframe()">+ ADD KF</button>
-    <button class="tl-btn danger"  onclick="deleteKeyframe()">✕ DEL</button>
-    <button class="tl-btn" onclick="prevKeyframe()">◄◄ PREV</button>
-    <button class="tl-btn" id="btn-play" onclick="togglePlay()">► PLAY</button>
-    <button class="tl-btn" onclick="stopPlayback()">■ STOP</button>
-    <button class="tl-btn" onclick="nextKeyframe()">NEXT ►►</button>
-    <span id="kf-count">0 keyframes</span>
-    <span id="time-display">0.0s</span>
+  <div id="tl-bar">
+    <button class="tb go" onclick="addKF()">+ ADD KF</button>
+    <button class="tb" onclick="prevKF()">◄◄</button>
+    <button class="tb" id="btn-play" onclick="togglePlay()">► PLAY</button>
+    <button class="tb" onclick="stopPlay()">■</button>
+    <button class="tb" onclick="nextKF()">▶▶</button>
+    <span id="kf-info">0 keyframes</span>
+    <span id="t-disp">0.0s</span>
   </div>
 </div>
 
 <script>
-// ═══════════════════════════════════════════════
+// ════════════════════════════════════════════════════
+// 3D MATH
+// ════════════════════════════════════════════════════
+const v3 = {
+  sub: (a,b)=>[a[0]-b[0],a[1]-b[1],a[2]-b[2]],
+  dot: (a,b)=>a[0]*b[0]+a[1]*b[1]+a[2]*b[2],
+  cross:(a,b)=>[a[1]*b[2]-a[2]*b[1], a[2]*b[0]-a[0]*b[2], a[0]*b[1]-a[1]*b[0]],
+  norm:(a)=>{const l=Math.sqrt(a[0]*a[0]+a[1]*a[1]+a[2]*a[2])||1;return[a[0]/l,a[1]/l,a[2]/l]},
+  len: (a)=>Math.sqrt(a[0]*a[0]+a[1]*a[1]+a[2]*a[2]),
+  scale:(a,s)=>[a[0]*s,a[1]*s,a[2]*s],
+};
+
+// ════════════════════════════════════════════════════
 // DATA
-// ═══════════════════════════════════════════════
+// ════════════════════════════════════════════════════
 const SVCS = [
   {name:"YT Automation",    icon:"🤖", orbit:"inner",  angle:0},
   {name:"Scriptwriting",    icon:"✍️",  orbit:"inner",  angle:120},
@@ -237,464 +248,549 @@ const SVCS = [
   {name:"Video Editing",    icon:"🎬", orbit:"outer",  angle:288},
 ];
 const ORB = {
-  inner:  {r:160, period:22000, col:[192,38,211]},
-  middle: {r:265, period:36000, col:[167,139,250]},
-  outer:  {r:375, period:52000, col:[96,165,250]},
+  inner:  {r:160, period:22000, col:[192,38,211],  iconSize:30},
+  middle: {r:265, period:36000, col:[167,139,250], iconSize:30},
+  outer:  {r:375, period:52000, col:[96,165,250],  iconSize:30},
 };
-const PERSP = 900;
-const DURATION = 20; // timeline seconds
+const FOCAL = 600; // perspective focal length
+const DURATION = 20;
 
-// ═══════════════════════════════════════════════
-// VIEW STATE  (what the camera sees right now)
-// ═══════════════════════════════════════════════
-const V = {
-  camAngle: 0,   // horizontal orbit rotation (rad)
-  camTilt:  0,   // 0=top-down, PI/2=side (rad)
-  camZoom:  0.6, // scale
-  offsetX:  0,   // px from viewport centre
-  offsetY:  0,
-};
-
+// ════════════════════════════════════════════════════
+// CAMERA STATE  (world-space position, lookat)
+// ════════════════════════════════════════════════════
+const DEFAULT_CAM = {x:0, y:0, z:800, lx:0, ly:0};
+const CAM = {...DEFAULT_CAM};
 const RING_STATE = {
-  inner:  {paused:false, offset:0, extraOffset:0},
-  middle: {paused:false, offset:0, extraOffset:0},
-  outer:  {paused:false, offset:0, extraOffset:0},
+  inner:  {paused:false, offset:0},
+  middle: {paused:false, offset:0},
+  outer:  {paused:false, offset:0},
 };
+let EC_BASE = 88;
 
-let cosT = 1, sinT = 0;
-let oCX  = 0, oCY = 0; // current orbit centre in px
-let startTime = null;
+// Live orbit angles (updated each frame)
 const angles = SVCS.map(s => s.angle * Math.PI/180);
+let startTime = null;
 
-// ═══════════════════════════════════════════════
-// KEYFRAMES
-// ═══════════════════════════════════════════════
-let keyframes   = [];   // [{id, time, state}]
-let selectedKF  = null;
-let currentTime = 0;    // seconds
-let playing     = false;
-let playWallStart = null;
-let playTimeStart = 0;
-let kfIdCounter = 0;
+// ════════════════════════════════════════════════════
+// 3D PROJECTION  (lookat camera)
+// ════════════════════════════════════════════════════
+let VM = null; // view matrix, recomputed each frame
 
-function captureState() {
-  return {
-    camAngle: V.camAngle,
-    camTilt:  V.camTilt,
-    camZoom:  V.camZoom,
-    offsetX:  V.offsetX,
-    offsetY:  V.offsetY,
-    inner:  RING_STATE.inner.extraOffset,
-    middle: RING_STATE.middle.extraOffset,
-    outer:  RING_STATE.outer.extraOffset,
-  };
+function buildVM() {
+  const eye    = [CAM.x, CAM.y, CAM.z];
+  const target = [CAM.lx, CAM.ly, 0];
+  let fwd = v3.norm(v3.sub(target, eye));
+  // Handle camera pointing straight up/down
+  const dot = Math.abs(v3.dot(fwd, [0,1,0]));
+  const worldUp = dot > 0.99 ? [0,0,fwd[1]>0?-1:1] : [0,1,0];
+  const right = v3.norm(v3.cross(fwd, worldUp));
+  const up    = v3.cross(right, fwd);
+  VM = {eye, fwd, right, up};
 }
 
-function applyState(s) {
-  V.camAngle = s.camAngle;
-  V.camTilt  = s.camTilt;
-  V.camZoom  = s.camZoom;
-  V.offsetX  = s.offsetX;
-  V.offsetY  = s.offsetY;
-  RING_STATE.inner.extraOffset  = s.inner  ?? 0;
-  RING_STATE.middle.extraOffset = s.middle ?? 0;
-  RING_STATE.outer.extraOffset  = s.outer  ?? 0;
-  syncSlidersFromV();
+function project3D(wx, wy, wz) {
+  if(!VM) return null;
+  const d  = v3.sub([wx,wy,wz], VM.eye);
+  const cx = v3.dot(d, VM.right);
+  const cy = v3.dot(d, VM.up);
+  const cz = v3.dot(d, VM.fwd);
+  if(cz <= 2) return null; // behind camera
+  const s = FOCAL / cz;
+  return {sx: cx*s, sy: -cy*s, depth: cz, scale: s};
 }
 
-function lerp(a,b,t){return a+(b-a)*t}
-function lerpAngle(a,b,t){
-  let d=b-a; d-=Math.round(d/(2*Math.PI))*2*Math.PI; return a+d*t;
-}
-function stateAtTime(t) {
-  const kfs = [...keyframes].sort((a,b)=>a.time-b.time);
-  if(!kfs.length) return captureState();
-  if(t<=kfs[0].time) return {...kfs[0].state};
-  if(t>=kfs[kfs.length-1].time) return {...kfs[kfs.length-1].state};
-  for(let i=0;i<kfs.length-1;i++){
-    if(t>=kfs[i].time && t<=kfs[i+1].time){
-      const a=(t-kfs[i].time)/(kfs[i+1].time-kfs[i].time);
-      const s1=kfs[i].state, s2=kfs[i+1].state;
-      return {
-        camAngle: lerpAngle(s1.camAngle,s2.camAngle,a),
-        camTilt:  lerp(s1.camTilt, s2.camTilt, a),
-        camZoom:  lerp(s1.camZoom, s2.camZoom, a),
-        offsetX:  lerp(s1.offsetX, s2.offsetX, a),
-        offsetY:  lerp(s1.offsetY, s2.offsetY, a),
-        inner:    lerpAngle(s1.inner,  s2.inner,  a),
-        middle:   lerpAngle(s1.middle, s2.middle, a),
-        outer:    lerpAngle(s1.outer,  s2.outer, a),
-      };
-    }
-  }
-  return captureState();
-}
-
-// ═══════════════════════════════════════════════
-// PROJECTION
-// ═══════════════════════════════════════════════
-function project(r, theta) {
-  const phi = theta + V.camAngle;
-  const x   =  r * Math.cos(phi);
-  const y   =  r * Math.sin(phi) * cosT;
-  const z   = -r * Math.sin(phi) * sinT;
-  const fov = PERSP / (PERSP - z);
-  return {sx: x*fov*V.camZoom, sy: y*fov*V.camZoom, depth:z};
-}
-
-// ═══════════════════════════════════════════════
-// CANVAS
-// ═══════════════════════════════════════════════
+// ════════════════════════════════════════════════════
+// CANVAS + DRAW
+// ════════════════════════════════════════════════════
 const canvas = document.getElementById('canvas');
 const ctx    = canvas.getContext('2d');
+const vp     = document.getElementById('vp');
+let W = 0, H = 0;
+
 function resize() {
-  const vp = document.getElementById('viewport');
-  canvas.width  = vp.offsetWidth;
-  canvas.height = vp.offsetHeight;
-  oCX = canvas.width/2  + V.offsetX;
-  oCY = canvas.height/2 + V.offsetY;
+  W = vp.offsetWidth; H = vp.offsetHeight;
+  canvas.width = W; canvas.height = H;
 }
 window.addEventListener('resize', resize);
 
 function drawRings() {
-  const W=canvas.width, H=canvas.height;
   ctx.clearRect(0,0,W,H);
-  oCX = W/2 + V.offsetX;
-  oCY = H/2 + V.offsetY;
-
-  // Update EC and blobs
-  const ec = document.getElementById('ec-center');
-  ec.style.left = oCX+'px'; ec.style.top = oCY+'px';
-  document.getElementById('b1').style.cssText+=`;left:${oCX-340}px;top:${oCY-300}px`;
-  document.getElementById('b2').style.cssText+=`;left:${oCX-60}px;top:${oCY-180}px`;
+  const cx = W/2, cy = H/2;
 
   ['outer','middle','inner'].forEach(k=>{
-    const {r,col}=ORB[k];
+    const {r, col} = ORB[k];
     ctx.save();
-    ctx.shadowColor=`rgba(${col},.85)`;ctx.shadowBlur=8;
-    ctx.strokeStyle=`rgba(${col},.55)`;ctx.lineWidth=1.5;
+    ctx.shadowColor = `rgba(${col},.9)`;
+    ctx.shadowBlur  = 10;
+    ctx.strokeStyle = `rgba(${col},.65)`;
+    ctx.lineWidth   = 1.5;
     ctx.beginPath();
-    for(let d=0;d<=360;d+=2){
-      const p=project(r,d*Math.PI/180);
-      const x=oCX+p.sx,y=oCY+p.sy;
-      d===0?ctx.moveTo(x,y):ctx.lineTo(x,y);
+    let started = false;
+    for(let d=0; d<=360; d+=2){
+      const p = project3D(r*Math.cos(d*Math.PI/180), r*Math.sin(d*Math.PI/180), 0);
+      if(!p){started=false; continue;}
+      const x=cx+p.sx, y=cy+p.sy;
+      if(!started){ctx.moveTo(x,y);started=true;}
+      else ctx.lineTo(x,y);
     }
-    ctx.closePath();ctx.stroke();ctx.restore();
+    ctx.stroke();
+    ctx.restore();
   });
 }
 
-function positionNodes() {
-  const sorted=SVCS.map((s,i)=>{
-    const p=project(ORB[s.orbit].r, angles[i]);
-    return {i,p,s};
-  }).sort((a,b)=>a.p.depth-b.p.depth);
+// ════════════════════════════════════════════════════
+// EC LOGO + NODES
+// ════════════════════════════════════════════════════
+const ecEl   = document.getElementById('ec');
+const nodesEl= document.getElementById('nodes');
+const nEls   = [], cEls = [], lEls = [];
 
-  sorted.forEach(({i,p,s},zo)=>{
-    const el=nodeEls[i];
-    const c=ORB[s.orbit].col;
-    const maxZ=ORB[s.orbit].r*sinT;
-    const relD=sinT>.01?(p.depth+maxZ)/(2*maxZ):.7;
-    const op=Math.max(.3,.3+relD*.7);
-    el.style.left=(oCX+p.sx)+'px';
-    el.style.top =(oCY+p.sy)+'px';
-    el.style.zIndex=20+zo;
-    el.style.opacity=op.toFixed(2);
-  });
-}
-
-// ═══════════════════════════════════════════════
-// BUILD NODES
-// ═══════════════════════════════════════════════
-const nc=document.getElementById('nodes-container');
-const nodeEls=[];
 SVCS.forEach((s,i)=>{
-  const c=ORB[s.orbit].col;
-  const el=document.createElement('div');
-  el.className='node';
-  el.innerHTML=`<div class="node-wrap">
-    <div class="node-circle" style="border-color:rgba(${c},.5);
-      box-shadow:0 0 10px rgba(${c},.3)"><span>${s.icon}</span></div>
-    <span class="node-label">${s.name}</span>
+  const col = ORB[s.orbit].col;
+  const el  = document.createElement('div');
+  el.className = 'nd';
+  el.innerHTML = `<div class="nd-wrap">
+    <div class="nd-circle" style="border-color:rgba(${col},.5);
+      box-shadow:0 0 10px rgba(${col},.28)"><span></span></div>
+    <span class="nd-label">${s.name}</span>
   </div>`;
-  nc.appendChild(el);nodeEls.push(el);
+  nodesEl.appendChild(el);
+  nEls.push(el);
+  cEls.push(el.querySelector('.nd-circle'));
+  lEls.push(el.querySelector('.nd-label'));
+  el.querySelector('span').textContent = s.icon;
 });
 
-// ═══════════════════════════════════════════════
+function updateElements() {
+  const cx = W/2, cy = H/2;
+
+  // EC logo
+  const pe = project3D(0,0,0);
+  if(pe){
+    const ecSize = EC_BASE * pe.scale;
+    ecEl.style.display = 'flex';
+    ecEl.style.left    = (cx+pe.sx)+'px';
+    ecEl.style.top     = (cy+pe.sy)+'px';
+    ecEl.style.width   = ecSize+'px';
+    ecEl.style.height  = ecSize+'px';
+    ecEl.style.fontSize= (ecSize*.24)+'px';
+    ecEl.style.zIndex  = Math.round(1000 - pe.depth);
+  } else {
+    ecEl.style.display = 'none';
+  }
+
+  // Blobs follow centre
+  const bx = cx + (pe ? pe.sx : 0);
+  const by = cy + (pe ? pe.sy : 0);
+  document.getElementById('b1').style.cssText = `width:500px;height:500px;background:rgba(192,38,211,.11);filter:blur(60px);z-index:1;pointer-events:none;position:absolute;left:${bx-350}px;top:${by-320}px`;
+  document.getElementById('b2').style.cssText = `width:580px;height:580px;background:rgba(37,99,235,.09);filter:blur(60px);z-index:1;pointer-events:none;position:absolute;left:${bx-80}px;top:${by-200}px`;
+
+  // Service nodes — sort back-to-front
+  const proj = SVCS.map((s,i)=>{
+    const r = ORB[s.orbit].r;
+    const p = project3D(r*Math.cos(angles[i]), r*Math.sin(angles[i]), 0);
+    return {i,p,s};
+  }).sort((a,b)=>(b.p?.depth??-1)-(a.p?.depth??-1));
+
+  proj.forEach(({i,p,s},zo)=>{
+    const el  = nEls[i];
+    const col = ORB[s.orbit].col;
+    if(!p){el.style.display='none';return;}
+    el.style.display = 'block';
+
+    const baseSize = ORB[s.orbit].iconSize;
+    const sz = Math.max(4, baseSize * p.scale);
+    const fs = Math.max(3, sz * 0.44);
+    const lblSize = Math.max(0, Math.min(12, sz * 0.30));
+
+    cEls[i].style.width    = sz+'px';
+    cEls[i].style.height   = sz+'px';
+    cEls[i].style.fontSize = fs+'px';
+
+    // Depth-based opacity
+    const maxD = Math.sqrt(CAM.x*CAM.x+CAM.y*CAM.y+CAM.z*CAM.z) + ORB[s.orbit].r;
+    const op = Math.max(.18, Math.min(1, (maxD - p.depth + ORB[s.orbit].r) / (2*ORB[s.orbit].r)));
+
+    el.style.left    = (cx+p.sx)+'px';
+    el.style.top     = (cy+p.sy)+'px';
+    el.style.zIndex  = 20 + zo;
+    el.style.opacity = op.toFixed(2);
+    lEls[i].style.fontSize = lblSize+'px';
+    lEls[i].style.opacity  = lblSize > 6 ? '1' : '0';
+  });
+}
+
+// ════════════════════════════════════════════════════
 // STARS
-// ═══════════════════════════════════════════════
+// ════════════════════════════════════════════════════
 (function(){
   function sr(s){let x=Math.sin(s*9301+49297)*233280;return x-Math.floor(x)}
   const sf=document.getElementById('sf');
   for(let i=0;i<70;i++){
     const sz=sr(i*12.1+.3)>.78?2:1;
-    const c=i%3===0?'rgba(192,38,211,.6)':i%3===1?'rgba(80,200,255,.5)':'rgba(255,255,255,.45)';
+    const c=i%3===0?'rgba(192,38,211,.65)':i%3===1?'rgba(80,200,255,.5)':'rgba(255,255,255,.45)';
     const d=document.createElement('div');
     d.style.cssText=`position:absolute;border-radius:50%;top:${(sr(i*4.71+1.3)*100).toFixed(2)}%;`
       +`left:${(sr(i*8.93+2.7)*100).toFixed(2)}%;width:${sz}px;height:${sz}px;background:${c};`
-      +`animation:twinkle ${(sr(i*2.83+1.1)*5+4).toFixed(1)}s ease-in-out ${(-(sr(i*6.57+3.9)*12)).toFixed(1)}s infinite`;
+      +`animation:tw ${(sr(i*2.83+1.1)*5+4).toFixed(1)}s ease-in-out ${(-(sr(i*6.57+3.9)*12)).toFixed(1)}s infinite`;
     sf.appendChild(d);
   }
 })();
 
-// ═══════════════════════════════════════════════
-// MOUSE INTERACTION
-// ═══════════════════════════════════════════════
-let drag={active:false,sx:0,sy:0,shift:false};
-const vp=document.getElementById('viewport');
+// ════════════════════════════════════════════════════
+// MOUSE: DRAG TO ORBIT / PAN, SCROLL TO DOLLY
+// ════════════════════════════════════════════════════
+let drag = {on:false, x:0, y:0, shift:false, cx:0,cy:0,cz:0, lx:0,ly:0};
 
-vp.addEventListener('mousedown',e=>{
-  drag={active:true,sx:e.clientX,sy:e.clientY,shift:e.shiftKey,
-        startAngle:V.camAngle,startTilt:V.camTilt,startX:V.offsetX,startY:V.offsetY};
-  vp.classList.add('dragging');
+vp.addEventListener('mousedown', e=>{
+  drag = {on:true, x:e.clientX, y:e.clientY, shift:e.shiftKey,
+    cx:CAM.x, cy:CAM.y, cz:CAM.z, lx:CAM.lx, ly:CAM.ly};
+  vp.classList.add('drag');
 });
-window.addEventListener('mousemove',e=>{
-  if(!drag.active)return;
-  const dx=e.clientX-drag.sx, dy=e.clientY-drag.sy;
+window.addEventListener('mousemove', e=>{
+  if(!drag.on) return;
+  const dx=e.clientX-drag.x, dy=e.clientY-drag.y;
   if(drag.shift){
-    V.offsetX=drag.startX+dx;
-    V.offsetY=drag.startY+dy;
-    document.getElementById('sl-x').value=Math.round(V.offsetX);
-    document.getElementById('sl-y').value=Math.round(V.offsetY);
-    document.getElementById('v-x').textContent=Math.round(V.offsetX);
-    document.getElementById('v-y').textContent=Math.round(V.offsetY);
+    // Pan look-at target
+    CAM.lx = drag.lx + dx * 0.6;
+    CAM.ly = drag.ly - dy * 0.6;
   } else {
-    V.camAngle=drag.startAngle+dx*0.008;
-    V.camTilt =Math.max(0,Math.min(Math.PI/2,drag.startTilt+dy*0.008));
-    const tDeg=Math.round(V.camTilt*180/Math.PI);
-    const rDeg=Math.round(((V.camAngle%(2*Math.PI))*180/Math.PI+360)%360-180);
-    document.getElementById('sl-tilt').value=tDeg;
-    document.getElementById('sl-rot').value =rDeg;
-    document.getElementById('v-tilt').textContent=tDeg+'°';
-    document.getElementById('v-rot').textContent =rDeg+'°';
+    // Orbit camera around look-at point
+    const dist = v3.len([drag.cx - CAM.lx, drag.cy - CAM.ly, drag.cz]);
+    let az = Math.atan2(drag.cx - CAM.lx, drag.cz) + dx * 0.009;
+    let el = Math.asin(Math.max(-0.98, Math.min(0.98,
+      (drag.cy - CAM.ly) / (dist||1)))) - dy * 0.009;
+    el = Math.max(-Math.PI/2+.01, Math.min(Math.PI/2-.01, el));
+    CAM.x = CAM.lx + dist * Math.cos(el) * Math.sin(az);
+    CAM.y = CAM.ly + dist * Math.sin(el);
+    CAM.z = dist * Math.cos(el) * Math.cos(az);
   }
+  syncPanelFromCam();
 });
-window.addEventListener('mouseup',()=>{drag.active=false;vp.classList.remove('dragging')});
-vp.addEventListener('wheel',e=>{
+window.addEventListener('mouseup', ()=>{drag.on=false; vp.classList.remove('drag')});
+
+vp.addEventListener('wheel', e=>{
   e.preventDefault();
-  const delta=e.deltaY>0?-30:30;
-  const newVal=Math.max(0,Math.min(1500,parseInt(document.getElementById('sl-zoom').value)+delta));
-  document.getElementById('sl-zoom').value=newVal;
-  V.camZoom=newVal/250;
-  document.getElementById('v-zoom').textContent=newVal;
+  const factor = e.deltaY > 0 ? 1.12 : 0.89;
+  // Dolly along camera forward axis
+  const dir = v3.norm([CAM.lx-CAM.x, CAM.ly-CAM.y, -CAM.z]);
+  const step = 60 * (e.deltaY > 0 ? 1 : -1);
+  CAM.x += dir[0]*step; CAM.y += dir[1]*step; CAM.z += dir[2]*step;
+  syncPanelFromCam();
 },{passive:false});
 
-// ═══════════════════════════════════════════════
-// SLIDERS → VIEW
-// ═══════════════════════════════════════════════
-function bindSlider(id,valId,fn){
-  document.getElementById(id).addEventListener('input',function(){
-    document.getElementById(valId).textContent=this.value+(valId.startsWith('v-tilt')||valId.startsWith('v-rot')||valId.startsWith('v-inner')||valId.startsWith('v-middle')||valId.startsWith('v-outer')?'°':'');
-    fn(parseFloat(this.value));
+// ════════════════════════════════════════════════════
+// PANEL SLIDERS ↔ CAM
+// ════════════════════════════════════════════════════
+function sl(id, valId, suffix, fn){
+  const el=document.getElementById(id);
+  el.addEventListener('input',()=>{
+    document.getElementById(valId).textContent=el.value+(suffix||'');
+    fn(parseFloat(el.value));
   });
 }
-bindSlider('sl-zoom','v-zoom', v=>{V.camZoom=v/250});
-bindSlider('sl-x',  'v-x',    v=>{V.offsetX=v});
-bindSlider('sl-y',  'v-y',    v=>{V.offsetY=v});
-bindSlider('sl-tilt','v-tilt',v=>{V.camTilt=v*Math.PI/180});
-bindSlider('sl-rot', 'v-rot', v=>{V.camAngle=v*Math.PI/180});
-bindSlider('sl-inner', 'v-inner', v=>{RING_STATE.inner.extraOffset=v*Math.PI/180});
-bindSlider('sl-middle','v-middle',v=>{RING_STATE.middle.extraOffset=v*Math.PI/180});
-bindSlider('sl-outer', 'v-outer', v=>{RING_STATE.outer.extraOffset=v*Math.PI/180});
+sl('sx','vx','',  v=>{CAM.x=v});
+sl('sy','vy','',  v=>{CAM.y=v});
+sl('sz','vz','',  v=>{CAM.z=v});
+sl('slx','vlx','',v=>{CAM.lx=v});
+sl('sly','vly','',v=>{CAM.ly=v});
+sl('si','vi','°', v=>{RING_STATE.inner.offset=v*Math.PI/180});
+sl('sm','vm','°', v=>{RING_STATE.middle.offset=v*Math.PI/180});
+sl('so','vo','°', v=>{RING_STATE.outer.offset=v*Math.PI/180});
+sl('sii','vii','',v=>{ORB.inner.iconSize=v});
+sl('sim','vim','',v=>{ORB.middle.iconSize=v});
+sl('sio','vio','',v=>{ORB.outer.iconSize=v});
+sl('sec2','vec','',v=>{EC_BASE=v});
 
-function syncSlidersFromV(){
-  const zoom=Math.round(V.camZoom*250);
-  document.getElementById('sl-zoom').value=zoom;
-  document.getElementById('v-zoom').textContent=zoom;
-  document.getElementById('sl-x').value=Math.round(V.offsetX);
-  document.getElementById('v-x').textContent=Math.round(V.offsetX);
-  document.getElementById('sl-y').value=Math.round(V.offsetY);
-  document.getElementById('v-y').textContent=Math.round(V.offsetY);
-  const td=Math.round(V.camTilt*180/Math.PI);
-  const rd=Math.round(((V.camAngle%(2*Math.PI))*180/Math.PI+360)%360-180);
-  document.getElementById('sl-tilt').value=td;document.getElementById('v-tilt').textContent=td+'°';
-  document.getElementById('sl-rot').value=rd; document.getElementById('v-rot').textContent=rd+'°';
-  const id=Math.round(RING_STATE.inner.extraOffset*180/Math.PI);
-  const md=Math.round(RING_STATE.middle.extraOffset*180/Math.PI);
-  const od=Math.round(RING_STATE.outer.extraOffset*180/Math.PI);
-  document.getElementById('sl-inner').value=((id%360)+360)%360;
-  document.getElementById('v-inner').textContent=((id%360)+360)%360+'°';
-  document.getElementById('sl-middle').value=((md%360)+360)%360;
-  document.getElementById('v-middle').textContent=((md%360)+360)%360+'°';
-  document.getElementById('sl-outer').value=((od%360)+360)%360;
-  document.getElementById('v-outer').textContent=((od%360)+360)%360+'°';
+function syncPanelFromCam() {
+  const set=(id,valId,v,sfx)=>{
+    document.getElementById(id).value=Math.round(v);
+    document.getElementById(valId).textContent=Math.round(v)+(sfx||'');
+  };
+  set('sx','vx',CAM.x); set('sy','vy',CAM.y); set('sz','vz',CAM.z);
+  set('slx','vlx',CAM.lx); set('sly','vly',CAM.ly);
+  set('si','vi',RING_STATE.inner.offset*180/Math.PI,'°');
+  set('sm','vm',RING_STATE.middle.offset*180/Math.PI,'°');
+  set('so','vo',RING_STATE.outer.offset*180/Math.PI,'°');
+  set('sii','vii',ORB.inner.iconSize); set('sim','vim',ORB.middle.iconSize); set('sio','vio',ORB.outer.iconSize);
+  set('sec2','vec',EC_BASE);
 }
 
 function togglePause(ring){
   RING_STATE[ring].paused=!RING_STATE[ring].paused;
-  const btn=document.getElementById('pb-'+ring);
-  btn.classList.toggle('paused',RING_STATE[ring].paused);
+  const btn=document.getElementById('pb-'+ring[0]);
+  btn.classList.toggle('on',RING_STATE[ring].paused);
   btn.textContent=RING_STATE[ring].paused?'▶ PLAY':'⏸ PAUSE';
 }
 
-// ═══════════════════════════════════════════════
-// TIMELINE  UI
-// ═══════════════════════════════════════════════
-const track=document.getElementById('tl-track');
+function resetCam(){
+  Object.assign(CAM, DEFAULT_CAM);
+  RING_STATE.inner.offset=0; RING_STATE.middle.offset=0; RING_STATE.outer.offset=0;
+  ORB.inner.iconSize=30; ORB.middle.iconSize=30; ORB.outer.iconSize=30;
+  EC_BASE=88;
+  ['pb-i','pb-m','pb-o'].forEach(id=>{
+    document.getElementById(id).classList.remove('on');
+    document.getElementById(id).textContent='⏸ PAUSE';
+  });
+  RING_STATE.inner.paused=RING_STATE.middle.paused=RING_STATE.outer.paused=false;
+  syncPanelFromCam();
+}
+
+// ════════════════════════════════════════════════════
+// KEYFRAME SYSTEM
+// ════════════════════════════════════════════════════
+let keyframes = [], selKF = null, curT = 0, playing = false;
+let playWall = null, playT0 = 0;
+let kfId = 0;
+
+function captureState(){
+  return {
+    cx:CAM.x, cy:CAM.y, cz:CAM.z, lx:CAM.lx, ly:CAM.ly,
+    io:RING_STATE.inner.offset, mo:RING_STATE.middle.offset, oo:RING_STATE.outer.offset,
+    isi:ORB.inner.iconSize, msi:ORB.middle.iconSize, osi:ORB.outer.iconSize,
+    ec:EC_BASE
+  };
+}
+
+function applyState(s){
+  CAM.x=s.cx; CAM.y=s.cy; CAM.z=s.cz; CAM.lx=s.lx; CAM.ly=s.ly;
+  RING_STATE.inner.offset=s.io; RING_STATE.middle.offset=s.mo; RING_STATE.outer.offset=s.oo;
+  ORB.inner.iconSize=s.isi; ORB.middle.iconSize=s.msi; ORB.outer.iconSize=s.osi;
+  EC_BASE=s.ec;
+  syncPanelFromCam();
+}
+
+// Easing
+const EASING = {
+  linear: t=>t,
+  ease:   t=>t<.5?2*t*t:1-Math.pow(-2*t+2,2)/2,      // ease-in-out quad
+  spring: t=>t<.5?4*t*t*t:(t-1)*(2*t-2)*(2*t-2)+1,   // ease-in-out cubic
+};
+let activeEase = 'ease';
+
+// Build easing selector
+document.querySelectorAll('.ease-opt').forEach(btn=>{
+  btn.addEventListener('click',()=>{
+    document.querySelectorAll('.ease-opt').forEach(b=>b.classList.remove('active'));
+    btn.classList.add('active');
+    activeEase = btn.dataset.ease;
+  });
+});
+
+function lerp(a,b,t){return a+(b-a)*t}
+function lerpA(a,b,t){let d=b-a;d-=Math.round(d/(2*Math.PI))*2*Math.PI;return a+d*t}
+function lerpState(s1,s2,t){
+  const e=EASING[activeEase](t);
+  return {
+    cx:lerp(s1.cx,s2.cx,e), cy:lerp(s1.cy,s2.cy,e), cz:lerp(s1.cz,s2.cz,e),
+    lx:lerp(s1.lx,s2.lx,e), ly:lerp(s1.ly,s2.ly,e),
+    io:lerpA(s1.io,s2.io,e), mo:lerpA(s1.mo,s2.mo,e), oo:lerpA(s1.oo,s2.oo,e),
+    isi:lerp(s1.isi,s2.isi,e), msi:lerp(s1.msi,s2.msi,e), osi:lerp(s1.osi,s2.osi,e),
+    ec:lerp(s1.ec,s2.ec,e)
+  };
+}
+
+function stateAt(t){
+  const kfs=[...keyframes].sort((a,b)=>a.t-b.t);
+  if(!kfs.length) return captureState();
+  if(kfs.length===1||t<=kfs[0].t) return {...kfs[0].s};
+  if(t>=kfs[kfs.length-1].t) return {...kfs[kfs.length-1].s};
+  for(let i=0;i<kfs.length-1;i++){
+    if(t>=kfs[i].t && t<=kfs[i+1].t){
+      const alpha=(t-kfs[i].t)/(kfs[i+1].t-kfs[i].t);
+      return lerpState(kfs[i].s, kfs[i+1].s, alpha);
+    }
+  }
+  return captureState();
+}
+
+// ════════════════════════════════════════════════════
+// TIMELINE
+// ════════════════════════════════════════════════════
+const track = document.getElementById('tl-track');
+let trackW  = 0;
 
 function buildRuler(){
-  // Remove old ticks
+  trackW = track.offsetWidth;
   track.querySelectorAll('.tick').forEach(t=>t.remove());
-  const W=track.offsetWidth;
   for(let s=0;s<=DURATION;s++){
     const t=document.createElement('div');
     t.className='tick';
     t.style.left=(s/DURATION*100)+'%';
-    const h=s%5===0?18:s%2===0?10:6;
-    t.innerHTML=`<div class="tick-line" style="height:${h}px"></div>`
-      +(s%5===0?`<div class="tick-label">${s}s</div>`:'');
+    const h=s%5===0?18:s%2===0?10:5;
+    t.innerHTML=`<div class="tick-ln" style="height:${h}px"></div>`
+      +(s%5===0?`<div class="tick-lb">${s}s</div>`:'');
     track.appendChild(t);
   }
 }
 
-function renderKFMarkers(){
-  track.querySelectorAll('.kf-marker').forEach(m=>m.remove());
+function renderKFs(){
+  track.querySelectorAll('.kfm-wrap').forEach(e=>e.remove());
   keyframes.forEach(kf=>{
+    const wrap=document.createElement('div');
+    wrap.className='kfm-wrap';
+    wrap.style.cssText=`position:absolute;top:50%;transform:translateY(-50%);left:${kf.t/DURATION*100}%`;
     const m=document.createElement('div');
-    m.className='kf-marker kf-mixed';
-    m.style.left=(kf.time/DURATION*100)+'%';
-    m.title=kf.time.toFixed(1)+'s';
-    m.dataset.id=kf.id;
-    m.classList.toggle('selected',selectedKF===kf.id);
-    m.addEventListener('click',e=>{
-      e.stopPropagation();
-      selectedKF=kf.id;
-      renderKFMarkers();
-      seekTo(kf.time);
-    });
-    // Drag keyframe in time
-    let dg=false,startX=0,startT=0;
-    m.addEventListener('mousedown',e=>{
-      dg=true;startX=e.clientX;startT=kf.time;
-      e.stopPropagation();
-    });
+    m.className='kfm'+(kf.id===selKF?' sel':'');
+    m.style.background=`rgb(192,38,211)`;
+    m.title=kf.t.toFixed(2)+'s';
+    // Delete button (blue dot)
+    const del=document.createElement('button');
+    del.className='kfm-del';del.textContent='✕';
+    del.onclick=e=>{e.stopPropagation();keyframes=keyframes.filter(k=>k.id!==kf.id);
+      if(selKF===kf.id)selKF=null;renderKFs();updateKFInfo();};
+    // Click to select & seek
+    m.onclick=e=>{e.stopPropagation();selKF=kf.id;seek(kf.t);renderKFs();};
+    // Drag to reposition in time
+    let dg=false,dx0=0,t0=0;
+    m.addEventListener('mousedown',e=>{dg=true;dx0=e.clientX;t0=kf.t;e.stopPropagation();});
     window.addEventListener('mousemove',e=>{
       if(!dg)return;
-      const dx=e.clientX-startX;
-      const newT=Math.max(0,Math.min(DURATION,startT+dx/track.offsetWidth*DURATION));
-      kf.time=parseFloat(newT.toFixed(2));
-      m.style.left=(kf.time/DURATION*100)+'%';
-      m.title=kf.time.toFixed(1)+'s';
+      const dt=(e.clientX-dx0)/track.offsetWidth*DURATION;
+      kf.t=Math.max(0,Math.min(DURATION,t0+dt));
+      wrap.style.left=(kf.t/DURATION*100)+'%';
+      m.title=kf.t.toFixed(2)+'s';
     });
     window.addEventListener('mouseup',()=>dg=false);
-    track.appendChild(m);
+    wrap.appendChild(del);wrap.appendChild(m);
+    track.appendChild(wrap);
   });
-  document.getElementById('kf-count').textContent=keyframes.length+' keyframe'+(keyframes.length!==1?'s':'');
+  updateKFInfo();
 }
 
-function seekTo(t){
-  currentTime=Math.max(0,Math.min(DURATION,t));
-  document.getElementById('tl-playhead').style.left=(currentTime/DURATION*100)+'%';
-  document.getElementById('tl-fill').style.width=(currentTime/DURATION*100)+'%';
-  document.getElementById('time-display').textContent=currentTime.toFixed(1)+'s';
-  if(keyframes.length>=2) applyState(stateAtTime(currentTime));
+function updateKFInfo(){
+  document.getElementById('kf-info').textContent=keyframes.length+' KF'+(keyframes.length!==1?'s':'');
+}
+
+function seek(t){
+  curT=Math.max(0,Math.min(DURATION,t));
+  document.getElementById('tl-head').style.left=(curT/DURATION*100)+'%';
+  document.getElementById('tl-fill').style.width=(curT/DURATION*100)+'%';
+  document.getElementById('t-disp').textContent=curT.toFixed(1)+'s';
+  if(keyframes.length>=1) applyState(stateAt(curT));
 }
 
 track.addEventListener('click',e=>{
-  const rect=track.getBoundingClientRect();
-  seekTo((e.clientX-rect.left)/rect.width*DURATION);
+  const r=track.getBoundingClientRect();
+  seek((e.clientX-r.left)/r.width*DURATION);
 });
 
-// ═══════════════════════════════════════════════
+// ════════════════════════════════════════════════════
 // KEYFRAME ACTIONS
-// ═══════════════════════════════════════════════
-function addKeyframe(){
-  const kf={id:kfIdCounter++,time:currentTime,state:captureState()};
-  // Replace if there's one very close
-  const existing=keyframes.find(k=>Math.abs(k.time-currentTime)<0.15);
-  if(existing){existing.state=captureState();}else{keyframes.push(kf);}
-  selectedKF=(existing??kf).id;
-  renderKFMarkers();
+// ════════════════════════════════════════════════════
+function addKF(){
+  // Replace if too close in time
+  const ex=keyframes.find(k=>Math.abs(k.t-curT)<0.12);
+  if(ex){ex.s=captureState();selKF=ex.id;}
+  else{const kf={id:kfId++,t:curT,s:captureState()};keyframes.push(kf);selKF=kf.id;}
+  renderKFs();
 }
-function deleteKeyframe(){
-  if(selectedKF===null)return;
-  keyframes=keyframes.filter(k=>k.id!==selectedKF);
-  selectedKF=null;
-  renderKFMarkers();
+function prevKF(){
+  const sorted=[...keyframes].sort((a,b)=>a.t-b.t);
+  const p=sorted.filter(k=>k.t<curT-0.05).pop();
+  if(p){selKF=p.id;seek(p.t);renderKFs();}
 }
-function prevKeyframe(){
-  const sorted=[...keyframes].sort((a,b)=>a.time-b.time);
-  const prev=sorted.filter(k=>k.time<currentTime-0.05).pop();
-  if(prev){selectedKF=prev.id;seekTo(prev.time);renderKFMarkers();}
-}
-function nextKeyframe(){
-  const sorted=[...keyframes].sort((a,b)=>a.time-b.time);
-  const nxt=sorted.find(k=>k.time>currentTime+0.05);
-  if(nxt){selectedKF=nxt.id;seekTo(nxt.time);renderKFMarkers();}
+function nextKF(){
+  const sorted=[...keyframes].sort((a,b)=>a.t-b.t);
+  const n=sorted.find(k=>k.t>curT+0.05);
+  if(n){selKF=n.id;seek(n.t);renderKFs();}
 }
 function togglePlay(){
+  if(keyframes.length<2){alert('Add at least 2 keyframes first.');return;}
   playing=!playing;
   document.getElementById('btn-play').textContent=playing?'⏸ PAUSE':'► PLAY';
+  document.getElementById('btn-play').classList.toggle('go',playing);
   if(playing){
-    if(currentTime>=DURATION) seekTo(0);
-    playWallStart=performance.now();
-    playTimeStart=currentTime;
+    if(curT>=DURATION) seek(0);
+    playWall=performance.now();
+    playT0=curT;
   }
 }
-function stopPlayback(){
+function stopPlay(){
   playing=false;
   document.getElementById('btn-play').textContent='► PLAY';
-  seekTo(0);
+  document.getElementById('btn-play').classList.remove('go');
+  seek(0);
 }
 
-// ═══════════════════════════════════════════════
-// EXPORT JSON
-// ═══════════════════════════════════════════════
+// ════════════════════════════════════════════════════
+// EXPORT
+// ════════════════════════════════════════════════════
 function copyJSON(){
-  const sorted=[...keyframes].sort((a,b)=>a.time-b.time);
+  const kfs=[...keyframes].sort((a,b)=>a.t-b.t);
   const out={
-    tool:'EC Keyframe Tool',
+    tool:'EC Keyframe Tool v2',
     duration:DURATION,
-    keyframes:sorted.map((kf,i)=>({
-      index:i+1,
-      time_sec:kf.time,
-      camTilt_deg:Math.round(kf.state.camTilt*180/Math.PI),
-      camZoom:parseFloat(kf.state.camZoom.toFixed(2)),
-      camAngle_deg:Math.round(((kf.state.camAngle%(2*Math.PI))*180/Math.PI+360)%360),
-      offsetX:Math.round(kf.state.offsetX),
-      offsetY:Math.round(kf.state.offsetY),
-      innerRingOffset_deg:Math.round(kf.state.inner*180/Math.PI),
-      middleRingOffset_deg:Math.round(kf.state.middle*180/Math.PI),
-      outerRingOffset_deg:Math.round(kf.state.outer*180/Math.PI),
+    easing:activeEase,
+    keyframes:kfs.map((kf,i)=>({
+      '#':i+1,
+      time_sec:parseFloat(kf.t.toFixed(2)),
+      camera:{x:Math.round(kf.s.cx),y:Math.round(kf.s.cy),z:Math.round(kf.s.cz)},
+      lookat:{x:Math.round(kf.s.lx),y:Math.round(kf.s.ly)},
+      rings:{
+        inner:{offset_deg:Math.round(kf.s.io*180/Math.PI),iconSize:Math.round(kf.s.isi)},
+        middle:{offset_deg:Math.round(kf.s.mo*180/Math.PI),iconSize:Math.round(kf.s.msi)},
+        outer:{offset_deg:Math.round(kf.s.oo*180/Math.PI),iconSize:Math.round(kf.s.osi)},
+      },
+      ecSize:Math.round(kf.s.ec)
     }))
   };
-  const txt=JSON.stringify(out,null,2);
-  navigator.clipboard.writeText(txt).then(()=>{
-    const btn=document.getElementById('btn-copy');
-    btn.textContent='✓ Copied!';
-    setTimeout(()=>btn.textContent='📋 Copy Animation JSON',2000);
+  navigator.clipboard.writeText(JSON.stringify(out,null,2)).then(()=>{
+    const b=document.getElementById('btn-copy');
+    b.textContent='✓ Copied to clipboard!';
+    setTimeout(()=>b.textContent='📋 Copy Animation JSON',2500);
   });
 }
 
-// ═══════════════════════════════════════════════
-// MAIN LOOP
-// ═══════════════════════════════════════════════
+// ════════════════════════════════════════════════════
+// TICK
+// ════════════════════════════════════════════════════
 function tick(ts){
-  if(!startTime){startTime=ts;resize();buildRuler();}
-  const elapsed=ts-startTime;
+  if(!startTime){
+    startTime=ts; resize(); buildRuler(); syncPanelFromCam();
+    // Add easing buttons dynamically
+    const sec=document.createElement('div');
+    sec.className='sec';
+    sec.innerHTML=`<div class="sec-hd">KEYFRAME EASING</div>
+    <div class="ease-row">
+      <button class="ease-opt active" data-ease="ease">EASE</button>
+      <button class="ease-opt" data-ease="spring">SPRING</button>
+      <button class="ease-opt" data-ease="linear">LINEAR</button>
+    </div>`;
+    document.getElementById('panel-footer').before(sec);
+    document.querySelectorAll('.ease-opt').forEach(btn=>{
+      btn.addEventListener('click',()=>{
+        document.querySelectorAll('.ease-opt').forEach(b=>b.classList.remove('active'));
+        btn.classList.add('active'); activeEase=btn.dataset.ease;
+      });
+    });
+  }
+  const elapsed = ts - startTime;
 
-  // Advance playing timeline
-  if(playing && keyframes.length>=2){
-    const wallElapsed=(ts-playWallStart)/1000;
-    const t=playTimeStart+wallElapsed;
-    if(t>=DURATION){playing=false;document.getElementById('btn-play').textContent='► PLAY';seekTo(DURATION);}
-    else{seekTo(t);applyState(stateAtTime(t));}
+  // Playback
+  if(playing){
+    const t = playT0 + (ts - playWall) / 1000;
+    if(t >= DURATION){playing=false;document.getElementById('btn-play').textContent='► PLAY';
+      document.getElementById('btn-play').classList.remove('go');seek(DURATION);}
+    else{
+      curT = t;
+      document.getElementById('tl-head').style.left=(curT/DURATION*100)+'%';
+      document.getElementById('tl-fill').style.width=(curT/DURATION*100)+'%';
+      document.getElementById('t-disp').textContent=curT.toFixed(1)+'s';
+      applyState(stateAt(curT));
+    }
   }
 
-  // Advance orbit angles (respecting pause)
+  // Orbit angles
   SVCS.forEach((s,i)=>{
-    const rs=RING_STATE[s.orbit];
-    if(!rs.paused){
-      angles[i]=s.angle*Math.PI/180+(elapsed/ORB[s.orbit].period)*2*Math.PI+rs.extraOffset;
-    } else {
-      angles[i]=s.angle*Math.PI/180+rs.extraOffset;
-    }
+    const rs = RING_STATE[s.orbit];
+    const base = s.angle * Math.PI/180 + rs.offset;
+    angles[i] = rs.paused ? base : base + (elapsed / ORB[s.orbit].period) * 2 * Math.PI;
   });
 
-  cosT=Math.cos(V.camTilt);
-  sinT=Math.sin(V.camTilt);
-
+  buildVM();
   drawRings();
-  positionNodes();
+  updateElements();
   requestAnimationFrame(tick);
 }
 
