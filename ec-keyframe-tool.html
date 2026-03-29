@@ -131,6 +131,28 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:12px;heigh
   font-size:9px;font-weight:700;letter-spacing:.04em;cursor:pointer;
   text-align:center;font-family:inherit;transition:background .2s}
 .ease-opt.active{background:rgba(192,38,211,.25);border-color:rgba(192,38,211,.5);color:#fff}
+
+/* ── KF comment panel ── */
+#kf-comment-box{display:none;padding:10px 14px;border-bottom:1px solid rgba(255,255,255,.06);
+  flex-shrink:0}
+#kf-comment-box.vis{display:block}
+#kf-comment-box label{font-size:9px;font-weight:700;letter-spacing:.18em;text-transform:uppercase;
+  color:rgba(59,130,246,.8);display:block;margin-bottom:6px}
+#kf-comment-box small{font-size:10px;color:rgba(255,255,255,.3);display:block;margin-bottom:6px}
+#kf-comment{width:100%;background:rgba(255,255,255,.05);border:1px solid rgba(59,130,246,.3);
+  border-radius:8px;color:#fff;font-family:'Space Grotesk',sans-serif;
+  font-size:12px;line-height:1.5;padding:8px 10px;resize:vertical;min-height:64px;
+  outline:none;transition:border-color .2s}
+#kf-comment:focus{border-color:rgba(59,130,246,.7)}
+#kf-comment-time{font-size:10px;color:rgba(255,255,255,.35);margin-top:5px}
+
+/* ── Comment label above KF marker ── */
+.kfm-comment{position:absolute;bottom:100%;left:50%;transform:translateX(-50%);
+  margin-bottom:4px;background:rgba(59,130,246,.85);color:#fff;
+  font-size:9px;font-weight:700;font-family:'Space Grotesk',sans-serif;
+  padding:2px 6px;border-radius:4px;white-space:nowrap;max-width:120px;
+  overflow:hidden;text-overflow:ellipsis;pointer-events:none;
+  box-shadow:0 2px 8px rgba(0,0,0,.5)}
 </style>
 </head>
 <body>
