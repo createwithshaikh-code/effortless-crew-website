@@ -699,6 +699,26 @@ function updateKFInfo(){
   document.getElementById('kf-info').textContent=keyframes.length+' KF'+(keyframes.length!==1?'s':'');
 }
 
+// ── Comment box ──
+const commentBox  = document.getElementById('kf-comment-box');
+const commentArea = document.getElementById('kf-comment');
+const commentTime = document.getElementById('kf-comment-time');
+let commentKFId   = null;
+
+function showCommentBox(kf){
+  if(!kf){commentBox.classList.remove('vis');commentKFId=null;return;}
+  commentKFId = kf.id;
+  commentArea.value = kf.comment||'';
+  commentTime.textContent = '@ '+kf.t.toFixed(2)+'s';
+  commentBox.classList.add('vis');
+  commentBox.scrollIntoView({behavior:'smooth',block:'nearest'});
+}
+
+commentArea.addEventListener('input', ()=>{
+  const kf = keyframes.find(k=>k.id===commentKFId);
+  if(kf){kf.comment=commentArea.value; renderKFs();}
+});
+
 function seek(t){
   curT=Math.max(0,Math.min(DURATION,t));
   document.getElementById('tl-head').style.left=(curT/DURATION*100)+'%';
