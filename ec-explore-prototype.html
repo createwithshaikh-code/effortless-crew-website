@@ -3,167 +3,183 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>EC — Explore Orbit v3</title>
+<title>EC — Explore Orbit</title>
 <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 body{background:#020210;color:#fff;font-family:'Space Grotesk',sans-serif;overflow:hidden;height:100vh;width:100vw}
 
-canvas{position:fixed;inset:0;pointer-events:none;z-index:1}
+canvas{position:fixed;inset:0;pointer-events:none;z-index:2}
 
-#starwrap{position:fixed;inset:0;pointer-events:none;overflow:hidden;z-index:0}
+/* Stars */
+#starwrap{position:fixed;inset:0;pointer-events:none;overflow:hidden;z-index:1}
 .sf{position:absolute;top:-30%;left:-30%;width:160%;height:160%;animation:spincw 360s linear infinite}
 @keyframes spincw{to{transform:rotate(360deg)}}
-@keyframes twinkle{0%,100%{opacity:.85}50%{opacity:.07}}
+@keyframes twinkle{0%,100%{opacity:.85}50%{opacity:.06}}
 
-.blob{position:fixed;border-radius:50%;pointer-events:none;filter:blur(40px);z-index:0}
+/* Glow blobs */
+.blob{position:fixed;border-radius:50%;pointer-events:none;z-index:1}
 
-/* ── Center logo ── */
+/* EC Center */
 #ec-center{
-  position:fixed;left:50%;top:50%;transform:translate(-50%,-50%);
-  width:108px;height:108px;border-radius:50%;
-  background:radial-gradient(circle at 40% 40%,rgba(10,20,50,.97),rgba(2,2,16,1));
+  position:fixed;transform:translate(-50%,-50%);
+  border-radius:50%;
+  background:radial-gradient(circle at 38% 38%,rgba(10,20,55,.97),rgba(2,2,16,1));
   border:1.5px solid rgba(80,200,255,.50);
-  box-shadow:0 0 32px rgba(80,200,255,.35),0 0 70px rgba(80,200,255,.15);
   display:flex;align-items:center;justify-content:center;
-  font-size:26px;font-weight:900;letter-spacing:-1px;
-  text-shadow:0 0 20px rgba(80,200,255,.8);
-  z-index:50;animation:sun-pulse 3s ease-in-out infinite;user-select:none
+  font-weight:900;letter-spacing:-1.5px;color:rgba(255,255,255,.92);
+  text-shadow:0 0 18px rgba(80,200,255,.8);
+  z-index:55;animation:sun-pulse 3s ease-in-out infinite;user-select:none;
+  transition:width .9s cubic-bezier(.23,1,.32,1),height .9s cubic-bezier(.23,1,.32,1),
+             font-size .9s cubic-bezier(.23,1,.32,1),
+             left .9s cubic-bezier(.23,1,.32,1),top .9s cubic-bezier(.23,1,.32,1)
 }
 @keyframes sun-pulse{
   0%,100%{box-shadow:0 0 32px rgba(80,200,255,.35),0 0 70px rgba(80,200,255,.15)}
-  50%{box-shadow:0 0 50px rgba(80,200,255,.55),0 0 100px rgba(80,200,255,.25)}
+  50%{box-shadow:0 0 52px rgba(80,200,255,.6),0 0 110px rgba(80,200,255,.28)}
 }
 
-/* ── Nodes ── */
-.node{position:fixed;pointer-events:auto;cursor:pointer;z-index:20;will-change:left,top,opacity}
-.node-wrap{display:flex;flex-direction:column;align-items:center;gap:5px;transform:translate(-50%,-50%)}
+/* Nodes */
+.node{position:fixed;pointer-events:auto;cursor:pointer;z-index:20}
+.node-wrap{display:flex;flex-direction:column;align-items:center;gap:6px;transform:translate(-50%,-50%)}
 .node-circle{
   border-radius:50%;background:rgba(8,8,28,.92);
   display:flex;align-items:center;justify-content:center;
-  transition:width .3s,height .3s,font-size .3s,box-shadow .4s;
-  flex-shrink:0;width:40px;height:40px;font-size:17px
+  flex-shrink:0;line-height:1;
+  transition:width .65s cubic-bezier(.23,1,.32,1),
+             height .65s cubic-bezier(.23,1,.32,1),
+             font-size .65s cubic-bezier(.23,1,.32,1),
+             box-shadow .65s cubic-bezier(.23,1,.32,1),
+             border-color .5s,opacity .5s
 }
 .node-label{
-  font-size:10px;font-weight:600;color:rgba(255,255,255,.72);
-  white-space:nowrap;letter-spacing:.02em;line-height:1;
-  text-shadow:0 1px 6px rgba(0,0,0,.9);pointer-events:none
-}
-.node.active .node-circle{
-  width:52px;height:52px;font-size:22px;
-  animation:node-pulse 2s ease-in-out infinite
-}
-@keyframes node-pulse{
-  0%,100%{box-shadow:0 0 20px var(--nc),0 0 40px var(--nc-lo)}
-  50%{box-shadow:0 0 36px var(--nc),0 0 64px var(--nc-lo)}
+  font-weight:700;color:rgba(255,255,255,.82);
+  white-space:nowrap;letter-spacing:.01em;line-height:1;
+  text-shadow:0 2px 8px rgba(0,0,0,.95);pointer-events:none;
+  transition:font-size .65s cubic-bezier(.23,1,.32,1),opacity .4s
 }
 
-/* ── Navbar ── */
+/* Navbar */
 nav{
   position:fixed;top:0;left:0;right:0;z-index:100;
   display:flex;align-items:center;justify-content:space-between;
   padding:18px 48px;
-  background:rgba(2,2,16,.65);backdrop-filter:blur(12px);
+  background:rgba(2,2,16,.60);backdrop-filter:blur(12px);
   border-bottom:1px solid rgba(255,255,255,.06);
   transition:opacity .85s cubic-bezier(.23,1,.32,1),transform .85s cubic-bezier(.23,1,.32,1)
 }
-nav.out{opacity:0;transform:translateY(-100%);pointer-events:none}
+nav.out{opacity:0;transform:translateY(-110%);pointer-events:none}
 .logo{font-size:19px;font-weight:800;letter-spacing:-.5px;
   text-shadow:0 0 10px rgba(192,38,211,.9),0 0 24px rgba(192,38,211,.5)}
 .nav-links{display:flex;gap:28px;list-style:none}
-.nav-links a{color:rgba(255,255,255,.6);text-decoration:none;font-size:14px;font-weight:600}
-.btn-nav{background:linear-gradient(135deg,#C026D3,#2563EB);color:#fff;border:none;
+.nav-links a{color:rgba(255,255,255,.6);text-decoration:none;font-size:14px;font-weight:600;
+  transition:color .2s}
+.nav-links a:hover{color:#fff}
+.btn-get{background:linear-gradient(135deg,#C026D3,#2563EB);color:#fff;border:none;
   padding:10px 22px;border-radius:12px;font-weight:700;font-size:13px;cursor:pointer;font-family:inherit}
 
-/* ── Hero text ── */
+/* Hero text */
 #hero-text{
   position:fixed;left:64px;top:50%;transform:translateY(-50%);
   z-index:30;max-width:480px;
-  transition:opacity .75s cubic-bezier(.23,1,.32,1),transform .75s cubic-bezier(.23,1,.32,1)
+  transition:opacity .8s cubic-bezier(.23,1,.32,1),transform .8s cubic-bezier(.23,1,.32,1)
 }
-#hero-text.out{opacity:0;transform:translateY(-50%) translateX(-60px);pointer-events:none}
-h1{font-size:clamp(36px,4.5vw,66px);font-weight:900;line-height:1.05;letter-spacing:-2px;margin-bottom:24px}
+#hero-text.out{opacity:0;transform:translateY(-50%) translateX(-80px);pointer-events:none}
+.h1{font-size:clamp(36px,4.2vw,64px);font-weight:900;line-height:1.04;letter-spacing:-2.5px;margin-bottom:22px}
 .grad{background:linear-gradient(90deg,#C026D3,#2563EB);-webkit-background-clip:text;
   -webkit-text-fill-color:transparent;background-clip:text}
-.hero-sub{font-size:17px;color:rgba(255,255,255,.55);margin-bottom:36px;line-height:1.65}
+.sub{font-size:17px;color:rgba(255,255,255,.52);margin-bottom:36px;line-height:1.65}
 .btn-primary{background:linear-gradient(135deg,#C026D3,#2563EB);color:#fff;border:none;
-  padding:14px 28px;border-radius:14px;font-weight:700;font-size:15px;cursor:pointer;font-family:inherit}
-.btn-ghost{background:transparent;color:rgba(255,255,255,.7);
+  padding:14px 30px;border-radius:14px;font-weight:700;font-size:15px;cursor:pointer;font-family:inherit}
+.btn-ghost{background:transparent;color:rgba(255,255,255,.68);
   border:1px solid rgba(255,255,255,.18);padding:14px 28px;border-radius:14px;
-  font-weight:600;font-size:15px;cursor:pointer;font-family:inherit}
+  font-weight:600;font-size:15px;cursor:pointer;font-family:inherit;
+  transition:background .2s,border-color .2s}
+.btn-ghost:hover{background:rgba(255,255,255,.07);border-color:rgba(255,255,255,.35)}
 
-/* ── Explore button ── */
-#explore-btn{
-  position:fixed;right:64px;bottom:80px;z-index:100;
-  background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.18);
-  color:rgba(255,255,255,.85);padding:14px 28px;border-radius:50px;
-  font-size:13px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;
+/* Enter Orbit button */
+#enter-btn{
+  position:fixed;z-index:100;
+  background:rgba(255,255,255,.04);
+  border:1px solid rgba(255,255,255,.22);
+  color:rgba(255,255,255,.88);
+  padding:13px 28px;border-radius:50px;
+  font-size:13px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;
   cursor:pointer;font-family:inherit;backdrop-filter:blur(8px);
-  transition:opacity .75s,background .25s,border-color .25s
+  transition:opacity .8s cubic-bezier(.23,1,.32,1),background .25s,border-color .25s,
+             left .9s cubic-bezier(.23,1,.32,1),top .9s cubic-bezier(.23,1,.32,1),transform .9s cubic-bezier(.23,1,.32,1)
 }
-#explore-btn:hover{background:rgba(255,255,255,.09);border-color:rgba(255,255,255,.35)}
-#explore-btn.out{opacity:0;pointer-events:none}
+#enter-btn:hover{background:rgba(255,255,255,.1);border-color:rgba(255,255,255,.4)}
+#enter-btn.out{opacity:0;pointer-events:none}
 
-/* ── Ring label ── */
+/* ── Explore UI (ring label, service info, arrows) ── */
 #ring-label{
-  position:fixed;top:88px;left:50%;transform:translateX(-50%);
-  z-index:100;opacity:0;pointer-events:none;
-  transition:opacity .5s;
-  font-size:11px;font-weight:700;letter-spacing:.18em;text-transform:uppercase;
-  color:rgba(255,255,255,.35);white-space:nowrap
+  position:fixed;top:32px;left:50%;transform:translateX(-50%);
+  z-index:110;opacity:0;pointer-events:none;
+  transition:opacity .6s;
+  font-size:12px;font-weight:700;letter-spacing:.2em;text-transform:uppercase;
+  white-space:nowrap
 }
 #ring-label.vis{opacity:1}
 
-/* ── Service info ── */
-#service-info{
-  position:fixed;bottom:108px;left:50%;transform:translateX(-50%);
-  z-index:100;text-align:center;
+#svc-info{
+  position:fixed;bottom:90px;left:50%;transform:translateX(-50%);
+  z-index:110;text-align:center;
   opacity:0;pointer-events:none;transition:opacity .6s
 }
-#service-info.vis{opacity:1}
-#svc-name{font-size:30px;font-weight:900;letter-spacing:-1px;margin-bottom:10px;transition:color .4s}
-#svc-desc{font-size:15px;color:rgba(255,255,255,.5);line-height:1.65;max-width:380px}
+#svc-info.vis{opacity:1}
+#svc-name{font-size:28px;font-weight:900;letter-spacing:-.5px;margin-bottom:8px;transition:color .4s}
+#svc-desc{font-size:14px;color:rgba(255,255,255,.48);line-height:1.7;max-width:360px;margin:0 auto}
 
-/* ── Nav arrows ── */
-#nav-arrows{
+/* Side arrows */
+.arr{
+  position:fixed;top:50%;z-index:110;
+  background:none;border:none;color:rgba(255,255,255,.35);
+  font-size:36px;font-weight:300;cursor:pointer;
+  padding:20px;transform:translateY(-50%);
+  opacity:0;pointer-events:none;
+  transition:opacity .6s,color .2s
+}
+.arr.vis{opacity:1;pointer-events:auto}
+.arr:hover{color:rgba(255,255,255,.85)}
+#arr-l{left:12px}
+#arr-r{right:12px}
+
+/* Counter */
+#svc-num{
   position:fixed;bottom:48px;left:50%;transform:translateX(-50%);
-  z-index:100;display:flex;align-items:center;gap:20px;
+  z-index:110;
+  font-size:11px;font-weight:700;letter-spacing:.18em;text-transform:uppercase;
+  color:rgba(255,255,255,.25);
   opacity:0;pointer-events:none;transition:opacity .6s
 }
-#nav-arrows.vis{opacity:1;pointer-events:auto}
-.btn-arr{
-  background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.15);
-  color:rgba(255,255,255,.75);padding:10px 24px;border-radius:50px;
-  font-size:13px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;
-  cursor:pointer;font-family:inherit;transition:background .2s,color .2s
-}
-.btn-arr:hover{background:rgba(255,255,255,.12);color:#fff}
-#svc-counter{font-size:12px;color:rgba(255,255,255,.32);font-weight:600;
-  letter-spacing:.1em;width:72px;text-align:center}
+#svc-num.vis{opacity:1}
 
-/* ── Exit button ── */
+/* Exit */
 #exit-btn{
   position:fixed;top:20px;right:22px;z-index:200;
   background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.12);
-  color:rgba(255,255,255,.6);padding:8px 18px;border-radius:50px;
-  font-size:13px;font-weight:700;letter-spacing:.06em;
+  color:rgba(255,255,255,.55);padding:8px 18px;border-radius:50px;
+  font-size:12px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;
   cursor:pointer;font-family:inherit;
   opacity:0;pointer-events:none;transition:opacity .5s,background .2s
 }
 #exit-btn.vis{opacity:1;pointer-events:auto}
 #exit-btn:hover{background:rgba(255,255,255,.1);color:#fff}
 
-/* ── Flash overlay ── */
-#flash{position:fixed;inset:0;background:rgba(255,255,255,.04);
-  pointer-events:none;opacity:0;z-index:500;transition:opacity .2s}
+/* Flash */
+#flash{position:fixed;inset:0;pointer-events:none;opacity:0;z-index:500;
+  transition:opacity .18s;background:rgba(255,255,255,.05)}
 </style>
 </head>
 <body>
 
 <canvas id="canvas"></canvas>
 <div id="starwrap"><div class="sf" id="sf"></div></div>
-<div class="blob" style="width:500px;height:500px;background:rgba(192,38,211,.12);top:-100px;left:-100px"></div>
-<div class="blob" style="width:600px;height:600px;background:rgba(37,99,235,.10);bottom:-100px;right:-100px"></div>
+
+<!-- Glow blobs — drawn dynamically in JS so they can shift position -->
+<div class="blob" id="blob1"></div>
+<div class="blob" id="blob2"></div>
 
 <div id="ec-center">EC</div>
 <div id="nodes-container"></div>
@@ -171,41 +187,36 @@ h1{font-size:clamp(36px,4.5vw,66px);font-weight:900;line-height:1.05;letter-spac
 <nav id="navbar">
   <div class="logo">Effortless Crew</div>
   <ul class="nav-links">
-    <li><a href="#">Services</a></li>
-    <li><a href="#">Work</a></li>
-    <li><a href="#">About</a></li>
-    <li><a href="#">Contact</a></li>
+    <li><a href="#">Services</a></li><li><a href="#">Work</a></li>
+    <li><a href="#">About</a></li><li><a href="#">Contact</a></li>
   </ul>
-  <button class="btn-nav">Get Started</button>
+  <button class="btn-get">Get Started</button>
 </nav>
 
 <div id="hero-text">
-  <h1>WORK LESS<br><span class="grad">GROW FASTER</span><br>DOMINATE.</h1>
-  <p class="hero-sub">AI-powered production team.<br>Premium content at scale.</p>
+  <div class="h1">WORK LESS<br><span class="grad">GROW FASTER</span><br>DOMINATE.</div>
+  <p class="sub">AI-powered production team.<br>Premium content at scale.</p>
   <div style="display:flex;gap:14px">
     <button class="btn-primary">Get Started →</button>
     <button class="btn-ghost">See Our Work</button>
   </div>
 </div>
 
+<button id="enter-btn" onclick="enterOrbit()">⊕ &nbsp;ENTER ORBIT</button>
+
+<!-- Explore UI -->
 <div id="ring-label"></div>
-<div id="service-info">
-  <div id="svc-name"></div>
-  <div id="svc-desc"></div>
-</div>
-<div id="nav-arrows">
-  <button class="btn-arr" onclick="navigate(-1)">← PREV</button>
-  <div id="svc-counter"></div>
-  <button class="btn-arr" onclick="navigate(1)">NEXT →</button>
-</div>
-<button id="exit-btn" onclick="exitExplore()">✕ EXIT</button>
-<button id="explore-btn" onclick="enterExplore()">⊕ EXPLORE ORBIT</button>
+<div id="svc-info"><div id="svc-name"></div><div id="svc-desc"></div></div>
+<button class="arr" id="arr-l" onclick="navigate(-1)">‹</button>
+<button class="arr" id="arr-r" onclick="navigate(1)">›</button>
+<div id="svc-num"></div>
+<button id="exit-btn" onclick="exitOrbit()">✕ &nbsp;EXIT</button>
 <div id="flash"></div>
 
 <script>
-// ============================================================
+// ═══════════════════════════════════════════════════════
 // DATA
-// ============================================================
+// ═══════════════════════════════════════════════════════
 const SERVICES = [
   {name:"YT Automation",    icon:"🤖", orbit:"inner",  angle:0,   desc:"Fully automated YouTube channels at scale"},
   {name:"Scriptwriting",    icon:"✍️",  orbit:"inner",  angle:120, desc:"Compelling scripts that convert and retain viewers"},
@@ -215,301 +226,352 @@ const SERVICES = [
   {name:"Portfolio Sites",  icon:"🌐", orbit:"middle", angle:180, desc:"Beautiful portfolios that win clients"},
   {name:"Thumbnails",       icon:"🖼️",  orbit:"middle", angle:270, desc:"Click-worthy thumbnails — always A/B tested"},
   {name:"Social Media Mgmt",icon:"📢", orbit:"outer",  angle:0,   desc:"Growth-focused content strategy and posting"},
-  {name:"Trend Research",   icon:"📊", orbit:"outer",  angle:72,  desc:"Data-driven insights on what's blowing up right now"},
+  {name:"Trend Research",   icon:"📊", orbit:"outer",  angle:72,  desc:"Data-driven insights on what's blowing up now"},
   {name:"Ad Production",    icon:"📣", orbit:"outer",  angle:144, desc:"High-ROI ad creatives for Meta, TikTok and YouTube"},
-  {name:"AI Production",    icon:"⚡", orbit:"outer",  angle:216, desc:"AI-accelerated workflows for faster, cheaper output"},
+  {name:"AI Production",    icon:"⚡", orbit:"outer",  angle:216, desc:"AI-accelerated workflows — faster, cheaper output"},
   {name:"Video Editing",    icon:"🎬", orbit:"outer",  angle:288, desc:"Premium long-form edits with cinematic flair"},
 ];
 
 const ORBITS = {
-  inner:  {r:200, period:22000, color:[192,38,211],  label:"INNER RING"},
-  middle: {r:320, period:36000, color:[167,139,250], label:"MIDDLE RING"},
-  outer:  {r:445, period:52000, color:[96,165,250],  label:"OUTER RING"},
+  inner:  {r:200, period:22000, col:[192,38,211],  label:"INNER RING"},
+  middle: {r:320, period:36000, col:[167,139,250], label:"MIDDLE RING"},
+  outer:  {r:445, period:52000, col:[96,165,250],  label:"OUTER RING"},
 };
 
-// Camera zoom when exploring each ring
-const EXPLORE_ZOOM = {inner:2.8, middle:1.75, outer:1.12};
-const BASE_ZOOM = 0.62;
+const ZOOM_EXPLORE = {inner:2.9, middle:1.8, outer:1.15};
+const BASE_ZOOM    = 0.58;
 
-// ============================================================
-// PROJECTION CONFIG
-// ============================================================
-// TILT = 87° → rings appear almost as flat lines
+// ═══════════════════════════════════════════════════════
+// PROJECTION  (rotateZ first, then rotateX — so camera
+// angle changes depth, enabling "orbit around" effect)
+// ═══════════════════════════════════════════════════════
 const TILT    = 87 * Math.PI / 180;
-const cosTilt = Math.cos(TILT); // ≈ 0.0523
-const sinTilt = Math.sin(TILT); // ≈ 0.9986
+const cosT    = Math.cos(TILT); // ≈ 0.052
+const sinT    = Math.sin(TILT); // ≈ 0.999
 const PERSP   = 800;
 
-// ============================================================
-// STATE
-// ============================================================
-let exploring    = false;
-let activeIdx    = 0;
-let camAngle     = 0;       // current camera rotation (rad)
-let camAngleTgt  = 0;       // target
-let camZoom      = BASE_ZOOM;
-let camZoomTgt   = BASE_ZOOM;
-let startTime    = null;
-let infoTimer    = null;
-const angles     = SERVICES.map(s => s.angle * Math.PI / 180); // live orbit angles
-const nodeEls    = [];
+let camAngle    = 0, camAngleTgt = 0;
+let camZoom     = BASE_ZOOM, camZoomTgt = BASE_ZOOM;
+let orbitCX     = 0, orbitCY = 0; // px, set on first frame
+let orbitCXTgt  = 0, orbitCYTgt = 0;
 
-// ============================================================
-// SETUP — CANVAS
-// ============================================================
+function project(r, theta) {
+  const phi  = theta + camAngle;
+  const x    =  r * Math.cos(phi);
+  const y    =  r * Math.sin(phi) * cosT;
+  const z    = -r * Math.sin(phi) * sinT;
+  const fov  = PERSP / (PERSP - z);
+  return {sx: x*fov*camZoom, sy: y*fov*camZoom, depth:z, fov};
+}
+
+function lerpAngle(c, t, k) {
+  let d = t - c;
+  d -= Math.round(d / (2*Math.PI)) * 2*Math.PI;
+  return c + d * k;
+}
+
+// ═══════════════════════════════════════════════════════
+// PHASE
+// ═══════════════════════════════════════════════════════
+let phase      = 'hero'; // 'hero' | 'flying' | 'explore'
+let activeIdx  = 0;
+let startTime  = null;
+const angles   = SERVICES.map(s => s.angle * Math.PI / 180);
+
+// ═══════════════════════════════════════════════════════
+// SETUP
+// ═══════════════════════════════════════════════════════
 const canvas = document.getElementById('canvas');
 const ctx    = canvas.getContext('2d');
 
 function resize() {
   canvas.width  = window.innerWidth;
   canvas.height = window.innerHeight;
+  if (phase === 'hero' || phase === 'flying') {
+    orbitCXTgt = window.innerWidth  * (phase==='hero' ? 0.63 : 0.50);
+    orbitCYTgt = window.innerHeight * 0.50;
+  }
 }
 window.addEventListener('resize', resize);
-resize();
 
-// ============================================================
-// SETUP — STARS
-// ============================================================
-(function buildStars() {
+// ── Stars ──
+(function(){
   function sr(s){let x=Math.sin(s*9301+49297)*233280;return x-Math.floor(x)}
   const sf = document.getElementById('sf');
-  for (let i = 0; i < 70; i++) {
-    const size = sr(i*12.1+0.3) > 0.78 ? 2 : 1;
-    const col  = i%3===0 ? 'rgba(192,38,211,.7)' : i%3===1 ? 'rgba(80,200,255,.6)' : 'rgba(255,255,255,.55)';
-    const d    = document.createElement('div');
-    d.style.cssText = `position:absolute;border-radius:50%;`
-      + `top:${(sr(i*4.71+1.3)*100).toFixed(2)}%;`
-      + `left:${(sr(i*8.93+2.7)*100).toFixed(2)}%;`
-      + `width:${size}px;height:${size}px;background:${col};`
-      + `animation:twinkle ${(sr(i*2.83+1.1)*5+4).toFixed(1)}s ease-in-out `
-      + `${(-(sr(i*6.57+3.9)*12)).toFixed(1)}s infinite`;
+  for(let i=0;i<72;i++){
+    const sz = sr(i*12.1+.3)>.78?2:1;
+    const c  = i%3===0?'rgba(192,38,211,.7)':i%3===1?'rgba(80,200,255,.55)':'rgba(255,255,255,.5)';
+    const d  = document.createElement('div');
+    d.style.cssText=`position:absolute;border-radius:50%;top:${(sr(i*4.71+1.3)*100).toFixed(2)}%;`
+      +`left:${(sr(i*8.93+2.7)*100).toFixed(2)}%;width:${sz}px;height:${sz}px;background:${c};`
+      +`animation:twinkle ${(sr(i*2.83+1.1)*5+4).toFixed(1)}s ease-in-out ${(-(sr(i*6.57+3.9)*12)).toFixed(1)}s infinite`;
     sf.appendChild(d);
   }
 })();
 
-// ============================================================
-// SETUP — SERVICE NODES
-// ============================================================
+// ── Blobs ──
+const blob1 = document.getElementById('blob1');
+const blob2 = document.getElementById('blob2');
+blob1.style.cssText='width:520px;height:520px;background:rgba(192,38,211,.10);filter:blur(50px);transition:left .9s cubic-bezier(.23,1,.32,1),top .9s cubic-bezier(.23,1,.32,1)';
+blob2.style.cssText='width:620px;height:620px;background:rgba(37,99,235,.09);filter:blur(50px);transition:left .9s cubic-bezier(.23,1,.32,1),top .9s cubic-bezier(.23,1,.32,1)';
+
+function updateBlobs(cx, cy) {
+  blob1.style.left = (cx - 400) + 'px'; blob1.style.top  = (cy - 350) + 'px';
+  blob2.style.left = (cx - 100) + 'px'; blob2.style.top  = (cy - 180) + 'px';
+}
+
+// ── EC center ──
+const ecEl = document.getElementById('ec-center');
+function updateEC(cx, cy, size) {
+  ecEl.style.left     = cx + 'px';
+  ecEl.style.top      = cy + 'px';
+  ecEl.style.width    = size + 'px';
+  ecEl.style.height   = size + 'px';
+  ecEl.style.fontSize = (size * 0.24) + 'px';
+}
+
+// ── Node elements ──
 const nc = document.getElementById('nodes-container');
+const nodeEls = [], circleEls = [], labelEls = [];
 SERVICES.forEach((svc, i) => {
-  const col = ORBITS[svc.orbit].color;
+  const col = ORBITS[svc.orbit].col;
   const el  = document.createElement('div');
   el.className = 'node';
-  el.id = `node-${i}`;
-  el.style.setProperty('--nc',    `rgba(${col},0.80)`);
-  el.style.setProperty('--nc-lo', `rgba(${col},0.32)`);
-  el.innerHTML = `
-    <div class="node-wrap">
-      <div class="node-circle"
-        style="border:1.5px solid rgba(${col},.45);
-               box-shadow:0 0 12px rgba(${col},.28),0 0 24px rgba(${col},.12)">
-        <span style="line-height:1">${svc.icon}</span>
-      </div>
-      <span class="node-label">${svc.name}</span>
-    </div>`;
-  el.addEventListener('click', () => { if (exploring) setActive(i); });
+  el.innerHTML = `<div class="node-wrap">
+    <div class="node-circle" style="border:1.5px solid rgba(${col},.42);box-shadow:0 0 12px rgba(${col},.25)">
+      <span>${svc.icon}</span>
+    </div>
+    <span class="node-label">${svc.name}</span>
+  </div>`;
+  el.addEventListener('click', () => { if(phase!=='hero') setActive(i); });
   nc.appendChild(el);
   nodeEls.push(el);
+  circleEls.push(el.querySelector('.node-circle'));
+  labelEls.push(el.querySelector('.node-label'));
 });
 
-// ============================================================
-// MATH — PROJECTION
-// ============================================================
-// Transform order: rotateZ(camAngle) THEN rotateX(TILT)
-// This makes z-depth depend on (worldAngle + camAngle),
-// so rotating camAngle brings different services to front.
-function project(r, worldTheta) {
-  const phi  = worldTheta + camAngle;
-  const cosP = Math.cos(phi);
-  const sinP = Math.sin(phi);
-  // After rotateZ then rotateX:
-  const x    = r * cosP;
-  const y    = r * sinP * cosTilt;
-  const z    = -r * sinP * sinTilt;   // negative y goes near (z+)
-  const fov  = PERSP / (PERSP - z);   // perspective scale
-  return {
-    sx:    x * fov * camZoom,
-    sy:    y * fov * camZoom,
-    depth: z,
-    fov,
-  };
-}
+// ── Enter button position ──
+const enterBtn = document.getElementById('enter-btn');
+enterBtn.style.right  = '64px';
+enterBtn.style.bottom = '80px';
 
-// Normalise angle difference to [-π, π]
-function lerpAngle(cur, tgt, t) {
-  let d = tgt - cur;
-  d -= Math.round(d / (2*Math.PI)) * 2*Math.PI;
-  return cur + d * t;
-}
-
-// ============================================================
-// DRAW — RINGS ON CANVAS
-// ============================================================
+// ═══════════════════════════════════════════════════════
+// DRAW RINGS
+// ═══════════════════════════════════════════════════════
 function drawRings() {
   const W = canvas.width, H = canvas.height;
-  const cx = W/2, cy = H/2;
   ctx.clearRect(0, 0, W, H);
+  const exploring = phase !== 'hero';
 
-  // Draw outer→inner so inner ring renders on top
   (['outer','middle','inner']).forEach(key => {
-    const {r, color} = ORBITS[key];
+    const {r, col} = ORBITS[key];
+    const alpha = exploring ? .75 : .30;
+    const lw    = exploring ? 1.5 : 1;
+    const blur  = exploring ? 10  : 3;
+
+    ctx.save();
+    ctx.shadowColor = `rgba(${col},${alpha})`;
+    ctx.shadowBlur  = blur;
+    ctx.strokeStyle = `rgba(${col},${alpha * .9})`;
+    ctx.lineWidth   = lw;
     ctx.beginPath();
-    for (let deg = 0; deg <= 360; deg += 2) {
-      const p = project(r, deg * Math.PI / 180);
-      const x = cx + p.sx, y = cy + p.sy;
-      deg === 0 ? ctx.moveTo(x, y) : ctx.lineTo(x, y);
+    for(let deg=0;deg<=360;deg+=2){
+      const p = project(r, deg*Math.PI/180);
+      const x = orbitCX + p.sx, y = orbitCY + p.sy;
+      deg===0 ? ctx.moveTo(x,y) : ctx.lineTo(x,y);
     }
     ctx.closePath();
-    ctx.strokeStyle = `rgba(${color},.32)`;
-    ctx.lineWidth   = 1.5;
     ctx.stroke();
+    ctx.restore();
   });
 }
 
-// ============================================================
-// POSITION — SERVICE NODES
-// ============================================================
+// ═══════════════════════════════════════════════════════
+// POSITION NODES
+// ═══════════════════════════════════════════════════════
 function positionNodes() {
-  const cx = window.innerWidth  / 2;
-  const cy = window.innerHeight / 2;
+  const exploring = phase !== 'hero';
 
-  // Compute projection for each node, sort by depth (far → near)
-  const sorted = SERVICES.map((svc, i) => {
+  const sorted = SERVICES.map((svc,i)=>{
     const p = project(ORBITS[svc.orbit].r, angles[i]);
-    return {i, p, svc};
-  }).sort((a, b) => a.p.depth - b.p.depth);
+    return {i,p,svc};
+  }).sort((a,b)=>a.p.depth-b.p.depth);
 
-  sorted.forEach(({i, p, svc}, zOrder) => {
-    const el       = nodeEls[i];
-    const isActive = exploring && i === activeIdx;
-    const maxZ     = ORBITS[svc.orbit].r * sinTilt;
+  sorted.forEach(({i,p,svc},zOrder)=>{
+    const el  = nodeEls[i];
+    const crc = circleEls[i];
+    const lbl = labelEls[i];
+    const col = ORBITS[svc.orbit].col;
+    const isActive = exploring && i===activeIdx;
 
-    // Opacity: back nodes dimmer
-    const relDepth = (p.depth + maxZ) / (2 * maxZ); // 0=back 1=front
-    const opacity  = isActive
-      ? 1.0
-      : Math.max(0.18, relDepth * (exploring ? 0.55 : 0.95));
+    // Size
+    const size = !exploring ? 38 : isActive ? 175 : 22;
+    const fs   = !exploring ? 17 : isActive ? 72 : 10;
+    crc.style.width    = size + 'px';
+    crc.style.height   = size + 'px';
+    crc.style.fontSize = fs   + 'px';
 
-    el.style.left      = (cx + p.sx) + 'px';
-    el.style.top       = (cy + p.sy) + 'px';
-    el.style.zIndex    = 10 + zOrder;
-    el.style.opacity   = opacity.toFixed(2);
-    el.classList.toggle('active', isActive);
+    // Glow
+    if(isActive){
+      crc.style.border     = `2px solid rgba(${col},.85)`;
+      crc.style.boxShadow  = `0 0 50px rgba(${col},.95),0 0 90px rgba(${col},.6),0 0 150px rgba(${col},.25),inset 0 0 40px rgba(${col},.12)`;
+    } else {
+      const maxZ = ORBITS[svc.orbit].r * sinT;
+      const rel  = (p.depth + maxZ) / (2*maxZ); // 0=back 1=front
+      const gA   = exploring ? rel*.35 : .28;
+      crc.style.border    = `1.5px solid rgba(${col},${exploring ? rel*.5 : .42})`;
+      crc.style.boxShadow = `0 0 ${exploring?6:12}px rgba(${col},${gA})`;
+    }
+
+    // Label
+    lbl.style.fontSize = isActive ? '15px' : '10px';
+    lbl.style.opacity  = (!exploring || isActive) ? '1' : '0';
+
+    // Opacity
+    const maxZ  = ORBITS[svc.orbit].r * sinT;
+    const rel   = (p.depth + maxZ) / (2 * maxZ);
+    const opacity = isActive ? 1 : exploring ? Math.max(.12, rel*.45) : Math.max(.45, .45 + rel*.55);
+
+    el.style.left    = (orbitCX + p.sx) + 'px';
+    el.style.top     = (orbitCY + p.sy) + 'px';
+    el.style.zIndex  = 10 + zOrder;
+    el.style.opacity = opacity.toFixed(2);
   });
 }
 
-// ============================================================
+// ═══════════════════════════════════════════════════════
 // ANIMATION LOOP
-// ============================================================
+// ═══════════════════════════════════════════════════════
 function tick(ts) {
-  if (!startTime) startTime = ts;
+  if(!startTime) {
+    startTime = ts;
+    // Init orbit center after we know window size
+    orbitCX    = window.innerWidth * .63;
+    orbitCY    = window.innerHeight * .50;
+    orbitCXTgt = orbitCX;
+    orbitCYTgt = orbitCY;
+    updateBlobs(orbitCX, orbitCY);
+    updateEC(orbitCX, orbitCY, 108);
+  }
   const elapsed = ts - startTime;
 
-  // Advance orbit angles for every service (all orbits always spin)
-  SERVICES.forEach((svc, i) => {
-    const init   = svc.angle * Math.PI / 180;
-    const period = ORBITS[svc.orbit].period;
-    angles[i]    = init + (elapsed / period) * 2 * Math.PI;
+  // Advance orbit angles
+  SERVICES.forEach((svc,i)=>{
+    angles[i] = svc.angle*Math.PI/180 + (elapsed/ORBITS[svc.orbit].period)*2*Math.PI;
   });
 
-  // When exploring: camera continuously tracks active service
-  if (exploring) {
-    // To bring service at angles[activeIdx] to "front" (phi = -π/2):
-    //   angles[activeIdx] + camAngle = -π/2
-    //   camAngle = -π/2 - angles[activeIdx]
+  // Camera tracking in explore
+  if(phase !== 'hero') {
     camAngleTgt = -Math.PI/2 - angles[activeIdx];
-    camZoomTgt  = EXPLORE_ZOOM[SERVICES[activeIdx].orbit];
+    camZoomTgt  = ZOOM_EXPLORE[SERVICES[activeIdx].orbit];
   } else {
     camZoomTgt = BASE_ZOOM;
   }
 
-  // Smooth lerp
-  camAngle = lerpAngle(camAngle, camAngleTgt, 0.10);
-  camZoom += (camZoomTgt - camZoom) * 0.07;
+  // Lerp camera
+  camAngle = lerpAngle(camAngle, camAngleTgt, phase==='flying'?.14:.09);
+  camZoom += (camZoomTgt - camZoom) * (phase==='flying'?.11:.07);
+
+  // Lerp orbit center
+  orbitCX += (orbitCXTgt - orbitCX) * .07;
+  orbitCY += (orbitCYTgt - orbitCY) * .07;
+
+  // EC and blob follow orbit center
+  const ecSize = phase==='hero' ? 108 : 88;
+  updateEC(orbitCX, orbitCY, ecSize);
+  updateBlobs(orbitCX, orbitCY);
 
   drawRings();
   positionNodes();
   requestAnimationFrame(tick);
 }
 
-// ============================================================
-// UI ACTIONS
-// ============================================================
+// ═══════════════════════════════════════════════════════
+// ACTIONS
+// ═══════════════════════════════════════════════════════
 function setActive(idx) {
   activeIdx = idx;
-  const svc  = SERVICES[idx];
-  const orb  = ORBITS[svc.orbit];
-  const hex  = `rgb(${orb.color})`;
-
+  const svc = SERVICES[idx];
+  const orb = ORBITS[svc.orbit];
+  const hex = `rgb(${orb.col})`;
   document.getElementById('svc-name').textContent = svc.name;
   document.getElementById('svc-name').style.color = hex;
   document.getElementById('svc-desc').textContent = svc.desc;
   document.getElementById('ring-label').textContent = orb.label;
-  document.getElementById('ring-label').style.color = `rgba(${orb.color},.55)`;
-  document.getElementById('svc-counter').textContent = `${idx + 1} / ${SERVICES.length}`;
+  document.getElementById('ring-label').style.color = `rgba(${orb.col},.7)`;
+  document.getElementById('svc-num').textContent = `${idx+1}  /  ${SERVICES.length}`;
 }
 
-function enterExplore() {
-  exploring = true;
+let flyTimer = null;
+function enterOrbit() {
+  phase = 'flying';
   setActive(0);
 
+  // Fade hero UI
   document.getElementById('navbar').classList.add('out');
   document.getElementById('hero-text').classList.add('out');
-  document.getElementById('explore-btn').classList.add('out');
+  document.getElementById('enter-btn').classList.add('out');
 
-  clearTimeout(infoTimer);
-  infoTimer = setTimeout(() => {
-    document.getElementById('service-info').classList.add('vis');
-    document.getElementById('nav-arrows').classList.add('vis');
-    document.getElementById('ring-label').classList.add('vis');
-    document.getElementById('exit-btn').classList.add('vis');
-  }, 900);
+  // Orbit center → screen center
+  orbitCXTgt = window.innerWidth  * .50;
+  orbitCYTgt = window.innerHeight * .50;
+
+  // Jump-start zoom for dramatic fly-in feel
+  camZoom = camZoom * 1.4;
+
+  // Show explore UI after camera settles
+  clearTimeout(flyTimer);
+  flyTimer = setTimeout(() => {
+    phase = 'explore';
+    ['ring-label','svc-info','svc-num','exit-btn'].forEach(id=>
+      document.getElementById(id).classList.add('vis'));
+    document.getElementById('arr-l').classList.add('vis');
+    document.getElementById('arr-r').classList.add('vis');
+  }, 1100);
 }
 
-function exitExplore() {
-  exploring = false;
+function exitOrbit() {
+  phase = 'hero';
   camZoomTgt = BASE_ZOOM;
-  clearTimeout(infoTimer);
+  clearTimeout(flyTimer);
+
+  orbitCXTgt = window.innerWidth  * .63;
+  orbitCYTgt = window.innerHeight * .50;
 
   document.getElementById('navbar').classList.remove('out');
   document.getElementById('hero-text').classList.remove('out');
-  document.getElementById('explore-btn').classList.remove('out');
-  document.getElementById('service-info').classList.remove('vis');
-  document.getElementById('nav-arrows').classList.remove('vis');
-  document.getElementById('ring-label').classList.remove('vis');
-  document.getElementById('exit-btn').classList.remove('vis');
+  document.getElementById('enter-btn').classList.remove('out');
+  ['ring-label','svc-info','svc-num','exit-btn'].forEach(id=>
+    document.getElementById(id).classList.remove('vis'));
+  document.getElementById('arr-l').classList.remove('vis');
+  document.getElementById('arr-r').classList.remove('vis');
 }
 
 function navigate(dir) {
-  const newIdx = (activeIdx + dir + SERVICES.length) % SERVICES.length;
-  setActive(newIdx);
-  // Brief flash
+  setActive((activeIdx + dir + SERVICES.length) % SERVICES.length);
   const f = document.getElementById('flash');
-  f.style.opacity = '1';
-  setTimeout(() => f.style.opacity = '0', 180);
+  f.style.opacity='1';
+  setTimeout(()=>f.style.opacity='0', 160);
 }
 
 // Keyboard
 document.addEventListener('keydown', e => {
-  if (!exploring) return;
-  if (e.key === 'Escape')      exitExplore();
-  if (e.key === 'ArrowRight')  navigate(1);
-  if (e.key === 'ArrowLeft')   navigate(-1);
+  if(e.key==='Escape'     && phase!=='hero') exitOrbit();
+  if(e.key==='ArrowRight' && phase==='explore') navigate(1);
+  if(e.key==='ArrowLeft'  && phase==='explore') navigate(-1);
+  if(e.key==='Enter'      && phase==='hero') enterOrbit();
 });
 
-// Touch swipe
-let touchStartX = null;
-document.addEventListener('touchstart', e => { touchStartX = e.touches[0].clientX; });
-document.addEventListener('touchend',   e => {
-  if (touchStartX === null || !exploring) return;
-  const dx = e.changedTouches[0].clientX - touchStartX;
-  touchStartX = null;
-  if (Math.abs(dx) > 50) navigate(dx < 0 ? 1 : -1);
+// Swipe
+let tx=null;
+document.addEventListener('touchstart',e=>{tx=e.touches[0].clientX});
+document.addEventListener('touchend',e=>{
+  if(tx===null||phase!=='explore')return;
+  if(Math.abs(e.changedTouches[0].clientX-tx)>50) navigate(e.changedTouches[0].clientX<tx?1:-1);
+  tx=null;
 });
 
-// ============================================================
-// START
-// ============================================================
+// ── START ──
 requestAnimationFrame(tick);
 </script>
 </body>
