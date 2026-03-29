@@ -337,41 +337,56 @@ const angles = SVCS.map(s => s.angle * Math.PI/180);
 let startTime = null;
 
 // ── Camera view matrix ────────────────────────────────
-// Euler angles: yaw (Y), pitch (X), roll (Z) — all in degrees stored in CAM
 let VM = null;
 
-function buildVM() {
+// Rodrigues rotation — rotate vector v around unit axis by rad
+function rotateVec(v, axis, rad){
+  const c=Math.cos(rad), s=Math.sin(rad), t=1-c;
+  const [ax,ay,az]=axis;
+  return [
+    v[0]*(t*ax*ax+c)    + v[1]*(t*ax*ay-s*az) + v[2]*(t*ax*az+s*ay),
+    v[0]*(t*ax*ay+s*az) + v[1]*(t*ay*ay+c)    + v[2]*(t*ay*az-s*ax),
+    v[0]*(t*ax*az-s*ay) + v[1]*(t*ay*az+s*ax) + v[2]*(t*az*az+c),
+  ];
+}
+
+// Rebuild CAM.fwd/right/up from Euler sliders (called when sliders change)
+function rebuildBasisFromEuler(){
   const yaw   = CAM.yaw   * Math.PI/180;
   const pitch = CAM.pitch * Math.PI/180;
   const roll  = CAM.roll  * Math.PI/180;
-
-  // Forward direction from yaw + pitch
-  // yaw=0, pitch=0  →  forward = [0, 0, -1]  (looking into the scene from +Z)
-  const fwd = v3.norm([
-    Math.sin(yaw) * Math.cos(pitch),
+  CAM.fwd = v3.norm([
+    Math.sin(yaw)*Math.cos(pitch),
     Math.sin(pitch),
-    -Math.cos(yaw) * Math.cos(pitch)
+    -Math.cos(yaw)*Math.cos(pitch)
   ]);
+  const worldUp = Math.abs(CAM.fwd[1])>0.999 ? [0,0,CAM.fwd[1]>0?-1:1] : [0,1,0];
+  const r0 = v3.norm(v3.cross(CAM.fwd, worldUp));
+  const u0 = v3.norm(v3.cross(r0, CAM.fwd));
+  const cr=Math.cos(roll), sr=Math.sin(roll);
+  CAM.right = [r0[0]*cr+u0[0]*sr, r0[1]*cr+u0[1]*sr, r0[2]*cr+u0[2]*sr];
+  CAM.up    = [-r0[0]*sr+u0[0]*cr, -r0[1]*sr+u0[1]*cr, -r0[2]*sr+u0[2]*cr];
+}
 
-  // Right and up before roll
-  const worldUp = Math.abs(fwd[1]) > 0.999 ? [0, 0, fwd[1]>0 ? -1 : 1] : [0, 1, 0];
-  const right0 = v3.norm(v3.cross(fwd, worldUp));
-  const up0    = v3.norm(v3.cross(right0, fwd));
+// Extract Euler angles from live basis (for slider display after drag)
+function extractEulerFromBasis(){
+  const f=CAM.fwd;
+  CAM.pitch = Math.asin(Math.max(-1,Math.min(1,f[1]))) * 180/Math.PI;
+  CAM.yaw   = Math.atan2(f[0], -f[2]) * 180/Math.PI;
+  // Roll: angle between actual up and the no-roll up
+  const worldUp=[0,1,0];
+  const noRollRight = v3.norm(v3.cross(f, worldUp));
+  // guard: if looking straight up/down noRollRight is degenerate
+  if(v3.len(noRollRight) < 0.001){ CAM.roll=0; return; }
+  const noRollUp = v3.norm(v3.cross(noRollRight, f));
+  const cosR = Math.max(-1,Math.min(1, v3.dot(CAM.up, noRollUp)));
+  const sinR = v3.dot(v3.cross(noRollUp, CAM.up), f);
+  CAM.roll = Math.atan2(sinR, cosR) * 180/Math.PI;
+}
 
-  // Apply roll around forward axis
-  const cr = Math.cos(roll), sr = Math.sin(roll);
-  const right = [
-    right0[0]*cr + up0[0]*sr,
-    right0[1]*cr + up0[1]*sr,
-    right0[2]*cr + up0[2]*sr,
-  ];
-  const up = [
-    -right0[0]*sr + up0[0]*cr,
-    -right0[1]*sr + up0[1]*cr,
-    -right0[2]*sr + up0[2]*cr,
-  ];
-
-  VM = {eye:[CAM.x, CAM.y, CAM.z], fwd, right, up};
+// buildVM just reads the live basis — no computation needed
+function buildVM(){
+  VM = {eye:[CAM.x, CAM.y, CAM.z], fwd:CAM.fwd, right:CAM.right, up:CAM.up};
 }
 
 function project3D(wx, wy, wz) {
