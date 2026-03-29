@@ -766,6 +766,7 @@ function seek(t){
   document.getElementById('tl-fill').style.width=(curT/DURATION*100)+'%';
   document.getElementById('t-disp').textContent=curT.toFixed(1)+'s';
   if(keyframes.length>=1) applyState(stateAt(curT));
+  updateKFDots();
 }
 
 track.addEventListener('click',e=>{
