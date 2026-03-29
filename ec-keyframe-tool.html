@@ -313,10 +313,16 @@ const ORB = {
 const FOCAL = 600;
 const DURATION = 20;
 
-// ── Camera state  (position in world, rotation in degrees) ──
-// yaw=0 pitch=0 → camera looks toward -Z (default: camera at z=800, sees XY plane)
+// ── Camera state ─────────────────────────────────────
+// Position: x/y/z   Rotation: stored as live basis (fwd/right/up)
+// Euler yaw/pitch/roll are for sliders only — basis is authoritative
 const DEFAULT_CAM = {x:0, y:0, z:800, yaw:0, pitch:0, roll:0};
-const CAM = {...DEFAULT_CAM};
+const CAM = {
+  ...DEFAULT_CAM,
+  fwd:   [0, 0, -1],   // looking toward -Z
+  right: [1, 0, 0],
+  up:    [0, 1, 0],
+};
 
 // Solar system world-space offset
 const SYS = {x:0, y:0, z:0};
