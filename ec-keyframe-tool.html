@@ -401,59 +401,60 @@ SVCS.forEach((s,i)=>{
 function updateElements() {
   const cx = W/2, cy = H/2;
 
-  // EC logo
+  // Project EC + all nodes into one list, sort back→front together
+  // so nodes closer to camera correctly appear IN FRONT of EC logo
+  const items = [];
   const pe = project3D(0,0,0);
-  if(pe){
-    const ecSize = EC_BASE * pe.scale;
-    ecEl.style.display = 'flex';
-    ecEl.style.left    = (cx+pe.sx)+'px';
-    ecEl.style.top     = (cy+pe.sy)+'px';
-    ecEl.style.width   = ecSize+'px';
-    ecEl.style.height  = ecSize+'px';
-    ecEl.style.fontSize= (ecSize*.24)+'px';
-    ecEl.style.zIndex  = Math.round(1000 - pe.depth);
-  } else {
-    ecEl.style.display = 'none';
-  }
+  if(pe) items.push({type:'ec', p:pe});
 
-  // Blobs follow centre
-  const bx = cx + (pe ? pe.sx : 0);
-  const by = cy + (pe ? pe.sy : 0);
-  document.getElementById('b1').style.cssText = `width:500px;height:500px;background:rgba(192,38,211,.11);filter:blur(60px);z-index:1;pointer-events:none;position:absolute;left:${bx-350}px;top:${by-320}px`;
-  document.getElementById('b2').style.cssText = `width:580px;height:580px;background:rgba(37,99,235,.09);filter:blur(60px);z-index:1;pointer-events:none;position:absolute;left:${bx-80}px;top:${by-200}px`;
-
-  // Service nodes — sort back-to-front
-  const proj = SVCS.map((s,i)=>{
+  SVCS.forEach((s,i)=>{
     const r = ORB[s.orbit].r;
     const p = project3D(r*Math.cos(angles[i]), r*Math.sin(angles[i]), 0);
-    return {i,p,s};
-  }).sort((a,b)=>(b.p?.depth??-1)-(a.p?.depth??-1));
+    if(p) items.push({type:'node', i, p, s});
+    else  nEls[i].style.display='none';
+  });
 
-  proj.forEach(({i,p,s},zo)=>{
-    const el  = nEls[i];
-    const col = ORB[s.orbit].col;
-    if(!p){el.style.display='none';return;}
-    el.style.display = 'block';
+  // Sort: highest depth (far) first → lowest z-index
+  items.sort((a,b)=>b.p.depth-a.p.depth);
 
-    const baseSize = ORB[s.orbit].iconSize;
-    const sz = Math.max(4, baseSize * p.scale);
-    const fs = Math.max(3, sz * 0.44);
-    const lblSize = Math.max(0, Math.min(12, sz * 0.30));
+  // Blobs follow EC projected position
+  const bx = cx + (pe ? pe.sx : 0);
+  const by = cy + (pe ? pe.sy : 0);
+  document.getElementById('b1').style.cssText=`width:500px;height:500px;background:rgba(192,38,211,.11);filter:blur(60px);z-index:1;pointer-events:none;position:absolute;left:${bx-350}px;top:${by-320}px`;
+  document.getElementById('b2').style.cssText=`width:580px;height:580px;background:rgba(37,99,235,.09);filter:blur(60px);z-index:1;pointer-events:none;position:absolute;left:${bx-80}px;top:${by-200}px`;
 
-    cEls[i].style.width    = sz+'px';
-    cEls[i].style.height   = sz+'px';
-    cEls[i].style.fontSize = fs+'px';
+  if(!pe) ecEl.style.display='none';
 
-    // Depth-based opacity
-    const maxD = Math.sqrt(CAM.x*CAM.x+CAM.y*CAM.y+CAM.z*CAM.z) + ORB[s.orbit].r;
-    const op = Math.max(.18, Math.min(1, (maxD - p.depth + ORB[s.orbit].r) / (2*ORB[s.orbit].r)));
-
-    el.style.left    = (cx+p.sx)+'px';
-    el.style.top     = (cy+p.sy)+'px';
-    el.style.zIndex  = 20 + zo;
-    el.style.opacity = op.toFixed(2);
-    lEls[i].style.fontSize = lblSize+'px';
-    lEls[i].style.opacity  = lblSize > 6 ? '1' : '0';
+  items.forEach((item, zo)=>{
+    const z = 10 + zo; // back items get low z, front items get high z
+    if(item.type==='ec'){
+      const ecSize = EC_BASE * item.p.scale;
+      ecEl.style.display  = 'flex';
+      ecEl.style.left     = (cx+item.p.sx)+'px';
+      ecEl.style.top      = (cy+item.p.sy)+'px';
+      ecEl.style.width    = ecSize+'px';
+      ecEl.style.height   = ecSize+'px';
+      ecEl.style.fontSize = (ecSize*.24)+'px';
+      ecEl.style.zIndex   = z; // participates in same sort — no longer hardcoded high
+    } else {
+      const {i,p,s} = item;
+      const el = nEls[i];
+      el.style.display = 'block';
+      const sz = Math.max(4, ORB[s.orbit].iconSize * p.scale);
+      const fs = Math.max(3, sz * 0.44);
+      const lblSize = Math.max(0, Math.min(12, sz * 0.30));
+      cEls[i].style.width    = sz+'px';
+      cEls[i].style.height   = sz+'px';
+      cEls[i].style.fontSize = fs+'px';
+      const camDist = v3.len([CAM.x,CAM.y,CAM.z]);
+      const op = Math.max(.15, Math.min(1, (camDist + ORB[s.orbit].r*1.5 - p.depth) / (ORB[s.orbit].r*3)));
+      el.style.left    = (cx+p.sx)+'px';
+      el.style.top     = (cy+p.sy)+'px';
+      el.style.zIndex  = z;
+      el.style.opacity = op.toFixed(2);
+      lEls[i].style.fontSize = lblSize+'px';
+      lEls[i].style.opacity  = lblSize>5?'1':'0';
+    }
   });
 }
 
