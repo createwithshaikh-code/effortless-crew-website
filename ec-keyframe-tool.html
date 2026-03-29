@@ -620,6 +620,7 @@ function togglePause(ring){
 
 function resetCam(){
   Object.assign(CAM,DEFAULT_CAM);
+  rebuildBasisFromEuler();
   SYS.x=0;SYS.y=0;SYS.z=0;
   RING_STATE.inner.offset=RING_STATE.middle.offset=RING_STATE.outer.offset=0;
   RING_STATE.inner.paused=RING_STATE.middle.paused=RING_STATE.outer.paused=false;
