@@ -641,24 +641,45 @@ export default function Hero() {
                   style={{ background: `linear-gradient(135deg, ${heroSettings.hero_color_1}cc 0%, ${heroSettings.hero_color_2}cc 100%)` }} />
               </MotionLink>
 
+              {/* Enter Orbit CTA */}
               <motion.button
-                className="flex items-center gap-2 group cursor-pointer px-4 py-3 sm:px-5 rounded-2xl transition-all duration-300 whitespace-nowrap"
+                className="relative flex items-center gap-2 group cursor-pointer px-4 py-3 sm:px-5 rounded-2xl transition-all duration-300 whitespace-nowrap overflow-hidden"
                 style={{
-                  background: "rgba(255,255,255,0.06)",
-                  border: "1px solid rgba(255,255,255,0.18)",
+                  background: orbitHovered
+                    ? "rgba(192,38,211,0.18)"
+                    : "rgba(255,255,255,0.06)",
+                  border: orbitHovered
+                    ? "1px solid rgba(192,38,211,0.55)"
+                    : "1px solid rgba(255,255,255,0.18)",
                   backdropFilter: "blur(8px)",
+                  boxShadow: orbitHovered
+                    ? "0 0 24px rgba(192,38,211,0.35), 0 0 48px rgba(192,38,211,0.15)"
+                    : "none",
+                  transition: "all 0.35s ease",
                 }}
-                whileHover={{ scale: 1.03, backgroundColor: "rgba(255,255,255,0.10)" }}
+                whileHover={{ scale: 1.04 }}
                 whileTap={{ scale: 0.97 }}
-                onClick={() => document.getElementById("portfolio")?.scrollIntoView({ behavior: "smooth" })}
+                onClick={enterOrbit}
               >
-                <span className="w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0"
-                  style={{ background: "rgba(192,38,211,0.20)", border: "1px solid rgba(192,38,211,0.35)" }}>
-                  <Play className="w-3.5 h-3.5 fill-white ml-0.5 text-white" />
+                {/* shimmer sweep on hover */}
+                {orbitHovered && (
+                  <span className="absolute inset-0 btn-shimmer pointer-events-none" />
+                )}
+                <span
+                  className="w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0"
+                  style={{
+                    background: "rgba(192,38,211,0.22)",
+                    border: "1px solid rgba(192,38,211,0.45)",
+                    boxShadow: orbitHovered ? "0 0 10px rgba(192,38,211,0.5)" : "none",
+                    transition: "box-shadow 0.35s ease",
+                  }}
+                >
+                  <Orbit className="w-3.5 h-3.5 text-white" />
                 </span>
-                <span className="text-sm font-semibold text-white/80 group-hover:text-white transition-colors">
-                  View Our Work
+                <span className="relative text-sm font-semibold text-white/80 group-hover:text-white transition-colors">
+                  Enter The Orbit
                 </span>
+                <Sparkles className="w-3 h-3 text-purple-400 opacity-0 group-hover:opacity-100 transition-opacity" />
               </motion.button>
             </motion.div>
           </motion.div>
