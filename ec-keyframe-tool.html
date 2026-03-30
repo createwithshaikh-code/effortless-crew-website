@@ -663,6 +663,8 @@ function captureState(){
   return {
     cx:CAM.x, cy:CAM.y, cz:CAM.z,
     yaw:CAM.yaw, pitch:CAM.pitch, roll:CAM.roll,
+    // Store live basis directly — avoids Euler round-trip errors on restore
+    fwd:[...CAM.fwd], right:[...CAM.right], up:[...CAM.up],
     sx:SYS.x, sy:SYS.y, sz:SYS.z,
     io:RING_STATE.inner.offset, mo:RING_STATE.middle.offset, oo:RING_STATE.outer.offset,
     ip:RING_STATE.inner.paused?1:0, mp:RING_STATE.middle.paused?1:0, op:RING_STATE.outer.paused?1:0,
