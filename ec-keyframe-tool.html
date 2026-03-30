@@ -618,6 +618,8 @@ function setSlider(rId,nId,v){
 function syncPanelFromCam(){
   setSlider('scx','vcx',CAM.x); setSlider('scy','vcy',CAM.y); setSlider('scz','vcz',CAM.z);
   setSlider('syaw','vyaw',CAM.yaw); setSlider('spitch','vpitch',CAM.pitch); setSlider('sroll','vroll',CAM.roll);
+  // Keep delta-tracking in sync so next slider move starts from current value
+  _prevYaw=CAM.yaw; _prevPitch=CAM.pitch; _prevRoll=CAM.roll;
   setSlider('sssx','vssx',SYS.x); setSlider('sssy','vssy',SYS.y); setSlider('sssz','vssz',SYS.z);
   setSlider('si','vi',RING_STATE.inner.offset*180/Math.PI);
   setSlider('sm','vm',RING_STATE.middle.offset*180/Math.PI);
