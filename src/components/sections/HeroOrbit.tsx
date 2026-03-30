@@ -179,8 +179,8 @@ export default function HeroOrbit({
         style={{
           position: "absolute",
           inset: 0,
-          perspective: orbitMode ? "900px" : "none",
-          transition: `perspective 0.8s ${EASE}`,
+          perspective: hasCamera ? `${pose.perspective}px` : "none",
+          transition: `perspective 1.2s ${EASE}`,
         }}
       >
         <div
@@ -188,10 +188,10 @@ export default function HeroOrbit({
             position: "absolute",
             inset: 0,
             transformStyle: "preserve-3d",
-            transform: orbitMode
-              ? `rotateX(${TILT_DEG}deg)`
-              : "rotateX(0deg)",
-            transition: `transform 0.8s ${EASE}`,
+            transform: hasCamera
+              ? `translateY(${pose.translateY}px) translateX(${pose.translateX}px) rotateZ(${pose.rotateZ}deg) rotateX(${pose.rotateX}deg) rotateY(${pose.rotateY}deg) translateZ(${pose.translateZ}px)`
+              : "none",
+            transition: `transform 1.2s ${EASE}`,
           }}
         >
           {/* ── Orbit track rings ── */}
