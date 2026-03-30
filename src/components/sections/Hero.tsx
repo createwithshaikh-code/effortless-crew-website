@@ -4,8 +4,8 @@ import React from "react";
 import Link from "next/link";
 import { useRef, useState, useCallback, useEffect } from "react";
 import { motion, AnimatePresence, useScroll, useTransform, useSpring } from "framer-motion";
-import { Play, ArrowRight, ChevronDown, X } from "lucide-react";
-import HeroOrbit, { type Service, type ServiceData } from "@/components/sections/HeroOrbit";
+import { ArrowRight, ChevronDown, X, Orbit, Sparkles } from "lucide-react";
+import HeroOrbit, { type Service, type ServiceData, type RingOverride } from "@/components/sections/HeroOrbit";
 
 const MotionLink = motion(Link);
 
