@@ -751,7 +751,7 @@ export default function Hero() {
                   zoomState
                     ? { opacity: 1, scale: zoomState.scale, x: zoomState.x, y: zoomState.y }
                     : orbitMode
-                      ? { opacity: 1, scale: 1.15, x: -220, y: 40 }
+                      ? { opacity: 1, scale: 1, x: -180, y: 0 }
                       : { opacity: 1, scale: 1, x: 0, y: 0 }
                 }
                 transition={
