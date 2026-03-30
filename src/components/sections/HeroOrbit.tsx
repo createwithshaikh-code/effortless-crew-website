@@ -219,10 +219,11 @@ export default function HeroOrbit({
             className="absolute top-1/2 left-1/2 z-20"
             style={{
               // Counter-rotate so EC stays face-on (billboard)
-              transform: orbitMode
-                ? `translate(-50%, -50%) rotateX(${-TILT_DEG}deg)`
+              transform: hasCamera
+                ? `translate(-50%, -50%) rotateY(${-pose.rotateY}deg) rotateX(${-pose.rotateX}deg) rotateZ(${-pose.rotateZ}deg)`
                 : "translate(-50%, -50%)",
-              transition: `transform 0.8s ${EASE}, filter 0.6s ease`,
+              transition: `transform 1.2s ${EASE}, filter 0.6s ease`,
+              transformStyle: "preserve-3d",
               filter: blurBackground ? "blur(5px) brightness(0.6)" : "none",
             }}
           >
