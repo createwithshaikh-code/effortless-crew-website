@@ -677,8 +677,14 @@ function captureState(){
 }
 function applyState(s){
   CAM.x=s.cx; CAM.y=s.cy; CAM.z=s.cz;
-  CAM.yaw=s.yaw??0; CAM.pitch=s.pitch??0; CAM.roll=s.roll??0;
-  rebuildBasisFromEuler();
+  // Restore basis directly if stored — no Euler reconstruction errors
+  if(s.fwd){
+    CAM.fwd=[...s.fwd]; CAM.right=[...s.right]; CAM.up=[...s.up];
+    extractEulerFromBasis(); // update slider display only
+  } else {
+    CAM.yaw=s.yaw??0; CAM.pitch=s.pitch??0; CAM.roll=s.roll??0;
+    rebuildBasisFromEuler(); // fallback for old keyframes without basis
+  }
   SYS.x=s.sx??0; SYS.y=s.sy??0; SYS.z=s.sz??0;
   RING_STATE.inner.offset=s.io; RING_STATE.middle.offset=s.mo; RING_STATE.outer.offset=s.oo;
   RING_STATE.inner.paused=s.ip>=.5;
