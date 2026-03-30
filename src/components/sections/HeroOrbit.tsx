@@ -335,16 +335,13 @@ export default function HeroOrbit({
                         willChange: "transform",
                       }}
                     >
-                      {/*
-                        Billboard wrapper: counter-rotates X so node faces the camera
-                        even when the orbital plane is tilted.
-                      */}
+                      {/* Billboard wrapper: counter-rotates so node faces camera */}
                       <div
                         style={{
-                          transform: orbitMode
-                            ? `translate(-50%, -50%) rotateX(${-TILT_DEG}deg)`
+                          transform: hasCamera
+                            ? `translate(-50%, -50%) rotateY(${-pose.rotateY}deg) rotateX(${-pose.rotateX}deg) rotateZ(${-pose.rotateZ}deg)`
                             : "translate(-50%, -50%)",
-                          transition: `transform 0.8s ${EASE}`,
+                          transition: `transform 1.2s ${EASE}`,
                           transformStyle: "preserve-3d",
                         }}
                       >
