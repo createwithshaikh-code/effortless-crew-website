@@ -571,9 +571,28 @@ function sl(rangeId, numId, min, max, fn){
 sl('scx','vcx',-1500,1500, v=>{CAM.x=v});
 sl('scy','vcy',-1500,1500, v=>{CAM.y=v});
 sl('scz','vcz',-300, 2500, v=>{CAM.z=v});
-sl('syaw','vyaw',-180,180,  v=>{CAM.yaw=v;   rebuildBasisFromEuler();});
-sl('spitch','vpitch',-89,89,v=>{CAM.pitch=v; rebuildBasisFromEuler();});
-sl('sroll','vroll',-180,180,v=>{CAM.roll=v;  rebuildBasisFromEuler();});
+// Rotation sliders apply LOCAL delta each step — same as drag, not global Euler rebuild
+let _prevYaw=0, _prevPitch=0, _prevRoll=0;
+sl('syaw','vyaw',-180,180, v=>{
+  const d=(v-_prevYaw)*Math.PI/180; _prevYaw=v; CAM.yaw=v;
+  // rotate around camera's own UP (local yaw)
+  CAM.fwd  =v3.norm(rotateVec(CAM.fwd,  CAM.up,-d));
+  CAM.right=v3.norm(rotateVec(CAM.right,CAM.up,-d));
+  CAM.up   =v3.norm(v3.cross(CAM.right,CAM.fwd)); // re-ortho
+});
+sl('spitch','vpitch',-89,89, v=>{
+  const d=(v-_prevPitch)*Math.PI/180; _prevPitch=v; CAM.pitch=v;
+  // rotate around camera's own RIGHT (local pitch)
+  CAM.fwd=v3.norm(rotateVec(CAM.fwd,CAM.right,-d));
+  CAM.up =v3.norm(rotateVec(CAM.up, CAM.right,-d));
+  CAM.right=v3.norm(v3.cross(CAM.fwd,CAM.up)); // re-ortho
+});
+sl('sroll','vroll',-180,180, v=>{
+  const d=(v-_prevRoll)*Math.PI/180; _prevRoll=v; CAM.roll=v;
+  // rotate around camera's own FORWARD (local roll)
+  CAM.right=v3.norm(rotateVec(CAM.right,CAM.fwd, d));
+  CAM.up   =v3.norm(rotateVec(CAM.up,   CAM.fwd, d));
+});
 sl('sssx','vssx',-800,800,  v=>{SYS.x=v});
 sl('sssy','vssy',-800,800,  v=>{SYS.y=v});
 sl('sssz','vssz',-800,800,  v=>{SYS.z=v});
