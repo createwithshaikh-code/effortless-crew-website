@@ -266,6 +266,21 @@ export default function Hero() {
   const [settingsReady, setSettingsReady] = useState(false);
   const [showOrbit, setShowOrbit] = useState(false);
 
+  // ── Orbit mode ──────────────────────────────────────────────────────
+  const [orbitHovered, setOrbitHovered] = useState(false);
+  const [orbitMode, setOrbitMode]       = useState(false);
+  const [orbitBlur, setOrbitBlur]       = useState(false);
+  // serviceCursor: which service in the flat list is active
+  const [serviceCursorIdx, setServiceCursorIdx] = useState(0);
+  // ringOverrides: per-ring pause + offset state
+  const [ringOverrides, setRingOverrides] = useState<{
+    inner: RingOverride; middle: RingOverride; outer: RingOverride;
+  }>({
+    inner:  { paused: false, offsetDeg: 0 },
+    middle: { paused: false, offsetDeg: 0 },
+    outer:  { paused: false, offsetDeg: 0 },
+  });
+
   // Fetch hero settings — animate headline only once settings confirmed
   useEffect(() => {
     const fallback = setTimeout(() => setSettingsReady(true), 600);
