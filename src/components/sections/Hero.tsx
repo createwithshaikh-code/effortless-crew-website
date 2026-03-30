@@ -774,6 +774,7 @@ export default function Hero() {
                   activeServiceName={activeOrbitService?.name ?? null}
                   ringOverrides={ringOverrides}
                   blurBackground={orbitBlur}
+                  cameraPose={currentCameraPose}
                 />
               </motion.div>
 
