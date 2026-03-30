@@ -338,21 +338,24 @@ export default function Hero() {
   }, []);
 
   // ── Orbit mode helpers ───────────────────────────────────────────────
-  // Flat list of all services in orbit order: inner → middle → outer
-  const flatServices = orbitServices ?? [
-    { name:"YT Automation", iconName:"Bot", orbit:"inner" as const, angle:0 },
-    { name:"Scriptwriting", iconName:"FileText", orbit:"inner" as const, angle:120 },
-    { name:"Short-Form Video", iconName:"Smartphone", orbit:"inner" as const, angle:240 },
-    { name:"Ecommerce Sites", iconName:"ShoppingCart", orbit:"middle" as const, angle:0 },
-    { name:"Logo Design", iconName:"Palette", orbit:"middle" as const, angle:90 },
-    { name:"Portfolio Sites", iconName:"Globe", orbit:"middle" as const, angle:180 },
-    { name:"Thumbnails", iconName:"Image", orbit:"middle" as const, angle:270 },
-    { name:"Social Media Mgmt", iconName:"Share2", orbit:"outer" as const, angle:0 },
-    { name:"Trend Research", iconName:"BarChart3", orbit:"outer" as const, angle:72 },
-    { name:"Ad Production", iconName:"Megaphone", orbit:"outer" as const, angle:144 },
-    { name:"AI Production", iconName:"Zap", orbit:"outer" as const, angle:216 },
-    { name:"Video Editing", iconName:"Film", orbit:"outer" as const, angle:288 },
+  // Flat list built from DB services or static fallback
+  const STATIC_SERVICES: ServiceData[] = [
+    { name:"YT Automation", iconName:"Bot", orbit:"inner", angle:0 },
+    { name:"Scriptwriting", iconName:"FileText", orbit:"inner", angle:120 },
+    { name:"Short-Form Video", iconName:"Smartphone", orbit:"inner", angle:240 },
+    { name:"Ecommerce Sites", iconName:"ShoppingCart", orbit:"middle", angle:0 },
+    { name:"Logo Design", iconName:"Palette", orbit:"middle", angle:90 },
+    { name:"Portfolio Sites", iconName:"Globe", orbit:"middle", angle:180 },
+    { name:"Thumbnails", iconName:"Image", orbit:"middle", angle:270 },
+    { name:"Social Media Mgmt", iconName:"Share2", orbit:"outer", angle:0 },
+    { name:"Trend Research", iconName:"BarChart3", orbit:"outer", angle:72 },
+    { name:"Ad Production", iconName:"Megaphone", orbit:"outer", angle:144 },
+    { name:"AI Production", iconName:"Zap", orbit:"outer", angle:216 },
+    { name:"Video Editing", iconName:"Film", orbit:"outer", angle:288 },
   ];
+  const flatServices: ServiceData[] = dbServices
+    ? dbServices.map(s => ({ name:s.name, iconName:s.icon_name, orbit:s.orbit, angle:s.angle }))
+    : STATIC_SERVICES;
 
   const activeOrbitService = orbitMode ? flatServices[serviceCursorIdx] : null;
 
