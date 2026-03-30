@@ -757,7 +757,7 @@ export default function Hero() {
                 transition={
                   !hasAnimatedIn
                     ? { duration: 1.0, delay: 0.6, ease: [0.22, 1, 0.36, 1] }
-                    : { duration: 0.8, ease: [0.22, 1, 0.36, 1] }
+                    : { duration: 1.2, ease: [0.22, 1, 0.36, 1] }
                 }
                 onAnimationComplete={() => {
                   if (!hasAnimatedInRef.current) {
