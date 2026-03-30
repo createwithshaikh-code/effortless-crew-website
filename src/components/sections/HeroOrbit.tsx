@@ -27,7 +27,7 @@ export interface ServiceData {
 
 export interface RingOverride {
   paused: boolean;
-  offsetDeg: number; // added to base angle so the ring "rotates" to bring a service front
+  offsetDeg: number;
 }
 
 const ICON_MAP: Record<string, LucideIcon> = {
@@ -40,7 +40,6 @@ interface HeroOrbitProps {
   onServiceClick?: (service: Service, nodeEl: HTMLElement) => void;
   paused?: boolean;
   services?: ServiceData[];
-  // Orbit mode props
   orbitMode?: boolean;
   activeServiceName?: string | null;
   ringOverrides?: { inner?: RingOverride; middle?: RingOverride; outer?: RingOverride };
@@ -103,6 +102,9 @@ const particles = [
   { top: "42%", left: "92%", size: 2, delay: -1, dur: 10 },
 ];
 
+// 3D tilt angle in orbit mode (degrees). 72° makes circles into tight ellipses.
+const TILT_DEG = 72;
+
 export default function HeroOrbit({
   onServiceClick,
   paused = false,
@@ -120,6 +122,8 @@ export default function HeroOrbit({
         angle: sd.angle,
       }))
     : services;
+
+  const EASE = "cubic-bezier(0.22, 1, 0.36, 1)";
 
   return (
     <div
@@ -150,258 +154,289 @@ export default function HeroOrbit({
         />
       ))}
 
-      {/* ── Orbit track rings ── */}
-      {(["inner", "middle", "outer"] as const).map((key) => {
-        const { radius } = orbitConfig[key];
-        return (
-          <div
-            key={key}
-            className="absolute rounded-full"
-            style={{
-              width: radius * 2,
-              height: radius * 2,
-              top: "50%",
-              left: "50%",
-              marginTop: -radius,
-              marginLeft: -radius,
-              ...ringStyle[key],
-            }}
-          />
-        );
-      })}
-
-      {/* ── Center EC Sun ── */}
+      {/*
+        ── 3D Perspective wrapper ──
+        In orbit mode: perspective on parent, rotateX on child tilts the entire orbital plane.
+        This makes the rings into ellipses and gives depth — "front" items appear larger.
+      */}
       <div
-        className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-20"
         style={{
-          transition: "filter 0.6s ease",
-          filter: blurBackground ? "blur(4px)" : "none",
+          position: "absolute",
+          inset: 0,
+          perspective: orbitMode ? "900px" : "none",
+          transition: `perspective 0.8s ${EASE}`,
         }}
       >
         <div
-          className="absolute rounded-full animate-ping"
           style={{
-            inset: -12,
-            background: "linear-gradient(135deg, rgba(80,200,255,0.28), rgba(37,99,235,0.18))",
-            animationDuration: "2.4s",
-          }}
-        />
-        <div
-          className="absolute rounded-full animate-ping"
-          style={{
-            inset: -26,
-            background: "linear-gradient(135deg, rgba(80,200,255,0.11), rgba(37,99,235,0.07))",
-            animationDuration: "3.2s",
-            animationDelay: "-0.7s",
-          }}
-        />
-        <div
-          className="relative rounded-full flex items-center justify-center select-none overflow-hidden"
-          style={{
-            width: 118, height: 118,
-            background: "radial-gradient(circle at center, rgba(10,20,50,0.95) 0%, rgba(5,10,35,0.98) 60%, rgba(2,2,16,1) 100%)",
-            border: "1.5px solid rgba(80,200,255,0.50)",
-            boxShadow: "0 0 32px rgba(80,200,255,0.35), 0 0 70px rgba(80,200,255,0.15), inset 0 0 18px rgba(30,80,160,0.25)",
-            animation: "sun-pulse 3s ease-in-out infinite",
-            willChange: "box-shadow",
+            position: "absolute",
+            inset: 0,
+            transformStyle: "preserve-3d",
+            transform: orbitMode
+              ? `rotateX(${TILT_DEG}deg)`
+              : "rotateX(0deg)",
+            transition: `transform 0.8s ${EASE}`,
           }}
         >
-          <NextImage
-            src="/orbit-logo.png"
-            alt="EC"
-            width={94}
-            height={94}
-            className="object-contain"
-            style={{ mixBlendMode: "screen" }}
-          />
-        </div>
-      </div>
-
-      {/* ── Per-node ghost trail + orbiting node ── */}
-      {resolvedServices.map((service) => {
-        const { radius, duration } = orbitConfig[service.orbit];
-        const override = ringOverrides[service.orbit];
-        const isActive = service.name === activeServiceName;
-        const isInBackground = orbitMode && !isActive && activeServiceName !== null;
-
-        // In orbit mode: use CSS animation-play-state + a rotation offset via custom animation
-        // If override.paused, freeze the ring; offsetDeg rotates it to the right position
-        const isPausedByOverride = orbitMode && override?.paused;
-        const offsetDeg = override?.offsetDeg ?? 0;
-
-        // Base delay from angle, then add offsetDeg as extra rotation
-        const delay = -((( service.angle + offsetDeg) / 360) * duration);
-
-        const col = orbitColor[service.orbit];
-        const Icon = service.icon;
-
-        const ghosts = [
-          { delta: duration * 0.04, size: 18, alpha: 0.30 },
-        ];
-
-        const nodeFilter = isInBackground
-          ? "blur(3px) brightness(0.5)"
-          : isActive
-            ? "none"
-            : "none";
-
-        const nodeOpacity = isInBackground ? 0.4 : 1;
-
-        return (
-          <div
-            key={service.name}
-            className={isPausedByOverride ? "orbits-paused" : ""}
-          >
-            {/* Ghost trail */}
-            {ghosts.map((g, gi) => (
+          {/* ── Orbit track rings ── */}
+          {(["inner", "middle", "outer"] as const).map((key) => {
+            const { radius } = orbitConfig[key];
+            return (
               <div
-                key={gi}
-                className="absolute"
+                key={key}
+                className="absolute rounded-full"
                 style={{
-                  top: "50%", left: "50%",
-                  width: 0, height: 0,
-                  animation: `orbit-cw ${duration}s linear infinite`,
-                  animationDelay: `${delay + g.delta}s`,
-                  willChange: "transform",
-                  opacity: isInBackground ? 0 : 1,
-                  transition: "opacity 0.5s ease",
+                  width: radius * 2,
+                  height: radius * 2,
+                  top: "50%",
+                  left: "50%",
+                  marginTop: -radius,
+                  marginLeft: -radius,
+                  ...ringStyle[key],
                 }}
-              >
-                <div style={{ transform: `translateY(-${radius}px)` }}>
-                  <div
-                    style={{
-                      width: g.size, height: g.size,
-                      borderRadius: "50%",
-                      transform: "translate(-50%, -50%)",
-                      background: rgba(col, g.alpha * 0.35),
-                      boxShadow: `0 0 ${Math.round(g.size * 0.7)}px ${rgba(col, g.alpha)}, 0 0 ${Math.round(g.size * 1.4)}px ${rgba(col, g.alpha * 0.5)}`,
-                    }}
-                  />
-                </div>
-              </div>
-            ))}
+              />
+            );
+          })}
 
-            {/* ── Main orbiting node ── */}
+          {/* ── Center EC Sun ── */}
+          <div
+            className="absolute top-1/2 left-1/2 z-20"
+            style={{
+              // Counter-rotate so EC stays face-on (billboard)
+              transform: orbitMode
+                ? `translate(-50%, -50%) rotateX(${-TILT_DEG}deg)`
+                : "translate(-50%, -50%)",
+              transition: `transform 0.8s ${EASE}, filter 0.6s ease`,
+              filter: blurBackground ? "blur(5px) brightness(0.6)" : "none",
+            }}
+          >
             <div
-              className="absolute"
+              className="absolute rounded-full animate-ping"
               style={{
-                top: "50%", left: "50%",
-                width: 0, height: 0,
-                animation: `orbit-cw ${duration}s linear infinite`,
-                animationDelay: `${delay}s`,
-                willChange: "transform",
+                inset: -12,
+                background: "linear-gradient(135deg, rgba(80,200,255,0.28), rgba(37,99,235,0.18))",
+                animationDuration: "2.4s",
+              }}
+            />
+            <div
+              className="absolute rounded-full animate-ping"
+              style={{
+                inset: -26,
+                background: "linear-gradient(135deg, rgba(80,200,255,0.11), rgba(37,99,235,0.07))",
+                animationDuration: "3.2s",
+                animationDelay: "-0.7s",
+              }}
+            />
+            <div
+              className="relative rounded-full flex items-center justify-center select-none overflow-hidden"
+              style={{
+                width: 118, height: 118,
+                background: "radial-gradient(circle at center, rgba(10,20,50,0.95) 0%, rgba(5,10,35,0.98) 60%, rgba(2,2,16,1) 100%)",
+                border: "1.5px solid rgba(80,200,255,0.50)",
+                boxShadow: "0 0 32px rgba(80,200,255,0.35), 0 0 70px rgba(80,200,255,0.15), inset 0 0 18px rgba(30,80,160,0.25)",
+                animation: "sun-pulse 3s ease-in-out infinite",
+                willChange: "box-shadow",
               }}
             >
-              <div style={{ transform: `translateY(-${radius}px)` }}>
+              <NextImage
+                src="/orbit-logo.png"
+                alt="EC"
+                width={94}
+                height={94}
+                className="object-contain"
+                style={{ mixBlendMode: "screen" }}
+              />
+            </div>
+          </div>
+
+          {/* ── Per-node ghost trail + orbiting node ── */}
+          {resolvedServices.map((service) => {
+            const { radius, duration } = orbitConfig[service.orbit];
+            const override = ringOverrides[service.orbit];
+            const isActive = service.name === activeServiceName;
+            const isInBackground = orbitMode && !isActive && activeServiceName !== null;
+            const isPausedByOverride = orbitMode && override?.paused;
+            const offsetDeg = override?.offsetDeg ?? 0;
+            const delay = -(((service.angle + offsetDeg) / 360) * duration);
+            const col = orbitColor[service.orbit];
+            const Icon = service.icon;
+
+            const ghosts = [
+              { delta: duration * 0.04, size: 18, alpha: 0.30 },
+            ];
+
+            return (
+              <div
+                key={service.name}
+                className={isPausedByOverride ? "orbits-paused" : ""}
+              >
+                {/* Ghost trail */}
+                {ghosts.map((g, gi) => (
+                  <div
+                    key={gi}
+                    className="absolute"
+                    style={{
+                      top: "50%", left: "50%",
+                      width: 0, height: 0,
+                      animation: `orbit-cw ${duration}s linear infinite`,
+                      animationDelay: `${delay + g.delta}s`,
+                      willChange: "transform",
+                      opacity: isInBackground ? 0 : 1,
+                      transition: "opacity 0.5s ease",
+                    }}
+                  >
+                    <div style={{ transform: `translateY(-${radius}px)` }}>
+                      <div
+                        style={{
+                          width: g.size, height: g.size,
+                          borderRadius: "50%",
+                          transform: "translate(-50%, -50%)",
+                          background: rgba(col, g.alpha * 0.35),
+                          boxShadow: `0 0 ${Math.round(g.size * 0.7)}px ${rgba(col, g.alpha)}, 0 0 ${Math.round(g.size * 1.4)}px ${rgba(col, g.alpha * 0.5)}`,
+                        }}
+                      />
+                    </div>
+                  </div>
+                ))}
+
+                {/* ── Main orbiting node ── */}
                 <div
+                  className="absolute"
                   style={{
-                    animation: `orbit-ccw ${duration}s linear infinite`,
+                    top: "50%", left: "50%",
+                    width: 0, height: 0,
+                    animation: `orbit-cw ${duration}s linear infinite`,
                     animationDelay: `${delay}s`,
                     willChange: "transform",
                   }}
                 >
-                  <div
-                    className="orbit-node"
-                    style={{
-                      position: "relative",
-                      width: 38,
-                      height: 38,
-                      transform: "translate(-50%, -50%)",
-                      pointerEvents: "auto",
-                      filter: nodeFilter,
-                      opacity: nodeOpacity,
-                      transition: "filter 0.5s ease, opacity 0.5s ease",
-                      "--node-glow-hi": rgba(col, 0.72),
-                      "--node-glow-lo": rgba(col, 0.28),
-                    } as React.CSSProperties}
-                  >
-                    {/* Enlarged hit area */}
+                  <div style={{ transform: `translateY(-${radius}px)` }}>
                     <div
                       style={{
-                        position: "absolute",
-                        inset: -13,
-                        borderRadius: "50%",
-                        cursor: "pointer",
-                        zIndex: 10,
-                      }}
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        const wrapper = e.currentTarget.parentElement;
-                        if (wrapper) onServiceClick?.(service, wrapper);
-                      }}
-                    />
-
-                    {/* Active ring glow */}
-                    {isActive && (
-                      <div
-                        style={{
-                          position: "absolute",
-                          inset: -10,
-                          borderRadius: "50%",
-                          border: `1.5px solid ${rgba(col, 0.9)}`,
-                          boxShadow: `0 0 20px ${rgba(col, 0.7)}, 0 0 40px ${rgba(col, 0.4)}`,
-                          animation: "sun-pulse 2s ease-in-out infinite",
-                          pointerEvents: "none",
-                        }}
-                      />
-                    )}
-
-                    {/* Visual circle */}
-                    <div
-                      className="orbit-node-circle"
-                      style={{
-                        width: 38, height: 38,
-                        borderRadius: "50%",
-                        background: isActive
-                          ? `radial-gradient(circle at 38% 38%, rgba(${col.r},${col.g},${col.b},0.30), rgba(8,8,28,0.95))`
-                          : "rgba(8,8,28,0.90)",
-                        border: `1.5px solid ${rgba(col, isActive ? 0.85 : 0.42)}`,
-                        boxShadow: isActive
-                          ? `0 0 20px ${rgba(col, 0.6)}, 0 0 40px ${rgba(col, 0.3)}, 0 4px 14px rgba(0,0,0,0.6)`
-                          : `0 0 12px ${rgba(col, 0.28)}, 0 0 24px ${rgba(col, 0.12)}, 0 4px 14px rgba(0,0,0,0.6)`,
-                        display: "flex",
-                        alignItems: "center",
-                        justifyContent: "center",
-                        transition: "background 0.4s ease, border-color 0.4s ease, box-shadow 0.4s ease",
+                        animation: `orbit-ccw ${duration}s linear infinite`,
+                        animationDelay: `${delay}s`,
+                        willChange: "transform",
                       }}
                     >
-                      <Icon style={{ width: 14, height: 14, color: rgba(col, isActive ? 1 : 0.95), display: "block" }} />
-                    </div>
-
-                    {/* Label */}
-                    {(() => {
-                      const flipLeft = Math.sin(service.angle * Math.PI / 180) > 0.1;
-                      return (
-                        <span
+                      {/*
+                        Billboard wrapper: counter-rotates X so node faces the camera
+                        even when the orbital plane is tilted.
+                      */}
+                      <div
+                        style={{
+                          transform: orbitMode
+                            ? `translate(-50%, -50%) rotateX(${-TILT_DEG}deg)`
+                            : "translate(-50%, -50%)",
+                          transition: `transform 0.8s ${EASE}`,
+                          transformStyle: "preserve-3d",
+                        }}
+                      >
+                        <div
+                          className="orbit-node"
                           style={{
-                            position: "absolute",
-                            ...(flipLeft
-                              ? { right: "calc(100% + 8px)", textAlign: "right" as const }
-                              : { left:  "calc(100% + 8px)", textAlign: "left"  as const }
-                            ),
-                            top: "50%",
-                            transform: "translateY(-50%)",
-                            fontSize: 10,
-                            fontWeight: 600,
-                            color: isActive ? "rgba(255,255,255,0.95)" : "rgba(255,255,255,0.72)",
-                            whiteSpace: "nowrap",
-                            lineHeight: 1,
-                            letterSpacing: "0.02em",
-                            pointerEvents: "none",
-                            transition: "color 0.4s ease",
-                          }}
+                            position: "relative",
+                            width: 38,
+                            height: 38,
+                            pointerEvents: "auto",
+                            filter: isInBackground
+                              ? "blur(3px) brightness(0.5)"
+                              : "none",
+                            opacity: isInBackground ? 0.35 : 1,
+                            transition: "filter 0.5s ease, opacity 0.5s ease",
+                            "--node-glow-hi": rgba(col, 0.72),
+                            "--node-glow-lo": rgba(col, 0.28),
+                          } as React.CSSProperties}
                         >
-                          {service.name}
-                        </span>
-                      );
-                    })()}
+                          {/* Enlarged hit area */}
+                          <div
+                            style={{
+                              position: "absolute",
+                              inset: -13,
+                              borderRadius: "50%",
+                              cursor: "pointer",
+                              zIndex: 10,
+                            }}
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              const wrapper = e.currentTarget.parentElement;
+                              if (wrapper) onServiceClick?.(service, wrapper);
+                            }}
+                          />
+
+                          {/* Active ring glow */}
+                          {isActive && (
+                            <div
+                              style={{
+                                position: "absolute",
+                                inset: -12,
+                                borderRadius: "50%",
+                                border: `2px solid ${rgba(col, 0.95)}`,
+                                boxShadow: `0 0 24px ${rgba(col, 0.8)}, 0 0 48px ${rgba(col, 0.45)}, 0 0 80px ${rgba(col, 0.2)}`,
+                                animation: "sun-pulse 2s ease-in-out infinite",
+                                pointerEvents: "none",
+                              }}
+                            />
+                          )}
+
+                          {/* Visual circle */}
+                          <div
+                            className="orbit-node-circle"
+                            style={{
+                              width: 38, height: 38,
+                              borderRadius: "50%",
+                              background: isActive
+                                ? `radial-gradient(circle at 38% 38%, rgba(${col.r},${col.g},${col.b},0.35), rgba(8,8,28,0.95))`
+                                : "rgba(8,8,28,0.90)",
+                              border: `1.5px solid ${rgba(col, isActive ? 0.9 : 0.42)}`,
+                              boxShadow: isActive
+                                ? `0 0 24px ${rgba(col, 0.7)}, 0 0 48px ${rgba(col, 0.35)}, 0 4px 14px rgba(0,0,0,0.6)`
+                                : `0 0 12px ${rgba(col, 0.28)}, 0 0 24px ${rgba(col, 0.12)}, 0 4px 14px rgba(0,0,0,0.6)`,
+                              display: "flex",
+                              alignItems: "center",
+                              justifyContent: "center",
+                              transition: "all 0.4s ease",
+                            }}
+                          >
+                            <Icon style={{ width: 14, height: 14, color: rgba(col, isActive ? 1 : 0.95), display: "block" }} />
+                          </div>
+
+                          {/* Label */}
+                          {(() => {
+                            const flipLeft = Math.sin(service.angle * Math.PI / 180) > 0.1;
+                            return (
+                              <span
+                                style={{
+                                  position: "absolute",
+                                  ...(flipLeft
+                                    ? { right: "calc(100% + 8px)", textAlign: "right" as const }
+                                    : { left:  "calc(100% + 8px)", textAlign: "left"  as const }
+                                  ),
+                                  top: "50%",
+                                  transform: "translateY(-50%)",
+                                  fontSize: isActive ? 11 : 10,
+                                  fontWeight: isActive ? 700 : 600,
+                                  color: isActive ? "rgba(255,255,255,0.95)" : "rgba(255,255,255,0.72)",
+                                  whiteSpace: "nowrap",
+                                  lineHeight: 1,
+                                  letterSpacing: "0.02em",
+                                  pointerEvents: "none",
+                                  transition: "all 0.4s ease",
+                                }}
+                              >
+                                {service.name}
+                              </span>
+                            );
+                          })()}
+                        </div>
+                      </div>
+                    </div>
                   </div>
                 </div>
               </div>
-            </div>
-          </div>
-        );
-      })}
+            );
+          })}
+        </div>
+      </div>
     </div>
   );
 }
