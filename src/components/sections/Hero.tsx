@@ -545,9 +545,9 @@ export default function Hero() {
           <motion.div
             className="flex flex-col justify-center lg:py-24 lg:pr-8"
             animate={
-              selectedService
-                ? { opacity: 0, x: -60, scale: 1.03 }
-                : { opacity: 1, x: 0,   scale: 1    }
+              selectedService || orbitMode
+                ? { opacity: 0, x: -60, scale: 1.03, pointerEvents: "none" }
+                : { opacity: 1, x: 0,   scale: 1,    pointerEvents: "auto" }
             }
             transition={{ duration: 0.55, ease: EASE_OUT }}
           >
