@@ -59,6 +59,7 @@ interface HeroOrbitProps {
   activeServiceName?: string | null;
   ringOverrides?: { inner?: RingOverride; middle?: RingOverride; outer?: RingOverride };
   blurBackground?: boolean;
+  cameraPose?: CameraPose;
 }
 
 const services: Service[] = [
