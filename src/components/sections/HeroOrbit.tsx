@@ -233,6 +233,7 @@ export default function HeroOrbit({
         const delay = -((( service.angle + offsetDeg) / 360) * duration);
 
         const col = orbitColor[service.orbit];
+        const Icon = service.icon;
 
         const ghosts = [
           { delta: duration * 0.04, size: 18, alpha: 0.30 },
