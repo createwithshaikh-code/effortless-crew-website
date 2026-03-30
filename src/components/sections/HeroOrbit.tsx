@@ -356,7 +356,8 @@ export default function HeroOrbit({
                               ? "blur(3px) brightness(0.5)"
                               : "none",
                             opacity: isInBackground ? 0.35 : 1,
-                            transition: "filter 0.5s ease, opacity 0.5s ease",
+                            transform: isActive && hasCamera ? "scale(1.6)" : "scale(1)",
+                            transition: "filter 0.5s ease, opacity 0.5s ease, transform 0.6s ease",
                             "--node-glow-hi": rgba(col, 0.72),
                             "--node-glow-lo": rgba(col, 0.28),
                           } as React.CSSProperties}
