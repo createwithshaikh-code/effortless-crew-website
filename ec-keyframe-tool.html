@@ -715,10 +715,20 @@ function lerp(a,b,t){return a+(b-a)*t}
 function lerpDeg(a,b,t){let d=b-a;d=((d%360)+540)%360-180;return a+d*t}
 function lerpA(a,b,t){let d=b-a;d-=Math.round(d/(2*Math.PI))*2*Math.PI;return a+d*t}
 
+function nlerpV(a,b,t){return v3.norm([a[0]+(b[0]-a[0])*t, a[1]+(b[1]-a[1])*t, a[2]+(b[2]-a[2])*t])}
+
 function lerpState(s1,s2,t){
   const e=EASING[activeEase](t);
+  // Interpolate basis vectors directly (no Euler — avoids discontinuities)
+  const fwd0 = s1.fwd||[0,0,-1], fwd1 = s2.fwd||[0,0,-1];
+  const up0  = s1.up ||[0,1, 0], up1  = s2.up ||[0,1, 0];
+  const fwd   = nlerpV(fwd0, fwd1, e);
+  const upRaw = nlerpV(up0,  up1,  e);
+  const right = v3.norm(v3.cross(fwd, upRaw));
+  const up    = v3.norm(v3.cross(right, fwd));
   return {
     cx:lerp(s1.cx,s2.cx,e), cy:lerp(s1.cy,s2.cy,e), cz:lerp(s1.cz,s2.cz,e),
+    fwd, right, up,
     yaw:lerpDeg(s1.yaw??0,s2.yaw??0,e), pitch:lerp(s1.pitch??0,s2.pitch??0,e), roll:lerpDeg(s1.roll??0,s2.roll??0,e),
     sx:lerp(s1.sx??0,s2.sx??0,e), sy:lerp(s1.sy??0,s2.sy??0,e), sz:lerp(s1.sz??0,s2.sz??0,e),
     io:lerpA(s1.io,s2.io,e), mo:lerpA(s1.mo,s2.mo,e), oo:lerpA(s1.oo,s2.oo,e),
