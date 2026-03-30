@@ -28,7 +28,8 @@
       "Bash(grep -r \"Ticker\\\\|from .*Ticker\" '/c/Users/jassim/WEBSITE x MUHIB/effortless crew website/src' --include=*.tsx)",
       "Bash(find '/c/Users/jassim/WEBSITE x MUHIB/effortless crew website/public' -type f \\\\\\(-name *.png -o -name *.jpg -o -name *.webp \\\\\\))",
       "Bash(/tmp/analyze.txt:*)",
-      "Read(//tmp/**)"
+      "Read(//tmp/**)",
+      "Bash(npx next:*)"
     ],
     "additionalDirectories": [
       "C:\\Users\\jassim\\Pictures\\logo",

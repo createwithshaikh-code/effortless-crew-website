@@ -30,6 +30,21 @@ export interface RingOverride {
   offsetDeg: number;
 }
 
+export interface CameraPose {
+  perspective: number;
+  rotateX: number;
+  rotateY: number;
+  rotateZ: number;
+  translateX: number;
+  translateY: number;
+  translateZ: number;
+}
+
+export const DEFAULT_CAMERA_POSE: CameraPose = {
+  perspective: 0, rotateX: 0, rotateY: 0, rotateZ: 0,
+  translateX: 0, translateY: 0, translateZ: 0,
+};
+
 const ICON_MAP: Record<string, LucideIcon> = {
   Film, Image, Smartphone, FileText, Bot, Share2, Palette, Megaphone,
   Globe, ShoppingCart, Zap, BarChart3, Youtube, Camera, Music, Code,
