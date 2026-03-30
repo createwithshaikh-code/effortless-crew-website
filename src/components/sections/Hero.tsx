@@ -686,42 +686,198 @@ export default function Hero() {
           </motion.div>
 
           {/* RIGHT: Orbit — parallax wrapper; only on desktop */}
-          {showOrbit && <motion.div style={{ y: orbitY }} className="flex flex-1 items-center justify-center">
+          {showOrbit && (
             <motion.div
-              ref={orbitContainerRef}
-              style={{
-                maskImage: selectedService
-                  ? "none"
-                  : "linear-gradient(to right, transparent 0%, black 13%, black 88%, transparent 100%)",
-                WebkitMaskImage: selectedService
-                  ? "none"
-                  : "linear-gradient(to right, transparent 0%, black 13%, black 88%, transparent 100%)",
-              }}
-              initial={{ opacity: 0, scale: 0.85, x: 0, y: 0 }}
-              animate={
-                zoomState
-                  ? { opacity: 1, scale: zoomState.scale, x: zoomState.x, y: zoomState.y }
-                  : { opacity: 1, scale: 1, x: 0, y: 0 }
-              }
-              transition={
-                !hasAnimatedIn
-                  ? { duration: 1.0, delay: 0.6, ease: [0.22, 1, 0.36, 1] }
-                  : { duration: 0.8, ease: [0.22, 1, 0.36, 1] }
-              }
-              onAnimationComplete={() => {
-                if (!hasAnimatedInRef.current) {
-                  hasAnimatedInRef.current = true;
-                  setHasAnimatedIn(true);
-                }
-              }}
+              style={{ y: orbitY }}
+              className="flex flex-1 items-center justify-center relative"
+              onMouseEnter={() => { if (!orbitMode) setOrbitHovered(true); }}
+              onMouseLeave={() => setOrbitHovered(false)}
             >
-              <HeroOrbit
-                onServiceClick={handleServiceClick}
-                paused={!!selectedService}
-                services={orbitServices}
-              />
+              <motion.div
+                ref={orbitContainerRef}
+                style={{
+                  maskImage: (selectedService || orbitMode)
+                    ? "none"
+                    : "linear-gradient(to right, transparent 0%, black 13%, black 88%, transparent 100%)",
+                  WebkitMaskImage: (selectedService || orbitMode)
+                    ? "none"
+                    : "linear-gradient(to right, transparent 0%, black 13%, black 88%, transparent 100%)",
+                }}
+                initial={{ opacity: 0, scale: 0.85, x: 0, y: 0 }}
+                animate={
+                  zoomState
+                    ? { opacity: 1, scale: zoomState.scale, x: zoomState.x, y: zoomState.y }
+                    : orbitMode
+                      ? { opacity: 1, scale: 0.58, x: 0, y: 0 }
+                      : { opacity: 1, scale: 1, x: 0, y: 0 }
+                }
+                transition={
+                  !hasAnimatedIn
+                    ? { duration: 1.0, delay: 0.6, ease: [0.22, 1, 0.36, 1] }
+                    : { duration: 0.8, ease: [0.22, 1, 0.36, 1] }
+                }
+                onAnimationComplete={() => {
+                  if (!hasAnimatedInRef.current) {
+                    hasAnimatedInRef.current = true;
+                    setHasAnimatedIn(true);
+                  }
+                }}
+              >
+                <HeroOrbit
+                  onServiceClick={handleServiceClick}
+                  paused={!!selectedService}
+                  services={orbitServices}
+                  orbitMode={orbitMode}
+                  activeServiceName={activeOrbitService?.name ?? null}
+                  ringOverrides={ringOverrides}
+                  blurBackground={orbitBlur}
+                />
+              </motion.div>
+
+              {/* ── Hover overlay: "Enter the Orbit" ── */}
+              <AnimatePresence>
+                {orbitHovered && !orbitMode && !selectedService && (
+                  <motion.div
+                    key="orbit-hover-overlay"
+                    className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none z-30"
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    exit={{ opacity: 0 }}
+                    transition={{ duration: 0.3 }}
+                  >
+                    {/* Blur + grow effect on the orbit container underneath */}
+                    <div
+                      className="absolute inset-0 rounded-full pointer-events-none"
+                      style={{
+                        background: "radial-gradient(circle at center, rgba(192,38,211,0.08) 0%, rgba(2,2,16,0.55) 70%)",
+                        backdropFilter: "blur(2px)",
+                        WebkitBackdropFilter: "blur(2px)",
+                      }}
+                    />
+                    <motion.div
+                      className="relative flex flex-col items-center gap-3 text-center pointer-events-auto cursor-pointer"
+                      initial={{ scale: 0.92, y: 8 }}
+                      animate={{ scale: 1, y: 0 }}
+                      exit={{ scale: 0.92, y: 8 }}
+                      transition={{ duration: 0.3, ease: [0.22, 1, 0.36, 1] }}
+                      onClick={enterOrbit}
+                    >
+                      <div
+                        className="w-16 h-16 rounded-full flex items-center justify-center"
+                        style={{
+                          background: "rgba(192,38,211,0.18)",
+                          border: "1.5px solid rgba(192,38,211,0.55)",
+                          boxShadow: "0 0 32px rgba(192,38,211,0.45), 0 0 64px rgba(192,38,211,0.20)",
+                        }}
+                      >
+                        <Orbit className="w-7 h-7 text-white" />
+                      </div>
+                      <p
+                        className="text-sm font-bold tracking-widest uppercase"
+                        style={{
+                          color: "#fff",
+                          textShadow: "0 0 20px rgba(192,38,211,0.9), 0 0 40px rgba(192,38,211,0.5)",
+                          letterSpacing: "0.18em",
+                        }}
+                      >
+                        Enter Our Orbit
+                      </p>
+                      <p
+                        className="text-xs font-medium max-w-[180px] leading-relaxed"
+                        style={{ color: "rgba(255,255,255,0.55)" }}
+                      >
+                        Click to explore our services in 3D orbit view
+                      </p>
+                    </motion.div>
+                  </motion.div>
+                )}
+              </AnimatePresence>
+
+              {/* ── Orbit mode UI: service name + nav ── */}
+              <AnimatePresence>
+                {orbitMode && (
+                  <motion.div
+                    key="orbit-mode-ui"
+                    className="absolute inset-0 flex flex-col items-center justify-end pb-8 pointer-events-none z-40"
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: 20 }}
+                    transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
+                  >
+                    {/* Active service name */}
+                    <AnimatePresence mode="wait">
+                      <motion.div
+                        key={activeOrbitService?.name ?? "none"}
+                        initial={{ opacity: 0, y: 10 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        exit={{ opacity: 0, y: -10 }}
+                        transition={{ duration: 0.3 }}
+                        className="text-center mb-4"
+                      >
+                        <p className="text-xs font-bold tracking-[0.25em] uppercase mb-1"
+                          style={{ color: "rgba(192,38,211,0.8)" }}>
+                          {activeOrbitService?.orbit ?? ""} ring
+                        </p>
+                        <p className="text-lg font-black tracking-wide text-white"
+                          style={{ textShadow: "0 0 20px rgba(192,38,211,0.6)" }}>
+                          {activeOrbitService?.name ?? ""}
+                        </p>
+                        <p className="text-xs mt-1" style={{ color: "rgba(255,255,255,0.35)" }}>
+                          {serviceCursorIdx + 1} / {flatServices.length}
+                        </p>
+                      </motion.div>
+                    </AnimatePresence>
+
+                    {/* Prev / Next + Exit */}
+                    <div className="flex items-center gap-3 pointer-events-auto">
+                      <motion.button
+                        className="w-10 h-10 rounded-full flex items-center justify-center text-white font-bold"
+                        style={{
+                          background: "rgba(255,255,255,0.08)",
+                          border: "1px solid rgba(255,255,255,0.18)",
+                          fontSize: 18,
+                          opacity: serviceCursorIdx === 0 ? 0.3 : 1,
+                        }}
+                        whileTap={{ scale: 0.92 }}
+                        onClick={() => navigateOrbit(-1)}
+                        disabled={serviceCursorIdx === 0}
+                      >
+                        ‹
+                      </motion.button>
+
+                      <motion.button
+                        className="px-5 py-2 rounded-full text-xs font-bold tracking-widest uppercase"
+                        style={{
+                          background: "rgba(192,38,211,0.18)",
+                          border: "1px solid rgba(192,38,211,0.45)",
+                          color: "rgba(255,255,255,0.7)",
+                        }}
+                        whileTap={{ scale: 0.95 }}
+                        onClick={exitOrbit}
+                      >
+                        Exit Orbit
+                      </motion.button>
+
+                      <motion.button
+                        className="w-10 h-10 rounded-full flex items-center justify-center text-white font-bold"
+                        style={{
+                          background: "rgba(255,255,255,0.08)",
+                          border: "1px solid rgba(255,255,255,0.18)",
+                          fontSize: 18,
+                          opacity: serviceCursorIdx === flatServices.length - 1 ? 0.3 : 1,
+                        }}
+                        whileTap={{ scale: 0.92 }}
+                        onClick={() => navigateOrbit(1)}
+                        disabled={serviceCursorIdx === flatServices.length - 1}
+                      >
+                        ›
+                      </motion.button>
+                    </div>
+                  </motion.div>
+                )}
+              </AnimatePresence>
             </motion.div>
-          </motion.div>}
+          )}
 
         </div>
       </div>
