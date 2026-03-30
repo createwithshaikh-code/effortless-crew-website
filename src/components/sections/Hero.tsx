@@ -801,7 +801,7 @@ export default function Hero() {
                 {orbitMode && (
                   <motion.div
                     key="orbit-mode-ui"
-                    className="absolute inset-0 flex flex-col items-center justify-end pb-8 pointer-events-none z-40"
+                    className="fixed bottom-8 left-1/2 -translate-x-1/2 flex flex-col items-center pointer-events-none z-40"
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
                     exit={{ opacity: 0, y: 20 }}
