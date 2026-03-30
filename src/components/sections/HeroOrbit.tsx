@@ -118,9 +118,6 @@ const particles = [
   { top: "42%", left: "92%", size: 2, delay: -1, dur: 10 },
 ];
 
-// 3D tilt angle in orbit mode (degrees). 72° makes circles into tight ellipses.
-const TILT_DEG = 72;
-
 export default function HeroOrbit({
   onServiceClick,
   paused = false,
@@ -129,7 +126,10 @@ export default function HeroOrbit({
   activeServiceName = null,
   ringOverrides = {},
   blurBackground = false,
+  cameraPose,
 }: HeroOrbitProps) {
+  const pose = cameraPose ?? DEFAULT_CAMERA_POSE;
+  const hasCamera = pose.perspective > 0;
   const resolvedServices: Service[] = servicesProp
     ? servicesProp.map((sd) => ({
         name: sd.name,
