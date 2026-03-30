@@ -337,6 +337,89 @@ export default function Hero() {
     setZoomState(null);
   }, []);
 
+  // ── Orbit mode helpers ───────────────────────────────────────────────
+  // Flat list of all services in orbit order: inner → middle → outer
+  const flatServices = orbitServices ?? [
+    { name:"YT Automation", iconName:"Bot", orbit:"inner" as const, angle:0 },
+    { name:"Scriptwriting", iconName:"FileText", orbit:"inner" as const, angle:120 },
+    { name:"Short-Form Video", iconName:"Smartphone", orbit:"inner" as const, angle:240 },
+    { name:"Ecommerce Sites", iconName:"ShoppingCart", orbit:"middle" as const, angle:0 },
+    { name:"Logo Design", iconName:"Palette", orbit:"middle" as const, angle:90 },
+    { name:"Portfolio Sites", iconName:"Globe", orbit:"middle" as const, angle:180 },
+    { name:"Thumbnails", iconName:"Image", orbit:"middle" as const, angle:270 },
+    { name:"Social Media Mgmt", iconName:"Share2", orbit:"outer" as const, angle:0 },
+    { name:"Trend Research", iconName:"BarChart3", orbit:"outer" as const, angle:72 },
+    { name:"Ad Production", iconName:"Megaphone", orbit:"outer" as const, angle:144 },
+    { name:"AI Production", iconName:"Zap", orbit:"outer" as const, angle:216 },
+    { name:"Video Editing", iconName:"Film", orbit:"outer" as const, angle:288 },
+  ];
+
+  const activeOrbitService = orbitMode ? flatServices[serviceCursorIdx] : null;
+
+  // Compute ring offset so the active service lands at the "front" (angle 270° = bottom of orbit = visually center-front in perspective)
+  // The orbit animates CW from the angle; we want angle+offset = 270 at the start freeze point
+  const computeOffset = (baseAngle: number) => {
+    // We want the node to appear at the bottom of the orbit ring (270°) = visual front
+    const target = 270;
+    let off = target - baseAngle;
+    if (off < 0) off += 360;
+    return off;
+  };
+
+  const enterOrbit = useCallback(() => {
+    setOrbitMode(true);
+    const first = flatServices[0];
+    if (!first) return;
+    setServiceCursorIdx(0);
+    // Blur during fly-in, then unblur after short delay
+    setOrbitBlur(false);
+    const offset = computeOffset(first.angle);
+    setRingOverrides({
+      inner:  { paused: true,  offsetDeg: offset },
+      middle: { paused: false, offsetDeg: 0 },
+      outer:  { paused: false, offsetDeg: 0 },
+    });
+    // Blur background after orbit settles
+    setTimeout(() => setOrbitBlur(true), 600);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [flatServices]);
+
+  const exitOrbit = useCallback(() => {
+    setOrbitBlur(false);
+    setTimeout(() => {
+      setOrbitMode(false);
+      setServiceCursorIdx(0);
+      setRingOverrides({
+        inner:  { paused: false, offsetDeg: 0 },
+        middle: { paused: false, offsetDeg: 0 },
+        outer:  { paused: false, offsetDeg: 0 },
+      });
+    }, 400);
+  }, []);
+
+  const navigateOrbit = useCallback((dir: 1 | -1) => {
+    setOrbitBlur(false);
+    setTimeout(() => {
+      setServiceCursorIdx(prev => {
+        const next = Math.max(0, Math.min(flatServices.length - 1, prev + dir));
+        const svc = flatServices[next];
+        if (!svc) return prev;
+        const offset = computeOffset(svc.angle);
+        // Determine which rings to pause
+        const isPausedMap = { inner: false, middle: false, outer: false };
+        isPausedMap[svc.orbit] = true;
+        setRingOverrides({
+          inner:  { paused: isPausedMap.inner,  offsetDeg: isPausedMap.inner  ? offset : ringOverrides.inner.offsetDeg  },
+          middle: { paused: isPausedMap.middle, offsetDeg: isPausedMap.middle ? offset : ringOverrides.middle.offsetDeg },
+          outer:  { paused: isPausedMap.outer,  offsetDeg: isPausedMap.outer  ? offset : ringOverrides.outer.offsetDeg  },
+        });
+        return next;
+      });
+      setTimeout(() => setOrbitBlur(true), 500);
+    }, 300);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [flatServices, ringOverrides]);
+
   // Escape key closes card
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => { if (e.key === "Escape") handleClose(); };
