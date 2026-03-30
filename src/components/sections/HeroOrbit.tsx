@@ -25,6 +25,11 @@ export interface ServiceData {
   angle: number;
 }
 
+export interface RingOverride {
+  paused: boolean;
+  offsetDeg: number; // added to base angle so the ring "rotates" to bring a service front
+}
+
 const ICON_MAP: Record<string, LucideIcon> = {
   Film, Image, Smartphone, FileText, Bot, Share2, Palette, Megaphone,
   Globe, ShoppingCart, Zap, BarChart3, Youtube, Camera, Music, Code,
@@ -35,6 +40,11 @@ interface HeroOrbitProps {
   onServiceClick?: (service: Service, nodeEl: HTMLElement) => void;
   paused?: boolean;
   services?: ServiceData[];
+  // Orbit mode props
+  orbitMode?: boolean;
+  activeServiceName?: string | null;
+  ringOverrides?: { inner?: RingOverride; middle?: RingOverride; outer?: RingOverride };
+  blurBackground?: boolean;
 }
 
 const services: Service[] = [
@@ -93,8 +103,15 @@ const particles = [
   { top: "42%", left: "92%", size: 2, delay: -1, dur: 10 },
 ];
 
-export default function HeroOrbit({ onServiceClick, paused = false, services: servicesProp }: HeroOrbitProps) {
-  // When servicesProp is provided, convert ServiceData[] -> Service[]
+export default function HeroOrbit({
+  onServiceClick,
+  paused = false,
+  services: servicesProp,
+  orbitMode = false,
+  activeServiceName = null,
+  ringOverrides = {},
+  blurBackground = false,
+}: HeroOrbitProps) {
   const resolvedServices: Service[] = servicesProp
     ? servicesProp.map((sd) => ({
         name: sd.name,
@@ -106,7 +123,7 @@ export default function HeroOrbit({ onServiceClick, paused = false, services: se
 
   return (
     <div
-      className={`relative pointer-events-none${paused ? " orbits-paused" : ""}`}
+      className={`relative pointer-events-none${paused && !orbitMode ? " orbits-paused" : ""}`}
       style={{ width: 1000, height: 1000, flexShrink: 0 }}
     >
       {/* Radial glow backdrop */}
@@ -154,7 +171,13 @@ export default function HeroOrbit({ onServiceClick, paused = false, services: se
       })}
 
       {/* ── Center EC Sun ── */}
-      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-20">
+      <div
+        className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-20"
+        style={{
+          transition: "filter 0.6s ease",
+          filter: blurBackground ? "blur(4px)" : "none",
+        }}
+      >
         <div
           className="absolute rounded-full animate-ping"
           style={{
@@ -197,17 +220,38 @@ export default function HeroOrbit({ onServiceClick, paused = false, services: se
       {/* ── Per-node ghost trail + orbiting node ── */}
       {resolvedServices.map((service) => {
         const { radius, duration } = orbitConfig[service.orbit];
-        const delay = -((service.angle / 360) * duration);
-        const Icon = service.icon;
+        const override = ringOverrides[service.orbit];
+        const isActive = service.name === activeServiceName;
+        const isInBackground = orbitMode && !isActive && activeServiceName !== null;
+
+        // In orbit mode: use CSS animation-play-state + a rotation offset via custom animation
+        // If override.paused, freeze the ring; offsetDeg rotates it to the right position
+        const isPausedByOverride = orbitMode && override?.paused;
+        const offsetDeg = override?.offsetDeg ?? 0;
+
+        // Base delay from angle, then add offsetDeg as extra rotation
+        const delay = -((( service.angle + offsetDeg) / 360) * duration);
+
         const col = orbitColor[service.orbit];
 
         const ghosts = [
           { delta: duration * 0.04, size: 18, alpha: 0.30 },
         ];
 
+        const nodeFilter = isInBackground
+          ? "blur(3px) brightness(0.5)"
+          : isActive
+            ? "none"
+            : "none";
+
+        const nodeOpacity = isInBackground ? 0.4 : 1;
+
         return (
-          <div key={service.name}>
-            {/* Ghost trail circles */}
+          <div
+            key={service.name}
+            className={isPausedByOverride ? "orbits-paused" : ""}
+          >
+            {/* Ghost trail */}
             {ghosts.map((g, gi) => (
               <div
                 key={gi}
@@ -218,13 +262,14 @@ export default function HeroOrbit({ onServiceClick, paused = false, services: se
                   animation: `orbit-cw ${duration}s linear infinite`,
                   animationDelay: `${delay + g.delta}s`,
                   willChange: "transform",
+                  opacity: isInBackground ? 0 : 1,
+                  transition: "opacity 0.5s ease",
                 }}
               >
                 <div style={{ transform: `translateY(-${radius}px)` }}>
                   <div
                     style={{
-                      width: g.size,
-                      height: g.size,
+                      width: g.size, height: g.size,
                       borderRadius: "50%",
                       transform: "translate(-50%, -50%)",
                       background: rgba(col, g.alpha * 0.35),
@@ -254,11 +299,6 @@ export default function HeroOrbit({ onServiceClick, paused = false, services: se
                     willChange: "transform",
                   }}
                 >
-                  {/*
-                   * 38×38 layout anchor — translate(-50%,-50%) centers node on orbit point.
-                   * Hover class "orbit-node" enables CSS glow/scale on the inner circle.
-                   * Enlarged hit area (inset -13px = ~64px zone) for easy clicking.
-                   */}
                   <div
                     className="orbit-node"
                     style={{
@@ -267,12 +307,14 @@ export default function HeroOrbit({ onServiceClick, paused = false, services: se
                       height: 38,
                       transform: "translate(-50%, -50%)",
                       pointerEvents: "auto",
-                      /* CSS vars used by .orbit-node:hover in globals.css */
+                      filter: nodeFilter,
+                      opacity: nodeOpacity,
+                      transition: "filter 0.5s ease, opacity 0.5s ease",
                       "--node-glow-hi": rgba(col, 0.72),
                       "--node-glow-lo": rgba(col, 0.28),
                     } as React.CSSProperties}
                   >
-                    {/* Enlarged invisible hit area — 64×64 centered over the 38×38 circle */}
+                    {/* Enlarged hit area */}
                     <div
                       style={{
                         position: "absolute",
@@ -288,24 +330,44 @@ export default function HeroOrbit({ onServiceClick, paused = false, services: se
                       }}
                     />
 
+                    {/* Active ring glow */}
+                    {isActive && (
+                      <div
+                        style={{
+                          position: "absolute",
+                          inset: -10,
+                          borderRadius: "50%",
+                          border: `1.5px solid ${rgba(col, 0.9)}`,
+                          boxShadow: `0 0 20px ${rgba(col, 0.7)}, 0 0 40px ${rgba(col, 0.4)}`,
+                          animation: "sun-pulse 2s ease-in-out infinite",
+                          pointerEvents: "none",
+                        }}
+                      />
+                    )}
+
                     {/* Visual circle */}
                     <div
                       className="orbit-node-circle"
                       style={{
                         width: 38, height: 38,
                         borderRadius: "50%",
-                        background: "rgba(8,8,28,0.90)",
-                        border: `1.5px solid ${rgba(col, 0.42)}`,
-                        boxShadow: `0 0 12px ${rgba(col, 0.28)}, 0 0 24px ${rgba(col, 0.12)}, 0 4px 14px rgba(0,0,0,0.6)`,
+                        background: isActive
+                          ? `radial-gradient(circle at 38% 38%, rgba(${col.r},${col.g},${col.b},0.30), rgba(8,8,28,0.95))`
+                          : "rgba(8,8,28,0.90)",
+                        border: `1.5px solid ${rgba(col, isActive ? 0.85 : 0.42)}`,
+                        boxShadow: isActive
+                          ? `0 0 20px ${rgba(col, 0.6)}, 0 0 40px ${rgba(col, 0.3)}, 0 4px 14px rgba(0,0,0,0.6)`
+                          : `0 0 12px ${rgba(col, 0.28)}, 0 0 24px ${rgba(col, 0.12)}, 0 4px 14px rgba(0,0,0,0.6)`,
                         display: "flex",
                         alignItems: "center",
                         justifyContent: "center",
+                        transition: "background 0.4s ease, border-color 0.4s ease, box-shadow 0.4s ease",
                       }}
                     >
-                      <Icon style={{ width: 14, height: 14, color: rgba(col, 0.95), display: "block" }} />
+                      <Icon style={{ width: 14, height: 14, color: rgba(col, isActive ? 1 : 0.95), display: "block" }} />
                     </div>
 
-                    {/* Label — flips to left side when node starts on right half of orbit */}
+                    {/* Label */}
                     {(() => {
                       const flipLeft = Math.sin(service.angle * Math.PI / 180) > 0.1;
                       return (
@@ -320,11 +382,12 @@ export default function HeroOrbit({ onServiceClick, paused = false, services: se
                             transform: "translateY(-50%)",
                             fontSize: 10,
                             fontWeight: 600,
-                            color: "rgba(255,255,255,0.72)",
+                            color: isActive ? "rgba(255,255,255,0.95)" : "rgba(255,255,255,0.72)",
                             whiteSpace: "nowrap",
                             lineHeight: 1,
                             letterSpacing: "0.02em",
                             pointerEvents: "none",
+                            transition: "color 0.4s ease",
                           }}
                         >
                           {service.name}
