@@ -394,6 +394,11 @@ export default function Hero() {
 
   const activeOrbitService = orbitMode ? flatServices[serviceCursorIdx] : null;
 
+  // Camera pose for current state
+  const currentCameraPose: CameraPose = orbitMode && activeOrbitService
+    ? CAMERA_POSES[activeOrbitService.orbit] ?? CAMERA_POSES.inner
+    : CAMERA_POSES.default;
+
   // Compute ring offset so the active service lands at the "front" (angle 270° = bottom of orbit = visually center-front in perspective)
   // The orbit animates CW from the angle; we want angle+offset = 270 at the start freeze point
   const computeOffset = (baseAngle: number) => {
