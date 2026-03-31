@@ -299,11 +299,12 @@ export default function HeroOrbit({
                       animation: `orbit-cw ${duration}s linear infinite`,
                       animationDelay: `${delay + g.delta}s`,
                       willChange: "transform",
+                      transformStyle: "preserve-3d",
                       opacity: isInBackground ? 0 : 1,
                       transition: "opacity 0.5s ease",
                     }}
                   >
-                    <div style={{ transform: `translateY(-${radius}px)` }}>
+                    <div style={{ transform: `translateY(-${radius}px)`, transformStyle: "preserve-3d" }}>
                       <div
                         style={{
                           width: g.size, height: g.size,
