@@ -187,38 +187,40 @@ const ORBIT_GLOW: Record<"inner" | "middle" | "outer", string> = {
   outer:  "rgba(96,165,250",
 };
 
-/* ── Camera poses for orbit mode: each ring gets its own camera position ── */
+/* ── Camera poses for orbit mode: each ring gets its own camera position ──
+   perspective: viewing distance (px). translateZ: how close the scene is.
+   Items at z close to perspective appear huge (strong depth).
+   rotateX: tilts the orbit plane — steep angles (75°+) make circles into thin
+   ellipses, with the "bottom" of each ring closest to the viewer.
+   The active service sits at 180° (bottom) = closest to camera = BIGGEST.  */
 const CAMERA_POSES: Record<string, CameraPose> = {
   default: DEFAULT_CAMERA_POSE,
-  // Inner ring: steep tilt, zoom in close (inner ring is small radius=200)
   inner: {
-    perspective: 1000,
+    perspective: 900,
+    rotateX: 78,
+    rotateY: 0,
+    rotateZ: -12,
+    translateX: 30,
+    translateY: -40,
+    translateZ: 480,
+  },
+  middle: {
+    perspective: 900,
     rotateX: 76,
     rotateY: 0,
     rotateZ: -8,
-    translateX: 30,
-    translateY: -50,
-    translateZ: 350,
+    translateX: 20,
+    translateY: -70,
+    translateZ: 400,
   },
-  // Middle ring: slightly less steep, pulled back a bit (radius=320)
-  middle: {
-    perspective: 1000,
-    rotateX: 73,
+  outer: {
+    perspective: 900,
+    rotateX: 74,
     rotateY: 0,
     rotateZ: -5,
-    translateX: 20,
-    translateY: -95,
-    translateZ: 280,
-  },
-  // Outer ring: widest view, less tilt (radius=445)
-  outer: {
-    perspective: 1000,
-    rotateX: 70,
-    rotateY: 0,
-    rotateZ: -3,
     translateX: 10,
-    translateY: -155,
-    translateZ: 200,
+    translateY: -100,
+    translateZ: 320,
   },
 };
 
