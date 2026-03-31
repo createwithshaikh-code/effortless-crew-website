@@ -6,11 +6,6 @@ import { useRef, useState, useCallback, useEffect } from "react";
 import { motion, AnimatePresence, useScroll, useTransform, useSpring } from "framer-motion";
 import { ArrowRight, ChevronDown, X } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
-import {
-  Film, Image, Smartphone, FileText,
-  Bot, Share2, Palette, Megaphone,
-  Globe, ShoppingCart, Zap, BarChart3,
-} from "lucide-react";
 
 const MotionLink = motion(Link);
 
