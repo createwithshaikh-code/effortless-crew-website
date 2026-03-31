@@ -4,10 +4,23 @@ import React from "react";
 import Link from "next/link";
 import { useRef, useState, useCallback, useEffect } from "react";
 import { motion, AnimatePresence, useScroll, useTransform, useSpring } from "framer-motion";
-import { ArrowRight, ChevronDown, X, Orbit, Sparkles } from "lucide-react";
-import HeroOrbit, { type Service, type ServiceData, type RingOverride, type CameraPose, DEFAULT_CAMERA_POSE } from "@/components/sections/HeroOrbit";
+import { ArrowRight, ChevronDown, X } from "lucide-react";
+import type { LucideIcon } from "lucide-react";
+import {
+  Film, Image, Smartphone, FileText,
+  Bot, Share2, Palette, Megaphone,
+  Globe, ShoppingCart, Zap, BarChart3,
+} from "lucide-react";
 
 const MotionLink = motion(Link);
+
+// ── Service type (kept for card overlay — will be wired to new solar system) ──
+export interface Service {
+  name: string;
+  icon: LucideIcon;
+  orbit: "inner" | "middle" | "outer";
+  angle: number;
+}
 
 function highlightEC(text: string) {
   const parts = text.split("Effortless Crew");
@@ -16,7 +29,7 @@ function highlightEC(text: string) {
   ));
 }
 
-// Hero settings from DB
+// ── Hero settings from DB ──
 interface HeroSettings {
   hero_headline: string;
   hero_subheadline: string;
@@ -36,7 +49,7 @@ const HERO_DEFAULTS: HeroSettings = {
   hero_color_2: "#2563EB",
 };
 
-// Dynamic services from DB
+// ── Dynamic services from DB ──
 interface DbService {
   id: string;
   name: string;
@@ -59,13 +72,13 @@ function sr(seed: number) {
   return x - Math.floor(x);
 }
 
-/* Stars with per-star twinkle — placed in 160%-oversized space so rotation never exposes edges */
+/* Stars */
 const STARS = Array.from({ length: 70 }, (_, i) => ({
-  top:     `${(sr(i * 4.71 + 1.3) * 100).toFixed(2)}%`,
-  left:    `${(sr(i * 8.93 + 2.7) * 100).toFixed(2)}%`,
-  size:    sr(i * 12.1 + 0.3) > 0.78 ? 2 : 1,
-  dur:     `${(sr(i * 2.83 + 1.1) * 5 + 4).toFixed(1)}s`,   // 4–9s twinkle cycle
-  delay:   `${-(sr(i * 6.57 + 3.9) * 12).toFixed(1)}s`,     // negative = mid-cycle on load
+  top:   `${(sr(i * 4.71 + 1.3) * 100).toFixed(2)}%`,
+  left:  `${(sr(i * 8.93 + 2.7) * 100).toFixed(2)}%`,
+  size:  sr(i * 12.1 + 0.3) > 0.78 ? 2 : 1,
+  dur:   `${(sr(i * 2.83 + 1.1) * 5 + 4).toFixed(1)}s`,
+  delay: `${-(sr(i * 6.57 + 3.9) * 12).toFixed(1)}s`,
 }));
 
 const SHOOTING = [
@@ -85,7 +98,7 @@ const container = {
   visible: { opacity: 1, transition: { staggerChildren: 0.16, delayChildren: 0.4 } },
 };
 
-/* ── Service card content ── */
+/* ── Service card content (kept for future solar system wiring) ── */
 interface CardData {
   title: string;
   desc: string;
@@ -187,54 +200,12 @@ const ORBIT_GLOW: Record<"inner" | "middle" | "outer", string> = {
   outer:  "rgba(96,165,250",
 };
 
-/* ── Camera poses for orbit mode: each ring gets its own camera position ──
-   perspective: viewing distance (px). translateZ: how close the scene is.
-   Items at z close to perspective appear huge (strong depth).
-   rotateX: tilts the orbit plane — steep angles (75°+) make circles into thin
-   ellipses, with the "bottom" of each ring closest to the viewer.
-   The active service sits at 180° (bottom) = closest to camera = BIGGEST.  */
-const CAMERA_POSES: Record<string, CameraPose> = {
-  default: DEFAULT_CAMERA_POSE,
-  inner: {
-    perspective: 900,
-    rotateX: 78,
-    rotateY: 0,
-    rotateZ: -12,
-    translateX: 30,
-    translateY: -40,
-    translateZ: 480,
-  },
-  middle: {
-    perspective: 900,
-    rotateX: 76,
-    rotateY: 0,
-    rotateZ: -8,
-    translateX: 20,
-    translateY: -70,
-    translateZ: 400,
-  },
-  outer: {
-    perspective: 900,
-    rotateX: 74,
-    rotateY: 0,
-    rotateZ: -5,
-    translateX: 10,
-    translateY: -100,
-    translateZ: 320,
-  },
-};
-
 /* ── Left panel: multi-image with pan + crossfade ── */
 function CardVisual({ glow, images, icon: Icon }: { glow: string; images: string[]; icon: React.ElementType }) {
-  // cycle is an always-incrementing counter; even for 1 image, it forces a key change
-  // so AnimatePresence triggers a fresh fade+pan on each loop.
   const [cycle, setCycle] = useState(0);
   const idx = images.length > 1 ? cycle % images.length : 0;
 
-  // Reset cycle to 0 when the images list changes (new service selected)
   useEffect(() => { setCycle(0); }, [images]);
-
-  // Advance every 11s (8s pan + 3s pause). Works for 1 or more images.
   useEffect(() => {
     if (!images.length) return;
     const timer = setTimeout(() => { setCycle((c) => c + 1); }, 21000);
@@ -278,47 +249,24 @@ function CardVisual({ glow, images, icon: Icon }: { glow: string; images: string
 }
 
 export default function Hero() {
-  const sectionRef        = useRef<HTMLElement>(null);
-  const orbitContainerRef = useRef<HTMLDivElement>(null);
-  const hasAnimatedInRef  = useRef(false);
+  const sectionRef = useRef<HTMLElement>(null);
 
-  // ── Parallax scroll ──────────────────────────────────────────────
   const { scrollYProgress } = useScroll({
     target: sectionRef,
     offset: ["start start", "end start"],
   });
-  // Spring smoothing — slight cinematic lag, auto-pauses at 0/1 bounds
   const smooth = useSpring(scrollYProgress, { stiffness: 80, damping: 30, restDelta: 0.001 });
+  const starsY      = useTransform(smooth, [0, 1], [0, -160]);
+  const textY       = useTransform(smooth, [0, 1], [0, -90]);
+  const textOpacity = useTransform(smooth, [0, 0.6], [1, 0]);
 
-  const starsY      = useTransform(smooth, [0, 1], [0, -160]); // farthest — most movement
-  const orbitY      = useTransform(smooth, [0, 1], [0, -220]); // middle
-  const textY       = useTransform(smooth, [0, 1], [0, -90]);  // closest (subtle)
-  const textOpacity = useTransform(smooth, [0, 0.6], [1, 0]);  // fades out at 60% scroll
-
+  // ── Service card state (kept for future solar system wiring) ──
   const [selectedService, setSelectedService] = useState<Service | null>(null);
-  const [zoomState, setZoomState] = useState<{ x: number; y: number; scale: number } | null>(null);
-  const [hasAnimatedIn, setHasAnimatedIn] = useState(false);
-  const [dbServices, setDbServices] = useState<DbService[] | null>(null);
-  const [heroSettings, setHeroSettings] = useState<HeroSettings>(HERO_DEFAULTS);
-  const [settingsReady, setSettingsReady] = useState(false);
-  const [showOrbit, setShowOrbit] = useState(false);
+  const [dbServices, setDbServices]           = useState<DbService[] | null>(null);
+  const [heroSettings, setHeroSettings]       = useState<HeroSettings>(HERO_DEFAULTS);
+  const [settingsReady, setSettingsReady]     = useState(false);
 
-  // ── Orbit mode ──────────────────────────────────────────────────────
-  const [orbitHovered, setOrbitHovered] = useState(false);
-  const [orbitMode, setOrbitMode]       = useState(false);
-  const [orbitBlur, setOrbitBlur]       = useState(false);
-  // serviceCursor: which service in the flat list is active
-  const [serviceCursorIdx, setServiceCursorIdx] = useState(0);
-  // ringOverrides: per-ring pause + offset state
-  const [ringOverrides, setRingOverrides] = useState<{
-    inner: RingOverride; middle: RingOverride; outer: RingOverride;
-  }>({
-    inner:  { paused: false, offsetDeg: 0 },
-    middle: { paused: false, offsetDeg: 0 },
-    outer:  { paused: false, offsetDeg: 0 },
-  });
-
-  // Fetch hero settings — animate headline only once settings confirmed
+  // Fetch hero settings
   useEffect(() => {
     const fallback = setTimeout(() => setSettingsReady(true), 600);
     fetch("/api/admin/hero-settings")
@@ -329,141 +277,19 @@ export default function Hero() {
     return () => clearTimeout(fallback);
   }, []);
 
-  // Fetch services from DB on mount
+  // Fetch services (for card data)
   useEffect(() => {
     fetch("/api/admin/services")
       .then((res) => (res.ok ? res.json() : null))
       .then((data: DbService[] | null) => {
-        if (Array.isArray(data) && data.length > 0) {
-          setDbServices(data);
-        }
+        if (Array.isArray(data) && data.length > 0) setDbServices(data);
       })
-      .catch(() => {/* silently fall back to static data */});
+      .catch(() => {});
   }, []);
-
-  const handleServiceClick = useCallback((service: Service, nodeEl: HTMLElement) => {
-    if (selectedService) return; // already zoomed
-    const containerEl = orbitContainerRef.current;
-    if (!containerEl) return;
-
-    const containerRect = containerEl.getBoundingClientRect();
-    const nodeRect      = nodeEl.getBoundingClientRect();
-
-    const ZOOM = 2.0;
-    const vx = window.innerWidth  / 2;
-    const vy = window.innerHeight / 2;
-
-    // Container center in viewport
-    const cx = containerRect.left + containerRect.width  / 2;
-    const cy = containerRect.top  + containerRect.height / 2;
-
-    // Node offset from container center
-    const nodeOffX = (nodeRect.left + nodeRect.width  / 2) - cx;
-    const nodeOffY = (nodeRect.top  + nodeRect.height / 2) - cy;
-
-    // Translation: bring node to viewport center after scale
-    const tx = (vx - cx) - nodeOffX * ZOOM;
-    const ty = (vy - cy) - nodeOffY * ZOOM;
-
-    setZoomState({ x: tx, y: ty, scale: ZOOM });
-    setSelectedService(service);
-  }, [selectedService]);
 
   const handleClose = useCallback(() => {
     setSelectedService(null);
-    setZoomState(null);
   }, []);
-
-  // ── Orbit mode helpers ───────────────────────────────────────────────
-  // Flat list built from DB services or static fallback
-  const STATIC_SERVICES: ServiceData[] = [
-    { name:"YT Automation", iconName:"Bot", orbit:"inner", angle:0 },
-    { name:"Scriptwriting", iconName:"FileText", orbit:"inner", angle:120 },
-    { name:"Short-Form Video", iconName:"Smartphone", orbit:"inner", angle:240 },
-    { name:"Ecommerce Sites", iconName:"ShoppingCart", orbit:"middle", angle:0 },
-    { name:"Logo Design", iconName:"Palette", orbit:"middle", angle:90 },
-    { name:"Portfolio Sites", iconName:"Globe", orbit:"middle", angle:180 },
-    { name:"Thumbnails", iconName:"Image", orbit:"middle", angle:270 },
-    { name:"Social Media Mgmt", iconName:"Share2", orbit:"outer", angle:0 },
-    { name:"Trend Research", iconName:"BarChart3", orbit:"outer", angle:72 },
-    { name:"Ad Production", iconName:"Megaphone", orbit:"outer", angle:144 },
-    { name:"AI Production", iconName:"Zap", orbit:"outer", angle:216 },
-    { name:"Video Editing", iconName:"Film", orbit:"outer", angle:288 },
-  ];
-  const flatServices: ServiceData[] = dbServices
-    ? dbServices.map(s => ({ name:s.name, iconName:s.icon_name, orbit:s.orbit, angle:s.angle }))
-    : STATIC_SERVICES;
-
-  const activeOrbitService = orbitMode ? flatServices[serviceCursorIdx] : null;
-
-  // Camera pose for current state
-  const currentCameraPose: CameraPose = orbitMode && activeOrbitService
-    ? CAMERA_POSES[activeOrbitService.orbit] ?? CAMERA_POSES.inner
-    : CAMERA_POSES.default;
-
-  // Compute ring offset so the active service lands at the "front" (angle 270° = bottom of orbit = visually center-front in perspective)
-  // The orbit animates CW from the angle; we want angle+offset = 270 at the start freeze point
-  const computeOffset = (baseAngle: number) => {
-    // 180° = bottom of circle = closest to viewer with rotateX tilt = visual front
-    const target = 180;
-    let off = target - baseAngle;
-    if (off < 0) off += 360;
-    return off;
-  };
-
-  const enterOrbit = useCallback(() => {
-    setOrbitMode(true);
-    const first = flatServices[0];
-    if (!first) return;
-    setServiceCursorIdx(0);
-    // Blur during fly-in, then unblur after short delay
-    setOrbitBlur(false);
-    const offset = computeOffset(first.angle);
-    setRingOverrides({
-      inner:  { paused: true,  offsetDeg: offset },
-      middle: { paused: false, offsetDeg: 0 },
-      outer:  { paused: false, offsetDeg: 0 },
-    });
-    // Blur background after orbit settles
-    setTimeout(() => setOrbitBlur(true), 600);
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [flatServices]);
-
-  const exitOrbit = useCallback(() => {
-    setOrbitBlur(false);
-    setTimeout(() => {
-      setOrbitMode(false);
-      setServiceCursorIdx(0);
-      setRingOverrides({
-        inner:  { paused: false, offsetDeg: 0 },
-        middle: { paused: false, offsetDeg: 0 },
-        outer:  { paused: false, offsetDeg: 0 },
-      });
-    }, 400);
-  }, []);
-
-  const navigateOrbit = useCallback((dir: 1 | -1) => {
-    setOrbitBlur(false);
-    setTimeout(() => {
-      setServiceCursorIdx(prev => {
-        const next = Math.max(0, Math.min(flatServices.length - 1, prev + dir));
-        const svc = flatServices[next];
-        if (!svc) return prev;
-        const offset = computeOffset(svc.angle);
-        // Determine which rings to pause
-        const isPausedMap = { inner: false, middle: false, outer: false };
-        isPausedMap[svc.orbit] = true;
-        setRingOverrides({
-          inner:  { paused: isPausedMap.inner,  offsetDeg: isPausedMap.inner  ? offset : ringOverrides.inner.offsetDeg  },
-          middle: { paused: isPausedMap.middle, offsetDeg: isPausedMap.middle ? offset : ringOverrides.middle.offsetDeg },
-          outer:  { paused: isPausedMap.outer,  offsetDeg: isPausedMap.outer  ? offset : ringOverrides.outer.offsetDeg  },
-        });
-        return next;
-      });
-      setTimeout(() => setOrbitBlur(true), 500);
-    }, 300);
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [flatServices, ringOverrides]);
 
   // Escape key closes card
   useEffect(() => {
@@ -472,15 +298,7 @@ export default function Hero() {
     return () => window.removeEventListener("keydown", onKey);
   }, [handleClose]);
 
-  // Show orbit only on real desktop screens (≥1024px) — never on mobile/tablet
-  useEffect(() => {
-    const check = () => setShowOrbit(window.innerWidth >= 1024);
-    check();
-    window.addEventListener("resize", check);
-    return () => window.removeEventListener("resize", check);
-  }, []);
-
-  // Build cardData: prefer DB data, fall back to static SERVICE_CARDS
+  // ── Card data resolvers ──
   const cardData: CardData | null = selectedService
     ? (() => {
         const dbSvc = dbServices?.find((s) => s.name === selectedService.name);
@@ -497,8 +315,6 @@ export default function Hero() {
       })()
     : null;
 
-  // Resolve images: if card_images column exists (even empty array), use it; only fall back to
-  // card_image_url when card_images is null/undefined (pre-migration rows).
   const cardImages: string[] = selectedService && dbServices
     ? (() => {
         const dbSvc = dbServices.find((s) => s.name === selectedService.name);
@@ -514,16 +330,9 @@ export default function Hero() {
 
   const orbitGlow = selectedService ? ORBIT_GLOW[selectedService.orbit] : ORBIT_GLOW.inner;
 
-  // Convert dbServices to ServiceData[] for HeroOrbit prop
-  const orbitServices: ServiceData[] | undefined = dbServices
-    ? dbServices.map((s) => ({
-        id: s.id,
-        name: s.name,
-        iconName: s.icon_name,
-        orbit: s.orbit,
-        angle: s.angle,
-      }))
-    : undefined;
+  // Expose setSelectedService for future solar system wiring
+  // (new solar system component will call this when a service node is clicked)
+  void setSelectedService;
 
   return (
     <section ref={sectionRef} className="relative min-h-screen flex items-center overflow-hidden bg-dark-300">
@@ -531,7 +340,7 @@ export default function Hero() {
       {/* Base bg */}
       <div className="absolute inset-0 section-bg-1" />
 
-      {/* ── Star field: rotating container + per-star opacity twinkle ── */}
+      {/* ── Star field ── */}
       <motion.div style={{ y: starsY }} className="absolute inset-0 pointer-events-none overflow-hidden">
         <div
           className="absolute"
@@ -555,7 +364,7 @@ export default function Hero() {
         </div>
       </motion.div>
 
-      {/* Soft glow blobs — sit above grid, below content */}
+      {/* Glow blobs */}
       <div className="absolute top-[-15%] right-[-5%] w-[480px] h-[480px] rounded-full pointer-events-none"
         style={{ background: "radial-gradient(circle, rgba(192,38,211,0.10) 0%, transparent 70%)" }} />
       <div className="absolute bottom-[-15%] left-[-5%] w-[420px] h-[420px] rounded-full pointer-events-none"
@@ -567,10 +376,8 @@ export default function Hero() {
           key={i}
           className="absolute pointer-events-none"
           style={{
-            top: s.top,
-            left: s.left,
-            width: "1.5px",
-            height: "80px",
+            top: s.top, left: s.left,
+            width: "1.5px", height: "80px",
             background: "linear-gradient(to bottom, transparent, rgba(186,230,253,0.75), white)",
             borderRadius: "999px",
             transformOrigin: "top center",
@@ -581,372 +388,132 @@ export default function Hero() {
         />
       ))}
 
-      {/* ── Main split layout ── */}
-      <div className="relative z-10 w-full container mx-auto px-4 sm:px-6 lg:px-8 py-24 lg:py-0">
-        <div className="flex flex-col lg:flex-row items-center gap-12 lg:gap-0 lg:min-h-screen">
+      {/* ── Main content ── */}
+      <motion.div
+        style={{ y: textY, opacity: textOpacity }}
+        className="relative z-10 w-full container mx-auto px-4 sm:px-6 lg:px-8 py-24 lg:py-0"
+      >
+        <div className="flex flex-col items-center text-center lg:py-32 max-w-4xl mx-auto">
 
-          {/* LEFT: Text — parallax wrapper handles scroll y+fade; inner handles zoom */}
-          <motion.div style={{ y: textY, opacity: textOpacity }} className="flex-1">
-          <motion.div
-            className="flex flex-col justify-center lg:py-24 lg:pr-8"
-            animate={
-              selectedService || orbitMode
-                ? { opacity: 0, x: -60, scale: 1.03, pointerEvents: "none" }
-                : { opacity: 1, x: 0,   scale: 1,    pointerEvents: "auto" }
-            }
-            transition={{ duration: 0.55, ease: EASE_OUT }}
+          {/* Headline */}
+          <motion.h1
+            style={{ opacity: 0 }}
+            variants={container}
+            initial="hidden"
+            animate={settingsReady ? "visible" : "hidden"}
+            className="font-display text-5xl sm:text-6xl lg:text-7xl xl:text-8xl font-black text-white leading-[1.05] tracking-tight mb-8"
           >
-
-
-            {/* Headline */}
-            <motion.h1
-              style={{ opacity: 0 }}
-              variants={container}
-              initial="hidden"
-              animate={settingsReady ? "visible" : "hidden"}
-              className="font-display text-5xl sm:text-6xl lg:text-6xl xl:text-7xl font-black text-white leading-[1.05] tracking-tight mb-6"
-            >
-              {heroSettings.hero_headline.split("\n").map((line, i, arr) => {
-                const isGradient = arr.length >= 2 && i === 1;
-                return (
-                  <motion.span key={i} variants={wordVariant} className="block">
-                    {isGradient ? (
-                      <span
-                        className="text-gradient-custom whitespace-nowrap"
-                        style={{
-                          "--gc1": heroSettings.hero_color_1,
-                          "--gc2": heroSettings.hero_color_2,
-                          fontSize: "0.85em",
-                        } as React.CSSProperties}
-                      >
-                        {line}
-                      </span>
-                    ) : line}
-                  </motion.span>
-                );
-              })}
-            </motion.h1>
-
-            {/* Subheadline */}
-            <motion.p
-              style={{ opacity: 0 }}
-              initial={{ opacity: 0 }}
-              animate={settingsReady ? { opacity: 1 } : { opacity: 0 }}
-              transition={{ duration: 0.7, delay: 0.9 }}
-              className="text-white/55 text-lg max-w-lg mb-10 leading-relaxed"
-            >
-              {highlightEC(heroSettings.hero_subheadline)}
-            </motion.p>
-
-            {/* Trust stats — staggered entry */}
-            <div className="flex items-center gap-6 mb-10">
-              {[
-                { value: "1500+", label: "Projects Done" },
-                { value: "200M+", label: "Views Generated" },
-                { value: "100%",  label: "Client Satisfaction" },
-              ].map((stat, i) => (
-                <motion.div
-                  key={i}
-                  style={{ opacity: 0 }}
-                  initial={{ opacity: 0 }}
-                  animate={settingsReady ? { opacity: 1 } : { opacity: 0 }}
-                  transition={{ duration: 0.5, delay: 1.05 + i * 0.08, ease: EASE_OUT }}
-                  className="flex flex-col"
-                >
-                  <span className="text-lg font-black text-white leading-none">{stat.value}</span>
-                  <span className="text-[11px] text-white/40 uppercase tracking-widest mt-0.5">{stat.label}</span>
-                </motion.div>
-              ))}
-            </div>
-
-            {/* CTA Buttons */}
-            <motion.div
-              style={{ opacity: 0 }}
-              initial={{ opacity: 0 }}
-              animate={settingsReady ? { opacity: 1 } : { opacity: 0 }}
-              transition={{ duration: 0.7, delay: 1.25 }}
-              className="flex flex-row items-center gap-3"
-            >
-              <MotionLink
-                href={heroSettings.hero_cta_link || "/contact"}
-                className="relative group flex items-center gap-2 px-5 py-3 sm:px-8 sm:py-4 rounded-2xl font-semibold text-white overflow-hidden whitespace-nowrap justify-center"
-                style={{
-                  background: `linear-gradient(135deg, ${heroSettings.hero_color_1} 0%, ${heroSettings.hero_color_2} 100%)`,
-                  boxShadow: `0 0 30px ${heroSettings.hero_color_1}66, 0 0 60px ${heroSettings.hero_color_2}33`,
-                }}
-                whileTap={{ scale: 0.97 }}
-                transition={{ duration: 0.15, ease: EASE_OUT }}
-              >
-                <span className="relative z-10 flex items-center gap-2 uppercase tracking-wide text-xs sm:text-sm whitespace-nowrap">
-                  {heroSettings.hero_cta_text || "Claim Your Creative Freedom"}
-                  <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
-                </span>
-                <span className="absolute inset-0 btn-shimmer" />
-                <span className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-200"
-                  style={{ background: `linear-gradient(135deg, ${heroSettings.hero_color_1}cc 0%, ${heroSettings.hero_color_2}cc 100%)` }} />
-              </MotionLink>
-
-              {/* Enter Orbit CTA */}
-              <motion.button
-                className="relative flex items-center gap-2 group cursor-pointer px-4 py-3 sm:px-5 rounded-2xl transition-all duration-300 whitespace-nowrap overflow-hidden"
-                style={{
-                  background: orbitHovered
-                    ? "rgba(192,38,211,0.18)"
-                    : "rgba(255,255,255,0.06)",
-                  border: orbitHovered
-                    ? "1px solid rgba(192,38,211,0.55)"
-                    : "1px solid rgba(255,255,255,0.18)",
-                  backdropFilter: "blur(8px)",
-                  boxShadow: orbitHovered
-                    ? "0 0 24px rgba(192,38,211,0.35), 0 0 48px rgba(192,38,211,0.15)"
-                    : "none",
-                  transition: "all 0.35s ease",
-                }}
-                whileHover={{ scale: 1.04 }}
-                whileTap={{ scale: 0.97 }}
-                onClick={enterOrbit}
-              >
-                {/* shimmer sweep on hover */}
-                {orbitHovered && (
-                  <span className="absolute inset-0 btn-shimmer pointer-events-none" />
-                )}
-                <span
-                  className="w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0"
-                  style={{
-                    background: "rgba(192,38,211,0.22)",
-                    border: "1px solid rgba(192,38,211,0.45)",
-                    boxShadow: orbitHovered ? "0 0 10px rgba(192,38,211,0.5)" : "none",
-                    transition: "box-shadow 0.35s ease",
-                  }}
-                >
-                  <Orbit className="w-3.5 h-3.5 text-white" />
-                </span>
-                <span className="relative text-sm font-semibold text-white/80 group-hover:text-white transition-colors">
-                  Enter The Orbit
-                </span>
-                <Sparkles className="w-3 h-3 text-purple-400 opacity-0 group-hover:opacity-100 transition-opacity" />
-              </motion.button>
-            </motion.div>
-          </motion.div>
-          </motion.div>
-
-          {/* RIGHT: Orbit — parallax wrapper; only on desktop */}
-          {showOrbit && (
-            <motion.div
-              style={{ y: orbitY }}
-              className="flex flex-1 items-center justify-center relative"
-              onMouseEnter={() => { if (!orbitMode) setOrbitHovered(true); }}
-              onMouseLeave={() => setOrbitHovered(false)}
-            >
-              <motion.div
-                ref={orbitContainerRef}
-                style={{
-                  maskImage: (selectedService || orbitMode)
-                    ? "none"
-                    : "linear-gradient(to right, transparent 0%, black 13%, black 88%, transparent 100%)",
-                  WebkitMaskImage: (selectedService || orbitMode)
-                    ? "none"
-                    : "linear-gradient(to right, transparent 0%, black 13%, black 88%, transparent 100%)",
-                }}
-                initial={{ opacity: 0, scale: 0.85, x: 0, y: 0 }}
-                animate={
-                  zoomState
-                    ? { opacity: 1, scale: zoomState.scale, x: zoomState.x, y: zoomState.y }
-                    : orbitMode
-                      ? { opacity: 1, scale: 1, x: -180, y: 0 }
-                      : { opacity: 1, scale: 1, x: 0, y: 0 }
-                }
-                transition={
-                  !hasAnimatedIn
-                    ? { duration: 1.0, delay: 0.6, ease: [0.22, 1, 0.36, 1] }
-                    : { duration: 1.2, ease: [0.22, 1, 0.36, 1] }
-                }
-                onAnimationComplete={() => {
-                  if (!hasAnimatedInRef.current) {
-                    hasAnimatedInRef.current = true;
-                    setHasAnimatedIn(true);
-                  }
-                }}
-              >
-                <HeroOrbit
-                  onServiceClick={handleServiceClick}
-                  paused={!!selectedService}
-                  services={orbitServices}
-                  orbitMode={orbitMode}
-                  activeServiceName={activeOrbitService?.name ?? null}
-                  ringOverrides={ringOverrides}
-                  blurBackground={orbitBlur}
-                  cameraPose={currentCameraPose}
-                />
-              </motion.div>
-
-              {/* ── Hover overlay: "Enter the Orbit" ── */}
-              <AnimatePresence>
-                {orbitHovered && !orbitMode && !selectedService && (
-                  <motion.div
-                    key="orbit-hover-overlay"
-                    className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none z-30"
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: 1 }}
-                    exit={{ opacity: 0 }}
-                    transition={{ duration: 0.3 }}
-                  >
-                    {/* Blur + grow effect on the orbit container underneath */}
-                    <div
-                      className="absolute inset-0 rounded-full pointer-events-none"
+            {heroSettings.hero_headline.split("\n").map((line, i, arr) => {
+              const isGradient = arr.length >= 2 && i === 1;
+              return (
+                <motion.span key={i} variants={wordVariant} className="block">
+                  {isGradient ? (
+                    <span
+                      className="text-gradient-custom whitespace-nowrap"
                       style={{
-                        background: "radial-gradient(circle at center, rgba(192,38,211,0.08) 0%, rgba(2,2,16,0.55) 70%)",
-                        backdropFilter: "blur(2px)",
-                        WebkitBackdropFilter: "blur(2px)",
-                      }}
-                    />
-                    <motion.div
-                      className="relative flex flex-col items-center gap-3 text-center pointer-events-auto cursor-pointer"
-                      initial={{ scale: 0.92, y: 8 }}
-                      animate={{ scale: 1, y: 0 }}
-                      exit={{ scale: 0.92, y: 8 }}
-                      transition={{ duration: 0.3, ease: [0.22, 1, 0.36, 1] }}
-                      onClick={enterOrbit}
+                        "--gc1": heroSettings.hero_color_1,
+                        "--gc2": heroSettings.hero_color_2,
+                        fontSize: "0.85em",
+                      } as React.CSSProperties}
                     >
-                      <div
-                        className="w-16 h-16 rounded-full flex items-center justify-center"
-                        style={{
-                          background: "rgba(192,38,211,0.18)",
-                          border: "1.5px solid rgba(192,38,211,0.55)",
-                          boxShadow: "0 0 32px rgba(192,38,211,0.45), 0 0 64px rgba(192,38,211,0.20)",
-                        }}
-                      >
-                        <Orbit className="w-7 h-7 text-white" />
-                      </div>
-                      <p
-                        className="text-sm font-bold tracking-widest uppercase"
-                        style={{
-                          color: "#fff",
-                          textShadow: "0 0 20px rgba(192,38,211,0.9), 0 0 40px rgba(192,38,211,0.5)",
-                          letterSpacing: "0.18em",
-                        }}
-                      >
-                        Enter Our Orbit
-                      </p>
-                      <p
-                        className="text-xs font-medium max-w-[180px] leading-relaxed"
-                        style={{ color: "rgba(255,255,255,0.55)" }}
-                      >
-                        Click to explore our services in 3D orbit view
-                      </p>
-                    </motion.div>
-                  </motion.div>
-                )}
-              </AnimatePresence>
+                      {line}
+                    </span>
+                  ) : line}
+                </motion.span>
+              );
+            })}
+          </motion.h1>
 
-              {/* ── Orbit mode UI: service name + nav ── */}
-              <AnimatePresence>
-                {orbitMode && (
-                  <motion.div
-                    key="orbit-mode-ui"
-                    className="fixed bottom-8 left-1/2 -translate-x-1/2 flex flex-col items-center pointer-events-none z-40"
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    exit={{ opacity: 0, y: 20 }}
-                    transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
-                  >
-                    {/* Active service name */}
-                    <AnimatePresence mode="wait">
-                      <motion.div
-                        key={activeOrbitService?.name ?? "none"}
-                        initial={{ opacity: 0, y: 10 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        exit={{ opacity: 0, y: -10 }}
-                        transition={{ duration: 0.3 }}
-                        className="text-center mb-4"
-                      >
-                        <p className="text-xs font-bold tracking-[0.25em] uppercase mb-1"
-                          style={{ color: "rgba(192,38,211,0.8)" }}>
-                          {activeOrbitService?.orbit ?? ""} ring
-                        </p>
-                        <p className="text-lg font-black tracking-wide text-white"
-                          style={{ textShadow: "0 0 20px rgba(192,38,211,0.6)" }}>
-                          {activeOrbitService?.name ?? ""}
-                        </p>
-                        <p className="text-xs mt-1" style={{ color: "rgba(255,255,255,0.35)" }}>
-                          {serviceCursorIdx + 1} / {flatServices.length}
-                        </p>
-                      </motion.div>
-                    </AnimatePresence>
+          {/* Subheadline */}
+          <motion.p
+            style={{ opacity: 0 }}
+            initial={{ opacity: 0 }}
+            animate={settingsReady ? { opacity: 1 } : { opacity: 0 }}
+            transition={{ duration: 0.7, delay: 0.9 }}
+            className="text-white/55 text-lg max-w-2xl mb-12 leading-relaxed"
+          >
+            {highlightEC(heroSettings.hero_subheadline)}
+          </motion.p>
 
-                    {/* Prev / Next + Exit */}
-                    <div className="flex items-center gap-3 pointer-events-auto">
-                      <motion.button
-                        className="w-10 h-10 rounded-full flex items-center justify-center text-white font-bold"
-                        style={{
-                          background: "rgba(255,255,255,0.08)",
-                          border: "1px solid rgba(255,255,255,0.18)",
-                          fontSize: 18,
-                          opacity: serviceCursorIdx === 0 ? 0.3 : 1,
-                        }}
-                        whileTap={{ scale: 0.92 }}
-                        onClick={() => navigateOrbit(-1)}
-                        disabled={serviceCursorIdx === 0}
-                      >
-                        ‹
-                      </motion.button>
+          {/* Trust stats */}
+          <motion.div
+            className="flex items-center justify-center gap-10 mb-12"
+            initial={{ opacity: 0 }}
+            animate={settingsReady ? { opacity: 1 } : { opacity: 0 }}
+            transition={{ duration: 0.5, delay: 1.05 }}
+          >
+            {[
+              { value: "1500+", label: "Projects Done" },
+              { value: "200M+", label: "Views Generated" },
+              { value: "100%",  label: "Client Satisfaction" },
+            ].map((stat, i) => (
+              <div key={i} className="flex flex-col items-center">
+                <span className="text-xl font-black text-white leading-none">{stat.value}</span>
+                <span className="text-[11px] text-white/40 uppercase tracking-widest mt-1">{stat.label}</span>
+              </div>
+            ))}
+          </motion.div>
 
-                      <motion.button
-                        className="px-5 py-2 rounded-full text-xs font-bold tracking-widest uppercase"
-                        style={{
-                          background: "rgba(192,38,211,0.18)",
-                          border: "1px solid rgba(192,38,211,0.45)",
-                          color: "rgba(255,255,255,0.7)",
-                        }}
-                        whileTap={{ scale: 0.95 }}
-                        onClick={exitOrbit}
-                      >
-                        Exit Orbit
-                      </motion.button>
+          {/* CTA */}
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={settingsReady ? { opacity: 1 } : { opacity: 0 }}
+            transition={{ duration: 0.7, delay: 1.25 }}
+            className="flex flex-row items-center gap-4"
+          >
+            <MotionLink
+              href={heroSettings.hero_cta_link || "/contact"}
+              className="relative group flex items-center gap-2 px-8 py-4 rounded-2xl font-semibold text-white overflow-hidden whitespace-nowrap justify-center"
+              style={{
+                background: `linear-gradient(135deg, ${heroSettings.hero_color_1} 0%, ${heroSettings.hero_color_2} 100%)`,
+                boxShadow: `0 0 30px ${heroSettings.hero_color_1}66, 0 0 60px ${heroSettings.hero_color_2}33`,
+              }}
+              whileTap={{ scale: 0.97 }}
+              transition={{ duration: 0.15, ease: EASE_OUT }}
+            >
+              <span className="relative z-10 flex items-center gap-2 uppercase tracking-wide text-sm whitespace-nowrap">
+                {heroSettings.hero_cta_text || "Claim Your Creative Freedom"}
+                <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+              </span>
+              <span className="absolute inset-0 btn-shimmer" />
+            </MotionLink>
 
-                      <motion.button
-                        className="w-10 h-10 rounded-full flex items-center justify-center text-white font-bold"
-                        style={{
-                          background: "rgba(255,255,255,0.08)",
-                          border: "1px solid rgba(255,255,255,0.18)",
-                          fontSize: 18,
-                          opacity: serviceCursorIdx === flatServices.length - 1 ? 0.3 : 1,
-                        }}
-                        whileTap={{ scale: 0.92 }}
-                        onClick={() => navigateOrbit(1)}
-                        disabled={serviceCursorIdx === flatServices.length - 1}
-                      >
-                        ›
-                      </motion.button>
-                    </div>
-                  </motion.div>
-                )}
-              </AnimatePresence>
-            </motion.div>
-          )}
+            <MotionLink
+              href="/portfolio"
+              className="flex items-center gap-2 px-6 py-4 rounded-2xl text-sm font-semibold text-white/70 hover:text-white transition-colors whitespace-nowrap"
+              style={{
+                background: "rgba(255,255,255,0.06)",
+                border: "1px solid rgba(255,255,255,0.15)",
+                backdropFilter: "blur(8px)",
+              }}
+              whileTap={{ scale: 0.97 }}
+              transition={{ duration: 0.15 }}
+            >
+              View Our Work
+              <ArrowRight className="w-4 h-4" />
+            </MotionLink>
+          </motion.div>
 
         </div>
-      </div>
+      </motion.div>
 
       {/* Scroll indicator */}
       <motion.div
         className="absolute bottom-8 left-1/2 -translate-x-1/2 z-10 flex flex-col items-center gap-2"
         initial={{ opacity: 0 }}
         animate={{ opacity: selectedService ? 0 : 1 }}
-        transition={{ delay: selectedService ? 0 : 2.2, duration: 0.6 }}
+        transition={{ delay: 2.2, duration: 0.6 }}
       >
         <span className="text-white/25 text-xs tracking-[0.2em] uppercase">Scroll</span>
         <motion.div
           animate={{ y: [0, 8, 0] }}
           transition={{ duration: 1.5, repeat: Infinity, ease: "easeInOut" }}
-          className="cursor-pointer"
-          onClick={() => document.getElementById("ticker")?.scrollIntoView({ behavior: "smooth" })}
         >
           <ChevronDown className="w-5 h-5 text-white/20" />
         </motion.div>
       </motion.div>
 
-      {/* ── Service card overlay ── */}
+      {/* ── Service card overlay (kept for future solar system wiring) ── */}
       <AnimatePresence>
         {selectedService && cardData && (
           <motion.div
@@ -957,14 +524,12 @@ export default function Hero() {
             exit={{ opacity: 0 }}
             transition={{ duration: 0.25 }}
           >
-            {/* Blurred backdrop — click to close */}
             <div
               className="absolute inset-0"
               style={{ backdropFilter: "blur(3px)", WebkitBackdropFilter: "blur(3px)", background: "rgba(0,0,0,0.25)" }}
               onClick={handleClose}
             />
 
-            {/* Card */}
             <motion.div
               key={selectedService.name}
               initial={{ opacity: 0, scale: 0.95, y: 16 }}
@@ -984,107 +549,38 @@ export default function Hero() {
                 overflow: "hidden",
               }}
             >
-              {/* Top-left radial hotspot */}
-              <div style={{
-                position: "absolute", top: -80, left: -80,
-                width: 320, height: 320, borderRadius: "50%",
-                background: `radial-gradient(circle, ${orbitGlow},0.28) 0%, transparent 70%)`,
-                pointerEvents: "none",
-              }} />
-              {/* Bottom-right accent */}
-              <div style={{
-                position: "absolute", bottom: -60, right: -60,
-                width: 220, height: 220, borderRadius: "50%",
-                background: `radial-gradient(circle, ${orbitGlow},0.12) 0%, transparent 70%)`,
-                pointerEvents: "none",
-              }} />
+              <div style={{ position: "absolute", top: -80, left: -80, width: 320, height: 320, borderRadius: "50%", background: `radial-gradient(circle, ${orbitGlow},0.28) 0%, transparent 70%)`, pointerEvents: "none" }} />
+              <div style={{ position: "absolute", bottom: -60, right: -60, width: 220, height: 220, borderRadius: "50%", background: `radial-gradient(circle, ${orbitGlow},0.12) 0%, transparent 70%)`, pointerEvents: "none" }} />
 
-              {/* Service identity — top left */}
               {(() => {
                 const Icon = selectedService.icon;
                 return (
-                  <div
-                    className="absolute top-5 left-5 z-20 flex items-center gap-2.5"
-                    style={{
-                      background: `${orbitGlow},0.22)`,
-                      backdropFilter: "blur(14px)",
-                      WebkitBackdropFilter: "blur(14px)",
-                      borderRadius: 999,
-                      padding: "5px 12px 5px 5px",
-                      border: `1px solid ${orbitGlow},0.35)`,
-                    }}
-                  >
-                    <div
-                      style={{
-                        width: 32, height: 32,
-                        borderRadius: "50%",
-                        background: `${orbitGlow},0.25)`,
-                        border: `1.5px solid ${orbitGlow},0.55)`,
-                        boxShadow: `0 0 12px ${orbitGlow},0.35)`,
-                        display: "flex", alignItems: "center", justifyContent: "center",
-                        flexShrink: 0,
-                      }}
-                    >
+                  <div className="absolute top-5 left-5 z-20 flex items-center gap-2.5" style={{ background: `${orbitGlow},0.22)`, backdropFilter: "blur(14px)", WebkitBackdropFilter: "blur(14px)", borderRadius: 999, padding: "5px 12px 5px 5px", border: `1px solid ${orbitGlow},0.35)` }}>
+                    <div style={{ width: 32, height: 32, borderRadius: "50%", background: `${orbitGlow},0.25)`, border: `1.5px solid ${orbitGlow},0.55)`, boxShadow: `0 0 12px ${orbitGlow},0.35)`, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
                       <Icon style={{ width: 13, height: 13, color: "rgba(255,255,255,0.95)" }} />
                     </div>
-                    <span
-                      className="text-xs font-bold uppercase tracking-widest"
-                      style={{ color: "rgba(255,255,255,0.95)" }}
-                    >
-                      {selectedService.name}
-                    </span>
+                    <span className="text-xs font-bold uppercase tracking-widest" style={{ color: "rgba(255,255,255,0.95)" }}>{selectedService.name}</span>
                   </div>
                 );
               })()}
 
-              {/* Return to Orbit button */}
-              <button
-                onClick={handleClose}
-                className="absolute top-5 right-5 z-20 flex items-center gap-2 text-white/50 hover:text-white transition-colors text-xs font-semibold tracking-wide uppercase"
-              >
-                Return to Orbit
-                <span
-                  className="w-6 h-6 rounded-full flex items-center justify-center"
-                  style={{ background: `${orbitGlow},0.15)`, border: `1px solid ${orbitGlow},0.35)` }}
-                >
+              <button onClick={handleClose} className="absolute top-5 right-5 z-20 flex items-center gap-2 text-white/50 hover:text-white transition-colors text-xs font-semibold tracking-wide uppercase">
+                Close
+                <span className="w-6 h-6 rounded-full flex items-center justify-center" style={{ background: `${orbitGlow},0.15)`, border: `1px solid ${orbitGlow},0.35)` }}>
                   <X className="w-3 h-3" />
                 </span>
               </button>
 
-              {/* Card body */}
               <div className="flex min-h-[380px] relative z-10">
-
-                {/* Left: Visual — full-bleed image or icon placeholder */}
-                <div
-                  className="hidden sm:block flex-shrink-0"
-                  style={{
-                    width: 280,
-                    borderRight: `1px solid ${orbitGlow},0.18)`,
-                    position: "relative",
-                    overflow: "hidden",
-                  }}
-                >
-                  <CardVisual
-                    glow={orbitGlow}
-                    images={cardImages}
-                    icon={selectedService.icon}
-                  />
+                <div className="hidden sm:block flex-shrink-0" style={{ width: 280, borderRight: `1px solid ${orbitGlow},0.18)`, position: "relative", overflow: "hidden" }}>
+                  <CardVisual glow={orbitGlow} images={cardImages} icon={selectedService.icon} />
                 </div>
-
-                {/* Right: Content */}
                 <div className="flex-1 flex flex-col justify-center p-8 pt-14">
-                  <h2
-                    className="font-black text-white text-2xl lg:text-3xl leading-tight mb-4"
-                    style={{ fontFamily: "var(--font-space-grotesk)" }}
-                  >
+                  <h2 className="font-black text-white text-2xl lg:text-3xl leading-tight mb-4" style={{ fontFamily: "var(--font-space-grotesk)" }}>
                     {cardData.title}
                   </h2>
-                  <p className="text-white/75 text-sm leading-relaxed mb-3">
-                    {cardData.desc}
-                  </p>
-                  <p className="text-white/45 text-sm leading-relaxed mb-8">
-                    {cardData.subDesc}
-                  </p>
+                  <p className="text-white/75 text-sm leading-relaxed mb-3">{cardData.desc}</p>
+                  <p className="text-white/45 text-sm leading-relaxed mb-8">{cardData.subDesc}</p>
                   <Link
                     href={cardCtaLink}
                     className="self-start flex items-center gap-2.5 px-7 py-3.5 rounded-full font-bold text-white text-xs uppercase tracking-widest"
@@ -1097,7 +593,6 @@ export default function Hero() {
                     <ArrowRight className="w-3.5 h-3.5" />
                   </Link>
                 </div>
-
               </div>
             </motion.div>
           </motion.div>
@@ -1107,3 +602,9 @@ export default function Hero() {
     </section>
   );
 }
+
+// ── Exported for future solar system wiring ──
+// When a new solar system is built, import this and call setSelectedService(service)
+// SERVICE_CARDS, ORBIT_GLOW, Service type, and DbService are all ready.
+export { SERVICE_CARDS, ORBIT_GLOW };
+export type { CardData, DbService };
