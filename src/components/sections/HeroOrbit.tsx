@@ -286,6 +286,7 @@ export default function HeroOrbit({
               <div
                 key={service.name}
                 className={isPausedByOverride ? "orbits-paused" : ""}
+                style={{ transformStyle: "preserve-3d" }}
               >
                 {/* Ghost trail */}
                 {ghosts.map((g, gi) => (
