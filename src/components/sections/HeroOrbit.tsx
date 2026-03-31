@@ -327,14 +327,16 @@ export default function HeroOrbit({
                     animation: `orbit-cw ${duration}s linear infinite`,
                     animationDelay: `${delay}s`,
                     willChange: "transform",
+                    transformStyle: "preserve-3d",
                   }}
                 >
-                  <div style={{ transform: `translateY(-${radius}px)` }}>
+                  <div style={{ transform: `translateY(-${radius}px)`, transformStyle: "preserve-3d" }}>
                     <div
                       style={{
                         animation: `orbit-ccw ${duration}s linear infinite`,
                         animationDelay: `${delay}s`,
                         willChange: "transform",
+                        transformStyle: "preserve-3d",
                       }}
                     >
                       {/* Billboard wrapper: counter-rotates so node faces camera */}
