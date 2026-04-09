@@ -1,7 +1,7 @@
 export const dynamic = "force-dynamic";
 
-import Hero from "@/components/sections/Hero";
+import VideoScroll from "@/components/sections/VideoScroll";
 
 export default function HomePage() {
-  return <Hero />;
+  return <VideoScroll />;
 }
