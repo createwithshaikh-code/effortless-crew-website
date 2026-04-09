@@ -10,9 +10,9 @@ const SECTIONS = [
   { id: 4, end: 20 },
 ];
 
-// Cubic ease-in-out
+// Smooth ease-in-out (quartic — more gradual than cubic)
 function easeInOut(t: number): number {
-  return t < 0.5 ? 2 * t * t : -1 + (4 - 2 * t) * t;
+  return t < 0.5 ? 8 * t * t * t * t : 1 - 8 * (--t) * t * t * t;
 }
 
 // Animate video.currentTime from `from` to `to` over `duration` ms
@@ -21,7 +21,6 @@ function animateTime(
   from: number,
   to: number,
   duration: number,
-  onDone?: () => void
 ): () => void {
   let raf = 0;
   const start = performance.now();
@@ -29,11 +28,7 @@ function animateTime(
   const tick = (now: number) => {
     const t = Math.min((now - start) / duration, 1);
     video.currentTime = from + (to - from) * easeInOut(t);
-    if (t < 1) {
-      raf = requestAnimationFrame(tick);
-    } else {
-      onDone?.();
-    }
+    if (t < 1) raf = requestAnimationFrame(tick);
   };
 
   raf = requestAnimationFrame(tick);
@@ -41,40 +36,38 @@ function animateTime(
 }
 
 export default function VideoScroll() {
-  const videoRef      = useRef<HTMLVideoElement>(null);
-  const containerRef  = useRef<HTMLDivElement>(null);
-  const activeRef     = useRef<number>(0);
-  const cancelAnim    = useRef<() => void>(() => {});
-  const [ready, setReady] = useState(false);
+  const videoRef     = useRef<HTMLVideoElement>(null);
+  const containerRef = useRef<HTMLDivElement>(null);
+  const activeRef    = useRef<number>(0);
+  const cancelAnim   = useRef<() => void>(() => {});
+  const triggerTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
-  // When video metadata loads, seek to 0 and mark ready
   const onLoaded = useCallback(() => {
     const v = videoRef.current;
-    if (!v) return;
-    v.currentTime = 0;
-    setReady(true);
+    if (v) v.currentTime = 0;
   }, []);
 
-  // Animate to the target section
+  // Animate to the target section — slow and deliberate
   const goToSection = useCallback((idx: number) => {
     const v = videoRef.current;
     if (!v) return;
-    cancelAnim.current(); // cancel any running animation
+    cancelAnim.current();
 
-    const target = SECTIONS[idx].end;
-    const from   = v.currentTime;
-    const dist   = Math.abs(target - from);
+    const target   = SECTIONS[idx].end;
+    const from     = v.currentTime;
+    const dist     = Math.abs(target - from);
 
-    // Duration scales slightly with distance but stays in 800–1800ms range
-    const duration = Math.max(800, Math.min(1800, dist * 120));
+    // Slower: 180ms per second of video, clamped 1400–3500ms
+    const duration = Math.max(1400, Math.min(3500, dist * 180));
 
     cancelAnim.current = animateTime(v, from, target, duration);
   }, []);
 
-  // Observe each section div — when it enters viewport, trigger animation
+  // IntersectionObserver — only fires when section is 90% in view
+  // + a 120ms debounce so rapid scroll doesn't trigger mid-snap
   useEffect(() => {
     const container = containerRef.current;
-    if (!container || !ready) return;
+    if (!container) return;
 
     const sections = container.querySelectorAll<HTMLElement>("[data-section]");
 
@@ -83,19 +76,26 @@ export default function VideoScroll() {
         entries.forEach((entry) => {
           if (entry.isIntersecting) {
             const idx = Number((entry.target as HTMLElement).dataset.section);
-            if (idx !== activeRef.current) {
+            if (idx === activeRef.current) return;
+
+            // Clear any pending trigger — wait for scroll to settle
+            if (triggerTimer.current) clearTimeout(triggerTimer.current);
+            triggerTimer.current = setTimeout(() => {
               activeRef.current = idx;
               goToSection(idx);
-            }
+            }, 120);
           }
         });
       },
-      { root: container, threshold: 0.55 }
+      { root: container, threshold: 0.9 } // 90% visible before triggering
     );
 
     sections.forEach((s) => observer.observe(s));
-    return () => observer.disconnect();
-  }, [ready, goToSection]);
+    return () => {
+      observer.disconnect();
+      if (triggerTimer.current) clearTimeout(triggerTimer.current);
+    };
+  }, [goToSection]);
 
   return (
     <div
@@ -108,7 +108,7 @@ export default function VideoScroll() {
         position: "relative",
       }}
     >
-      {/* Fixed full-screen video */}
+      {/* Fixed full-screen video — just sits there, no loading state */}
       <video
         ref={videoRef}
         src="/website-test.mp4"
@@ -128,30 +128,7 @@ export default function VideoScroll() {
         }}
       />
 
-      {/* Loading overlay — shown until video metadata ready */}
-      {!ready && (
-        <div
-          style={{
-            position: "fixed",
-            inset: 0,
-            zIndex: 10,
-            background: "#020210",
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-          }}
-        >
-          <div style={{
-            width: 40, height: 40,
-            borderRadius: "50%",
-            border: "2px solid rgba(192,38,211,0.2)",
-            borderTopColor: "#C026D3",
-            animation: "spin 0.8s linear infinite",
-          }} />
-        </div>
-      )}
-
-      {/* 4 snap sections — each 100vh, transparent, just for scroll detection */}
+      {/* 4 snap sections — each 100vh, transparent, scroll detection only */}
       {SECTIONS.map((section, i) => (
         <div
           key={section.id}
@@ -165,10 +142,6 @@ export default function VideoScroll() {
           }}
         />
       ))}
-
-      <style>{`
-        @keyframes spin { to { transform: rotate(360deg); } }
-      `}</style>
     </div>
   );
 }
