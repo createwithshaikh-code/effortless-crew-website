@@ -2,7 +2,7 @@
 
 import { useRef, useEffect, useCallback } from "react";
 
-// ── Section timestamps (seconds) ──
+// ── Section end timestamps (seconds) ──
 const SECTIONS = [
   { id: 1, end: 4  },
   { id: 2, end: 7  },
@@ -10,61 +10,65 @@ const SECTIONS = [
   { id: 4, end: 20 },
 ];
 
-// Smooth ease-in-out (quartic — more gradual than cubic)
-function easeInOut(t: number): number {
-  return t < 0.5 ? 8 * t * t * t * t : 1 - 8 * (--t) * t * t * t;
-}
-
-// Animate video.currentTime from `from` to `to` over `duration` ms
-function animateTime(
-  video: HTMLVideoElement,
-  from: number,
-  to: number,
-  duration: number,
-): () => void {
-  let raf = 0;
-  const start = performance.now();
-
-  const tick = (now: number) => {
-    const t = Math.min((now - start) / duration, 1);
-    video.currentTime = from + (to - from) * easeInOut(t);
-    if (t < 1) raf = requestAnimationFrame(tick);
-  };
-
-  raf = requestAnimationFrame(tick);
-  return () => cancelAnimationFrame(raf);
-}
+// How fast the video plays between sections (1 = normal speed, 0.5 = half speed)
+const PLAYBACK_RATE = 0.5;
 
 export default function VideoScroll() {
   const videoRef     = useRef<HTMLVideoElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
   const activeRef    = useRef<number>(0);
-  const cancelAnim   = useRef<() => void>(() => {});
+  const targetRef    = useRef<number>(0);
   const triggerTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const onLoaded = useCallback(() => {
     const v = videoRef.current;
-    if (v) v.currentTime = 0;
+    if (!v) return;
+    v.currentTime = 0;
+    v.playbackRate = PLAYBACK_RATE;
   }, []);
 
-  // Animate to the target section — slow and deliberate
+  // Play video toward target — pause when it arrives
   const goToSection = useCallback((idx: number) => {
     const v = videoRef.current;
     if (!v) return;
-    cancelAnim.current();
 
-    const target   = SECTIONS[idx].end;
-    const from     = v.currentTime;
-    const dist     = Math.abs(target - from);
+    const target = SECTIONS[idx].end;
+    targetRef.current = target;
 
-    // 50% slower: 270ms per second of video, clamped 2100–5250ms
-    const duration = Math.max(2100, Math.min(5250, dist * 270));
+    const current = v.currentTime;
+    if (Math.abs(current - target) < 0.05) return;
 
-    cancelAnim.current = animateTime(v, from, target, duration);
+    // Play forward or backward
+    if (target > current) {
+      v.playbackRate = PLAYBACK_RATE;
+    } else {
+      // Browsers don't support negative playbackRate natively —
+      // seek directly for backward (one-time seek, not frame-by-frame)
+      v.currentTime = target;
+      return;
+    }
+
+    v.play().catch(() => {});
   }, []);
 
-  // IntersectionObserver — only fires when section is 90% in view
-  // + a 120ms debounce so rapid scroll doesn't trigger mid-snap
+  // Monitor playback — pause when we reach the target
+  useEffect(() => {
+    const v = videoRef.current;
+    if (!v) return;
+
+    const onTimeUpdate = () => {
+      const target = targetRef.current;
+      if (v.currentTime >= target && !v.paused) {
+        v.pause();
+        v.currentTime = target;
+      }
+    };
+
+    v.addEventListener("timeupdate", onTimeUpdate);
+    return () => v.removeEventListener("timeupdate", onTimeUpdate);
+  }, []);
+
+  // IntersectionObserver — snap sections trigger goToSection
   useEffect(() => {
     const container = containerRef.current;
     if (!container) return;
@@ -78,16 +82,15 @@ export default function VideoScroll() {
             const idx = Number((entry.target as HTMLElement).dataset.section);
             if (idx === activeRef.current) return;
 
-            // Clear any pending trigger — wait for scroll to settle
             if (triggerTimer.current) clearTimeout(triggerTimer.current);
             triggerTimer.current = setTimeout(() => {
               activeRef.current = idx;
               goToSection(idx);
-            }, 120);
+            }, 100);
           }
         });
       },
-      { root: container, threshold: 0.9 } // 90% visible before triggering
+      { root: container, threshold: 0.9 }
     );
 
     sections.forEach((s) => observer.observe(s));
@@ -108,7 +111,6 @@ export default function VideoScroll() {
         position: "relative",
       }}
     >
-      {/* Fixed full-screen video — just sits there, no loading state */}
       <video
         ref={videoRef}
         src="/website-test.mp4"
@@ -128,7 +130,6 @@ export default function VideoScroll() {
         }}
       />
 
-      {/* 4 snap sections — each 100vh, transparent, scroll detection only */}
       {SECTIONS.map((section, i) => (
         <div
           key={section.id}
