@@ -57,8 +57,8 @@ export default function VideoScroll() {
     const from     = v.currentTime;
     const dist     = Math.abs(target - from);
 
-    // Slower: 180ms per second of video, clamped 1400–3500ms
-    const duration = Math.max(1400, Math.min(3500, dist * 180));
+    // 50% slower: 270ms per second of video, clamped 2100–5250ms
+    const duration = Math.max(2100, Math.min(5250, dist * 270));
 
     cancelAnim.current = animateTime(v, from, target, duration);
   }, []);
