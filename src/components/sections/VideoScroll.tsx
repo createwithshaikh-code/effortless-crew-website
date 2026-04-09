@@ -10,24 +10,27 @@ const SECTIONS = [
   { id: 4, end: 20 },
 ];
 
-// How fast the video plays between sections (1 = normal speed, 0.5 = half speed)
-const PLAYBACK_RATE = 0.5;
+const RATE_MAX  = 1.0;  // full speed in the middle
+const RATE_MIN  = 0.25; // slowest at start and end of each section transition
+const EASE_WIN  = 0.8;  // seconds of video over which ease-in / ease-out happens
+
+function lerp(a: number, b: number, t: number) {
+  return a + (b - a) * Math.max(0, Math.min(1, t));
+}
 
 export default function VideoScroll() {
   const videoRef     = useRef<HTMLVideoElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
   const activeRef    = useRef<number>(0);
   const targetRef    = useRef<number>(0);
+  const startRef     = useRef<number>(0); // currentTime when this transition began
   const triggerTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const onLoaded = useCallback(() => {
     const v = videoRef.current;
-    if (!v) return;
-    v.currentTime = 0;
-    v.playbackRate = PLAYBACK_RATE;
+    if (v) v.currentTime = 0;
   }, []);
 
-  // Play video toward target — pause when it arrives
   const goToSection = useCallback((idx: number) => {
     const v = videoRef.current;
     if (!v) return;
@@ -38,37 +41,56 @@ export default function VideoScroll() {
     const current = v.currentTime;
     if (Math.abs(current - target) < 0.05) return;
 
-    // Play forward or backward
     if (target > current) {
-      v.playbackRate = PLAYBACK_RATE;
+      // Forward — play with ease-in/out rate control
+      startRef.current  = current;
+      v.playbackRate    = RATE_MIN; // start slow
+      v.play().catch(() => {});
     } else {
-      // Browsers don't support negative playbackRate natively —
-      // seek directly for backward (one-time seek, not frame-by-frame)
+      // Backward — browsers can't play in reverse, so seek instantly
+      v.pause();
       v.currentTime = target;
-      return;
     }
-
-    v.play().catch(() => {});
   }, []);
 
-  // Monitor playback — pause when we reach the target
+  // On every timeupdate, adjust playbackRate for ease-in / ease-out
   useEffect(() => {
     const v = videoRef.current;
     if (!v) return;
 
     const onTimeUpdate = () => {
-      const target = targetRef.current;
-      if (v.currentTime >= target && !v.paused) {
+      const target  = targetRef.current;
+      const start   = startRef.current;
+      const current = v.currentTime;
+
+      if (v.paused) return;
+
+      // Distance from where we started (ease-in)
+      const fromStart = current - start;
+      // Distance to target (ease-out)
+      const toTarget  = target - current;
+
+      // If we've passed or reached the target — stop
+      if (toTarget <= 0) {
         v.pause();
         v.currentTime = target;
+        return;
       }
+
+      // Ease-in: ramp from RATE_MIN → RATE_MAX over EASE_WIN seconds
+      const easeIn  = lerp(RATE_MIN, RATE_MAX, fromStart / EASE_WIN);
+      // Ease-out: ramp from RATE_MAX → RATE_MIN as we approach target
+      const easeOut = lerp(RATE_MIN, RATE_MAX, toTarget  / EASE_WIN);
+
+      // Apply the slower of the two (whichever phase is dominant)
+      v.playbackRate = Math.min(easeIn, easeOut, RATE_MAX);
     };
 
     v.addEventListener("timeupdate", onTimeUpdate);
     return () => v.removeEventListener("timeupdate", onTimeUpdate);
   }, []);
 
-  // IntersectionObserver — snap sections trigger goToSection
+  // IntersectionObserver — 90% visible threshold, 100ms debounce
   useEffect(() => {
     const container = containerRef.current;
     if (!container) return;
