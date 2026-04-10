@@ -95,6 +95,8 @@ export default function VideoScroll() {
       el.removeEventListener("wheel",      onWheel);
       el.removeEventListener("touchstart", onTouchStart);
       el.removeEventListener("touchmove",  onTouchMove);
+      document.documentElement.style.overflow = "";
+      document.body.style.overflow = "";
     };
   }, []);
 
