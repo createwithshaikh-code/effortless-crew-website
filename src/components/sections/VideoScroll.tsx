@@ -19,6 +19,11 @@ export default function VideoScroll() {
     const v = videoRef.current;
     if (!v) return;
 
+    // Lock page scroll so the footer can't be revealed
+    const prev = document.documentElement.style.overflow;
+    document.documentElement.style.overflow = "hidden";
+    document.body.style.overflow = "hidden";
+
     // ── Mouse wheel: normalize delta across browsers/OS and accumulate velocity ──
     const onWheel = (e: WheelEvent) => {
       e.preventDefault();
