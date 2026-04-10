@@ -20,7 +20,6 @@ export default function VideoScroll() {
     if (!v) return;
 
     // Lock page scroll so the footer can't be revealed
-    const prev = document.documentElement.style.overflow;
     document.documentElement.style.overflow = "hidden";
     document.body.style.overflow = "hidden";
 
