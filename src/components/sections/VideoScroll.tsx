@@ -21,7 +21,7 @@ export default function VideoScroll() {
 
       // Only seek if there's a meaningful difference (avoids pointless seeks)
       if (Math.abs(diff) > 0.001) {
-        displayRef.current += diff * 0.12; // 0.12 = smooth but responsive
+        displayRef.current += diff * 0.04; // lower = more inertia, softer stop
         v.currentTime = displayRef.current;
       }
 
