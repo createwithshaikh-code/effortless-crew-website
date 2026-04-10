@@ -101,7 +101,7 @@ export default function VideoScroll() {
   }, []);
 
   return (
-    <div style={{ width: "100vw", height: "100vh", overflow: "hidden", position: "fixed", top: 0, left: 0 }}>
+    <div style={{ width: "100vw", height: "100vh", overflow: "hidden", position: "fixed", top: 0, left: 0, zIndex: 10 }}>
       <video
         ref={videoRef}
         src="/website-test.mp4"
