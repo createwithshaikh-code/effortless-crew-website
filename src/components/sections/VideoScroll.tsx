@@ -2,42 +2,61 @@
 
 import { useRef, useEffect } from "react";
 
-const VIDEO_DURATION = 20;  // seconds
-const SCROLL_PER_SEC = 300; // px of scroll per second of video — increase to slow down
+const VIDEO_DURATION = 20;   // seconds
+const SCROLL_PER_SEC = 300;  // px of scroll per second of video
+const MIN_RATE       = 0.15; // slowest playback speed
+const MAX_RATE       = 2.5;  // fastest playback speed
+const CATCH_UP_K     = 2.8;  // how aggressively video chases the scroll target
 
 export default function VideoScroll() {
-  const videoRef    = useRef<HTMLVideoElement>(null);
-  const targetRef   = useRef(0);   // where scroll says we should be
-  const displayRef  = useRef(0);   // where the video actually is (smoothed)
-  const rafRef      = useRef(0);
+  const videoRef  = useRef<HTMLVideoElement>(null);
+  const targetRef = useRef(0);
+  const rafRef    = useRef(0);
 
   useEffect(() => {
     const v = videoRef.current;
     if (!v) return;
 
-    // Smooth follow loop — lerp displayTime toward targetTime every frame
-    const tick = () => {
-      const diff = targetRef.current - displayRef.current;
+    // Map scroll → target video time
+    const onScroll = () => {
+      const totalScroll = VIDEO_DURATION * SCROLL_PER_SEC;
+      targetRef.current = Math.max(
+        0,
+        Math.min(VIDEO_DURATION, (window.scrollY / totalScroll) * VIDEO_DURATION)
+      );
+    };
 
-      // Only seek if there's a meaningful difference (avoids pointless seeks)
-      if (Math.abs(diff) > 0.001) {
-        displayRef.current += diff * 0.04; // lower = more inertia, softer stop
-        v.currentTime = displayRef.current;
+    // RAF loop — video PLAYS to target (forward) or SEEKS (backward)
+    const tick = () => {
+      const target  = targetRef.current;
+      const current = v.currentTime;
+      const diff    = target - current;
+
+      if (diff > 0.05) {
+        // Forward: play at a rate proportional to the gap
+        // — fast when far away, slows naturally as it approaches
+        const rate = Math.min(MAX_RATE, Math.max(MIN_RATE, diff * CATCH_UP_K));
+        v.playbackRate = rate;
+        if (v.paused) v.play().catch(() => {});
+
+      } else if (diff < -0.05) {
+        // Backward: seek (browsers can't play in reverse natively)
+        if (!v.paused) v.pause();
+        v.currentTime = target;
+
+      } else {
+        // Close enough — snap and stop
+        if (!v.paused) {
+          v.pause();
+          v.currentTime = target;
+        }
       }
 
       rafRef.current = requestAnimationFrame(tick);
     };
 
-    rafRef.current = requestAnimationFrame(tick);
-
-    // Map scroll position → video time
-    const onScroll = () => {
-      const totalScroll = VIDEO_DURATION * SCROLL_PER_SEC;
-      const progress    = Math.max(0, Math.min(1, window.scrollY / totalScroll));
-      targetRef.current = progress * VIDEO_DURATION;
-    };
-
     window.addEventListener("scroll", onScroll, { passive: true });
+    rafRef.current = requestAnimationFrame(tick);
 
     return () => {
       cancelAnimationFrame(rafRef.current);
@@ -45,7 +64,6 @@ export default function VideoScroll() {
     };
   }, []);
 
-  // Total page height = enough scroll distance for the full video
   const totalHeight = VIDEO_DURATION * SCROLL_PER_SEC + window.innerHeight;
 
   return (
