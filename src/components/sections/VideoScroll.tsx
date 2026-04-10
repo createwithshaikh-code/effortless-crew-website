@@ -3,49 +3,73 @@
 import { useRef, useEffect } from "react";
 
 const VIDEO_DURATION = 20;   // seconds
-const SCROLL_PER_SEC = 300;  // px of scroll per second of video
-const MIN_RATE       = 0.15; // slowest playback speed
-const MAX_RATE       = 2.5;  // fastest playback speed
-const CATCH_UP_K     = 2.8;  // how aggressively video chases the scroll target
+const MIN_RATE       = 0.15;
+const MAX_RATE       = 2.5;
+const CATCH_UP_K     = 2.8;
+const FRICTION       = 0.88; // velocity decay per frame (lower = stops faster)
+const SENSITIVITY    = 0.00035; // wheel sensitivity
 
 export default function VideoScroll() {
   const videoRef  = useRef<HTMLVideoElement>(null);
-  const targetRef = useRef(0);
+  const targetRef = useRef(0);   // 0–1 progress
+  const velRef    = useRef(0);   // current scroll velocity
   const rafRef    = useRef(0);
 
   useEffect(() => {
     const v = videoRef.current;
     if (!v) return;
 
-    // Map scroll → target video time
-    const onScroll = () => {
-      const totalScroll = VIDEO_DURATION * SCROLL_PER_SEC;
-      targetRef.current = Math.max(
-        0,
-        Math.min(VIDEO_DURATION, (window.scrollY / totalScroll) * VIDEO_DURATION)
-      );
+    // ── Mouse wheel: normalize delta across browsers/OS and accumulate velocity ──
+    const onWheel = (e: WheelEvent) => {
+      e.preventDefault();
+
+      // Normalize deltaMode: pixel (Chrome) / line (Firefox) / page
+      const delta =
+        e.deltaMode === 1 ? e.deltaY * 16 :   // line → px
+        e.deltaMode === 2 ? e.deltaY * 600 :  // page → px
+        e.deltaY;                              // already px
+
+      velRef.current += delta * SENSITIVITY;
     };
 
-    // RAF loop — video PLAYS to target (forward) or SEEKS (backward)
+    // ── Touch: compute delta between moves ──
+    let lastTouch = 0;
+    const onTouchStart = (e: TouchEvent) => { lastTouch = e.touches[0].clientY; };
+    const onTouchMove  = (e: TouchEvent) => {
+      const delta = lastTouch - e.touches[0].clientY;
+      lastTouch   = e.touches[0].clientY;
+      velRef.current += delta * SENSITIVITY * 0.6;
+    };
+
+    // ── RAF loop: apply friction to velocity, advance target, drive video ──
     const tick = () => {
-      const target  = targetRef.current;
+      velRef.current *= FRICTION;
+
+      // Advance virtual progress by velocity
+      if (Math.abs(velRef.current) > 0.0001) {
+        targetRef.current = Math.max(
+          0,
+          Math.min(1, targetRef.current + velRef.current)
+        );
+      }
+
+      const target  = targetRef.current * VIDEO_DURATION;
       const current = v.currentTime;
       const diff    = target - current;
 
       if (diff > 0.05) {
-        // Forward: play at a rate proportional to the gap
-        // — fast when far away, slows naturally as it approaches
+        // Forward — native play (smooth decoder, no seeking)
         const rate = Math.min(MAX_RATE, Math.max(MIN_RATE, diff * CATCH_UP_K));
         v.playbackRate = rate;
         if (v.paused) v.play().catch(() => {});
 
       } else if (diff < -0.05) {
-        // Backward: seek (browsers can't play in reverse natively)
+        // Backward — one seek (unavoidable, browsers can't play in reverse)
         if (!v.paused) v.pause();
         v.currentTime = target;
 
       } else {
-        // Close enough — snap and stop
+        // Arrived — stop
         if (!v.paused) {
           v.pause();
           v.currentTime = target;
@@ -55,19 +79,23 @@ export default function VideoScroll() {
       rafRef.current = requestAnimationFrame(tick);
     };
 
-    window.addEventListener("scroll", onScroll, { passive: true });
+    // Attach to the container so it doesn't interfere with rest of page
+    const el = document.documentElement;
+    el.addEventListener("wheel",      onWheel,      { passive: false });
+    el.addEventListener("touchstart", onTouchStart, { passive: true  });
+    el.addEventListener("touchmove",  onTouchMove,  { passive: true  });
     rafRef.current = requestAnimationFrame(tick);
 
     return () => {
       cancelAnimationFrame(rafRef.current);
-      window.removeEventListener("scroll", onScroll);
+      el.removeEventListener("wheel",      onWheel);
+      el.removeEventListener("touchstart", onTouchStart);
+      el.removeEventListener("touchmove",  onTouchMove);
     };
   }, []);
 
-  const totalHeight = VIDEO_DURATION * SCROLL_PER_SEC + window.innerHeight;
-
   return (
-    <div style={{ height: totalHeight }}>
+    <div style={{ width: "100vw", height: "100vh", overflow: "hidden", position: "fixed", top: 0, left: 0 }}>
       <video
         ref={videoRef}
         src="/website-test.mp4"
@@ -75,10 +103,8 @@ export default function VideoScroll() {
         playsInline
         preload="auto"
         style={{
-          position: "sticky",
-          top: 0,
-          width: "100vw",
-          height: "100vh",
+          width: "100%",
+          height: "100%",
           objectFit: "cover",
           display: "block",
         }}
