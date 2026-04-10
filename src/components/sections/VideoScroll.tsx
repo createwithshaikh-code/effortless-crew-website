@@ -1,170 +1,70 @@
 "use client";
 
-import { useRef, useEffect, useCallback } from "react";
+import { useRef, useEffect } from "react";
 
-// ── Section end timestamps (seconds) ──
-const SECTIONS = [
-  { id: 1, end: 4  },
-  { id: 2, end: 7  },
-  { id: 3, end: 15 },
-  { id: 4, end: 20 },
-];
-
-const RATE_MAX  = 1.0;  // full speed in the middle
-const RATE_MIN  = 0.25; // slowest at start and end of each section transition
-const EASE_WIN  = 0.8;  // seconds of video over which ease-in / ease-out happens
-
-function lerp(a: number, b: number, t: number) {
-  return a + (b - a) * Math.max(0, Math.min(1, t));
-}
+const VIDEO_DURATION = 20;  // seconds
+const SCROLL_PER_SEC = 300; // px of scroll per second of video — increase to slow down
 
 export default function VideoScroll() {
-  const videoRef     = useRef<HTMLVideoElement>(null);
-  const containerRef = useRef<HTMLDivElement>(null);
-  const activeRef    = useRef<number>(0);
-  const targetRef    = useRef<number>(0);
-  const startRef     = useRef<number>(0); // currentTime when this transition began
-  const triggerTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const videoRef    = useRef<HTMLVideoElement>(null);
+  const targetRef   = useRef(0);   // where scroll says we should be
+  const displayRef  = useRef(0);   // where the video actually is (smoothed)
+  const rafRef      = useRef(0);
 
-  const onLoaded = useCallback(() => {
-    const v = videoRef.current;
-    if (v) v.currentTime = 0;
-  }, []);
-
-  const goToSection = useCallback((idx: number) => {
-    const v = videoRef.current;
-    if (!v) return;
-
-    const target = SECTIONS[idx].end;
-    targetRef.current = target;
-
-    const current = v.currentTime;
-    if (Math.abs(current - target) < 0.05) return;
-
-    if (target > current) {
-      // Forward — play with ease-in/out rate control
-      startRef.current  = current;
-      v.playbackRate    = RATE_MIN; // start slow
-      v.play().catch(() => {});
-    } else {
-      // Backward — browsers can't play in reverse, so seek instantly
-      v.pause();
-      v.currentTime = target;
-    }
-  }, []);
-
-  // On every timeupdate, adjust playbackRate for ease-in / ease-out
   useEffect(() => {
     const v = videoRef.current;
     if (!v) return;
 
-    const onTimeUpdate = () => {
-      const target  = targetRef.current;
-      const start   = startRef.current;
-      const current = v.currentTime;
+    // Smooth follow loop — lerp displayTime toward targetTime every frame
+    const tick = () => {
+      const diff = targetRef.current - displayRef.current;
 
-      if (v.paused) return;
-
-      // Distance from where we started (ease-in)
-      const fromStart = current - start;
-      // Distance to target (ease-out)
-      const toTarget  = target - current;
-
-      // If we've passed or reached the target — stop
-      if (toTarget <= 0) {
-        v.pause();
-        v.currentTime = target;
-        return;
+      // Only seek if there's a meaningful difference (avoids pointless seeks)
+      if (Math.abs(diff) > 0.001) {
+        displayRef.current += diff * 0.12; // 0.12 = smooth but responsive
+        v.currentTime = displayRef.current;
       }
 
-      // Ease-in: ramp from RATE_MIN → RATE_MAX over EASE_WIN seconds
-      const easeIn  = lerp(RATE_MIN, RATE_MAX, fromStart / EASE_WIN);
-      // Ease-out: ramp from RATE_MAX → RATE_MIN as we approach target
-      const easeOut = lerp(RATE_MIN, RATE_MAX, toTarget  / EASE_WIN);
-
-      // Apply the slower of the two (whichever phase is dominant)
-      v.playbackRate = Math.min(easeIn, easeOut, RATE_MAX);
+      rafRef.current = requestAnimationFrame(tick);
     };
 
-    v.addEventListener("timeupdate", onTimeUpdate);
-    return () => v.removeEventListener("timeupdate", onTimeUpdate);
+    rafRef.current = requestAnimationFrame(tick);
+
+    // Map scroll position → video time
+    const onScroll = () => {
+      const totalScroll = VIDEO_DURATION * SCROLL_PER_SEC;
+      const progress    = Math.max(0, Math.min(1, window.scrollY / totalScroll));
+      targetRef.current = progress * VIDEO_DURATION;
+    };
+
+    window.addEventListener("scroll", onScroll, { passive: true });
+
+    return () => {
+      cancelAnimationFrame(rafRef.current);
+      window.removeEventListener("scroll", onScroll);
+    };
   }, []);
 
-  // IntersectionObserver — 90% visible threshold, 100ms debounce
-  useEffect(() => {
-    const container = containerRef.current;
-    if (!container) return;
-
-    const sections = container.querySelectorAll<HTMLElement>("[data-section]");
-
-    const observer = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((entry) => {
-          if (entry.isIntersecting) {
-            const idx = Number((entry.target as HTMLElement).dataset.section);
-            if (idx === activeRef.current) return;
-
-            if (triggerTimer.current) clearTimeout(triggerTimer.current);
-            triggerTimer.current = setTimeout(() => {
-              activeRef.current = idx;
-              goToSection(idx);
-            }, 100);
-          }
-        });
-      },
-      { root: container, threshold: 0.9 }
-    );
-
-    sections.forEach((s) => observer.observe(s));
-    return () => {
-      observer.disconnect();
-      if (triggerTimer.current) clearTimeout(triggerTimer.current);
-    };
-  }, [goToSection]);
+  // Total page height = enough scroll distance for the full video
+  const totalHeight = VIDEO_DURATION * SCROLL_PER_SEC + window.innerHeight;
 
   return (
-    <div
-      ref={containerRef}
-      style={{
-        height: "100vh",
-        overflowY: "scroll",
-        scrollSnapType: "y mandatory",
-        scrollBehavior: "smooth",
-        position: "relative",
-      }}
-    >
+    <div style={{ height: totalHeight }}>
       <video
         ref={videoRef}
         src="/website-test.mp4"
         muted
         playsInline
         preload="auto"
-        onLoadedMetadata={onLoaded}
         style={{
-          position: "fixed",
+          position: "sticky",
           top: 0,
-          left: 0,
           width: "100vw",
           height: "100vh",
           objectFit: "cover",
-          zIndex: 0,
-          pointerEvents: "none",
+          display: "block",
         }}
       />
-
-      {SECTIONS.map((section, i) => (
-        <div
-          key={section.id}
-          data-section={i}
-          style={{
-            height: "100vh",
-            scrollSnapAlign: "start",
-            scrollSnapStop: "always",
-            position: "relative",
-            zIndex: 1,
-          }}
-        />
-      ))}
     </div>
   );
 }
