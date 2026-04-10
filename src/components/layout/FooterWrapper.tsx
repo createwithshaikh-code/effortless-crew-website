@@ -6,5 +6,6 @@ import Footer from "./Footer";
 export default function FooterWrapper() {
   const pathname = usePathname();
   if (pathname.startsWith("/admin")) return null;
+  if (pathname === "/") return null;
   return <Footer />;
 }
