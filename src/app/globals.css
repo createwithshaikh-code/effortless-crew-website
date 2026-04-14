@@ -30,6 +30,8 @@ body {
 .page-panel--hero {
   z-index: 1;
   transform: translateY(0);
+  overflow-y: auto;
+  overflow-x: hidden;
 }
 .page-panel--hero.hidden {
   transform: translateY(100vh);
