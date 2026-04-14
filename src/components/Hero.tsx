@@ -105,14 +105,10 @@ export default function Hero({ onEnterOrbit }: { onEnterOrbit?: () => void }) {
     tl.to([starsSmall.current, starsMid.current, starsLarge.current], { opacity: 0, ease: "none", duration: 0.2 }, 0.80);
     tl.to(globeRef.current,      { opacity: 0, ease: "none", duration: 0.15 }, 0.93);
 
+    }, heroRef); // scope context to #hero section
+
     return () => {
-      enter.kill();
-      const st = tl.scrollTrigger;
-      if (st) {
-        st.disable(false); // unpin before DOM removal
-        st.kill(true);
-      }
-      tl.kill();
+      ctx.revert(); // kills all tweens, ScrollTriggers, and unpins cleanly
     };
   }, [onEnterOrbit]);
 
