@@ -140,10 +140,10 @@ const Hero = forwardRef<HeroHandle, { onEnterOrbit?: () => void }>(
     tl.to(ch1Line2.current,  { y: "-30vh", opacity: 0, ease: "power2.in", duration: 0.15 }, 0.65);
     tl.to(ch1Divider.current,{ y: "-30vh", opacity: 0, ease: "power2.in", duration: 0.15 }, 0.65);
     tl.to(ch1Sub.current,    { y: "-10vh", opacity: 1, scale: 1.10, ease: "power2.in", duration: 0.2 }, 0.65);
-    tl.to(globeRef.current,      { scale: 12, ease: "power1.in", duration: 0.2 }, 0.78);
-    tl.to(horizonRef.current,    { opacity: 0, ease: "none", duration: 0.2 }, 0.80);
-    tl.to([starsSmall.current, starsMid.current, starsLarge.current], { opacity: 0, ease: "none", duration: 0.2 }, 0.80);
-    tl.to(globeRef.current,      { opacity: 0, ease: "none", duration: 0.15 }, 0.93);
+    tl.to(globeRef.current,   { scale: 12, ease: "power1.in", duration: 0.2, force3D: true }, 0.78);
+    tl.to(horizonRef.current, { opacity: 0, ease: "none", duration: 0.2 }, 0.80);
+    tl.to("#layer-stars",     { opacity: 0, ease: "none", duration: 0.2 }, 0.80);
+    tl.to(globeRef.current,   { opacity: 0, ease: "none", duration: 0.15, force3D: true }, 0.93);
 
     return () => {
       enterTlRef.current?.kill();
