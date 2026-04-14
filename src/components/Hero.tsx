@@ -44,7 +44,16 @@ const Hero = forwardRef<HeroHandle, { onEnterOrbit?: () => void }>(
     // kill any running entrance
     enterTlRef.current?.kill();
 
-    // reset all elements to hidden start state
+    // clear all GSAP inline styles so scroll-driven transforms don't linger
+    gsap.set([
+      horizonRef.current, globeRef.current, heroTextRef.current,
+      starsSmall.current, starsMid.current, starsLarge.current,
+      ch1Line1.current, ch1Line2.current, ch1Divider.current,
+      ch1Sub.current, ch1Nebula.current,
+    ], { clearProps: "all" });
+    gsap.set("#layer-stars", { clearProps: "all" });
+
+    // now set entrance start states
     gsap.set(horizonRef.current,  { y: "0vh", opacity: 1 });
     gsap.set(globeRef.current,    { opacity: 0, scale: 0.9 });
     gsap.set([starsSmall.current, starsMid.current, starsLarge.current], { opacity: 0 });
