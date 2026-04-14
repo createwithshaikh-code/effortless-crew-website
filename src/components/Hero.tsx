@@ -42,21 +42,30 @@ export default function Hero({ onEnterOrbit }: { onEnterOrbit?: () => void }) {
       gsap.to(r.current, { filter: "brightness(0.55)", duration: 2.5 + Math.random()*2, ease: "sine.inOut", yoyo: true, repeat: -1, delay: Math.random()*2 });
     });
 
-    /* entrance animations */
-    const enter = gsap.timeline({ defaults: { ease: "power3.out" } });
+    /* entrance animations
+       Timing:
+         0.0  — horizon drops, globe + stars fade in
+         0.9  — eyebrow appears
+         1.2  — EFFORTLESS chars stagger (10 chars × 0.055s = 0.55s, ends ≈1.75)
+         2.0  — CREW flash (only after all chars done)
+         2.75 — tagline fades in
+         2.95 — button fades in
+    */
+    const enter = gsap.timeline({ defaults: { ease: "power3.out" }, delay: 0.25 });
     enter.from(horizonRef.current, { y: "-60vh", duration: 1.5 }, 0);
     enter.from(globeRef.current,   { opacity: 0, scale: 0.9, duration: 1.2 }, 0.2);
     enter.from([starsSmall.current, starsMid.current, starsLarge.current], { opacity: 0, duration: 1, stagger: 0.1 }, 0.2);
     enter.from(".logo-eyebrow",   { opacity: 0, y: 10, duration: 0.6 }, 0.9);
-    enter.from(".ec-char",        { opacity: 0, duration: 0.3, stagger: 0.055 }, 1.1);
-    enter.set("#txt-crew",        { opacity: 1 }, 1.75);
+    enter.from(".ec-char",        { opacity: 0, duration: 0.3, stagger: 0.055 }, 1.2);
+    // CREW starts after last char finishes: 1.2 + (9×0.055) + 0.3 = ~2.0
+    enter.set("#txt-crew", { opacity: 1 }, 2.0);
     enter.fromTo("#txt-crew",
-      { filter: "brightness(5) drop-shadow(0 0 50px rgba(255,200,80,1)) drop-shadow(0 0 100px rgba(255,140,0,1))" },
-      { filter: "brightness(1) drop-shadow(0 0 14px rgba(255,140,0,0.5))", duration: 0.7, ease: "power2.out" },
-      1.75
+      { filter: "brightness(6) drop-shadow(0 0 60px rgba(255,210,80,1)) drop-shadow(0 0 120px rgba(255,140,0,1))" },
+      { filter: "brightness(1) drop-shadow(0 0 14px rgba(255,140,0,0.5))", duration: 0.75, ease: "power2.out" },
+      2.0
     );
-    enter.from(".game-tagline",   { opacity: 0, y: 8, duration: 0.5 }, 2.1);
-    enter.from("#enter-orbit-btn",{ opacity: 0, y: 8, duration: 0.5 }, 2.3);
+    enter.from(".game-tagline",    { opacity: 0, y: 8, duration: 0.5 }, 2.75);
+    enter.from("#enter-orbit-btn", { opacity: 0, y: 8, duration: 0.5 }, 2.95);
 
     /* scroll timeline — uses hero-panel as scroller */
     const scroller = document.getElementById("hero-panel");
