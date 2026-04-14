@@ -33,6 +33,8 @@ export default function Hero({ onEnterOrbit }: { onEnterOrbit?: () => void }) {
   const ch1Nebula  = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
+    const ctx = gsap.context(() => {
+
     if (starsSmall.current) buildStarField(starsSmall.current, 900, "255,230,200", 1);
     if (starsMid.current)   buildStarField(starsMid.current,   280, "255,240,210", 1.5);
     if (starsLarge.current) buildStarField(starsLarge.current, 100, "255,248,230", 2);
