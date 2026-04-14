@@ -318,12 +318,12 @@ export default function Orbit({ onExit }: { onExit?: () => void }) {
 
       RING_ORDER.forEach((rn,ri)=>{
         orbList[rn].forEach((orb,i)=>{
-          orb.scale.setScalar(1+.05*Math.sin(t*1.7+i*1.4+ri*.9));
           const sel=rn===curRing&&i===curIdx;
-          orb.children.forEach(ch=>{
-            const sp=ch as THREE.Sprite;
-            if(ch.name==="label"&&sp.material)sp.material.opacity=lerp(sp.material.opacity,sel?0:1,.09);
-          });
+          // selected orb pulses brighter, others subtle breathe
+          const pulse=sel
+            ? 1+.08*Math.sin(t*2.2+i*1.4)
+            : 1+.03*Math.sin(t*1.4+i*1.4+ri*.9);
+          orb.scale.setScalar(pulse);
         });
       });
 
