@@ -196,28 +196,28 @@ export default function Orbit({ onExit }: { onExit?: () => void }) {
         // planet sphere
         const orb=new THREE.Mesh(
           new THREE.SphereGeometry(18,32,32),
-          new THREE.MeshPhongMaterial({map:ptex,shininess:15,emissive:new THREE.Color(col).multiplyScalar(0.15),emissiveIntensity:1})
+          new THREE.MeshPhongMaterial({map:ptex,shininess:20,emissive:new THREE.Color(col).multiplyScalar(0.3),emissiveIntensity:1.2})
         );
         orb.position.set(r*Math.cos(ang),0,r*Math.sin(ang));
 
-        // atmosphere shell
+        // tight atmosphere shell
         orb.add(new THREE.Mesh(
-          new THREE.SphereGeometry(22,16,16),
-          new THREE.MeshBasicMaterial({color:col,transparent:true,opacity:.10,side:THREE.BackSide,blending:THREE.AdditiveBlending,depthWrite:false})
+          new THREE.SphereGeometry(21,16,16),
+          new THREE.MeshBasicMaterial({color:col,transparent:true,opacity:.18,side:THREE.BackSide,blending:THREE.AdditiveBlending,depthWrite:false})
         ));
-        // outer glow sprite
-        const gs=new THREE.Sprite(new THREE.SpriteMaterial({map:gtex,transparent:true,opacity:.7,blending:THREE.AdditiveBlending,depthWrite:false}));
-        gs.scale.set(80,80,1); orb.add(gs);
+        // wide atmosphere haze
+        orb.add(new THREE.Mesh(
+          new THREE.SphereGeometry(28,16,16),
+          new THREE.MeshBasicMaterial({color:col,transparent:true,opacity:.06,side:THREE.BackSide,blending:THREE.AdditiveBlending,depthWrite:false})
+        ));
+        // inner glow sprite
+        const gs1=new THREE.Sprite(new THREE.SpriteMaterial({map:gtex,transparent:true,opacity:.9,blending:THREE.AdditiveBlending,depthWrite:false}));
+        gs1.scale.set(70,70,1); orb.add(gs1);
+        // outer wide glow
+        const gs2=new THREE.Sprite(new THREE.SpriteMaterial({map:gtex,transparent:true,opacity:.45,blending:THREE.AdditiveBlending,depthWrite:false}));
+        gs2.scale.set(130,130,1); orb.add(gs2);
 
-        // label
-        const lTex=mkTex(320,64,(ctx,W,H)=>{
-          ctx.font="bold 20px Arial";ctx.textAlign="center";ctx.textBaseline="middle";
-          ctx.shadowColor=RING_COLORS[ringName];ctx.shadowBlur=14;
-          ctx.fillStyle="rgba(255,255,255,.9)";ctx.fillText(_svc.name,W/2,H/2);
-        });
-        const lbl=new THREE.Sprite(new THREE.SpriteMaterial({map:lTex,transparent:true,opacity:1,depthWrite:false}));
-        lbl.scale.set(110,24,1);lbl.position.y=32;lbl.name="label";orb.add(lbl);
-
+        // no 3D labels — service names shown in HUD only (avoids mismatch confusion)
         grp.add(orb); orbList[ringName].push(orb);
       });
     });
