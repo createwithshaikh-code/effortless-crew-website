@@ -33,8 +33,6 @@ export default function Hero({ onEnterOrbit }: { onEnterOrbit?: () => void }) {
   const ch1Nebula  = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    const ctx = gsap.context(() => {
-
     if (starsSmall.current) buildStarField(starsSmall.current, 900, "255,230,200", 1);
     if (starsMid.current)   buildStarField(starsMid.current,   280, "255,240,210", 1.5);
     if (starsLarge.current) buildStarField(starsLarge.current, 100, "255,248,230", 2);
@@ -44,21 +42,33 @@ export default function Hero({ onEnterOrbit }: { onEnterOrbit?: () => void }) {
       gsap.to(r.current, { filter: "brightness(0.55)", duration: 2.5 + Math.random()*2, ease: "sine.inOut", yoyo: true, repeat: -1, delay: Math.random()*2 });
     });
 
-    /* entrance animations
-       Timing:
-         0.0  — horizon drops, globe + stars fade in
+    /* Set horizon to its "from" position immediately (off-screen above) so
+       it doesn't flicker during the CSS panel slide-down transition.
+       The entrance timeline will animate it into place after the slide. */
+    gsap.set(horizonRef.current,  { y: "-60vh" });
+    gsap.set(globeRef.current,    { opacity: 0, scale: 0.9 });
+    gsap.set([starsSmall.current, starsMid.current, starsLarge.current], { opacity: 0 });
+    gsap.set(".logo-eyebrow",     { opacity: 0 });
+    gsap.set(".ec-char",          { opacity: 0 });
+    gsap.set("#txt-crew",         { opacity: 0 });
+    gsap.set(".game-tagline",     { opacity: 0 });
+    gsap.set("#enter-orbit-btn",  { opacity: 0 });
+
+    /* entrance animations — delayed 1.4s so CSS panel slide finishes first
+       Timing (relative to delay):
+         0.0  — horizon rises, globe + stars fade in
          0.9  — eyebrow appears
-         1.2  — EFFORTLESS chars stagger (10 chars × 0.055s = 0.55s, ends ≈1.75)
-         2.0  — CREW flash (only after all chars done)
-         2.75 — tagline fades in
-         2.95 — button fades in
+         1.2  — EFFORTLESS chars stagger (10 chars × 0.055s, ends ≈1.75)
+         2.0  — CREW flash
+         2.75 — tagline
+         2.95 — button
     */
-    const enter = gsap.timeline({ defaults: { ease: "power3.out" }, delay: 0.25 });
-    enter.from(horizonRef.current, { y: "-60vh", duration: 1.5 }, 0);
-    enter.from(globeRef.current,   { opacity: 0, scale: 0.9, duration: 1.2 }, 0.2);
-    enter.from([starsSmall.current, starsMid.current, starsLarge.current], { opacity: 0, duration: 1, stagger: 0.1 }, 0.2);
-    enter.from(".logo-eyebrow",   { opacity: 0, y: 10, duration: 0.6 }, 0.9);
-    enter.from(".ec-char",        { opacity: 0, duration: 0.3, stagger: 0.055 }, 1.2);
+    const enter = gsap.timeline({ defaults: { ease: "power3.out" }, delay: 1.4 });
+    enter.to(horizonRef.current, { y: "0vh", duration: 1.5 }, 0);
+    enter.to(globeRef.current,   { opacity: 1, scale: 1, duration: 1.2 }, 0.2);
+    enter.to([starsSmall.current, starsMid.current, starsLarge.current], { opacity: 1, duration: 1, stagger: 0.1 }, 0.2);
+    enter.to(".logo-eyebrow",   { opacity: 1, y: 0, duration: 0.6 }, 0.9);
+    enter.to(".ec-char",        { opacity: 1, duration: 0.3, stagger: 0.055 }, 1.2);
     // CREW starts after last char finishes: 1.2 + (9×0.055) + 0.3 = ~2.0
     enter.set("#txt-crew", { opacity: 1 }, 2.0);
     enter.fromTo("#txt-crew",
@@ -66,10 +76,10 @@ export default function Hero({ onEnterOrbit }: { onEnterOrbit?: () => void }) {
       { filter: "brightness(1) drop-shadow(0 0 14px rgba(255,140,0,0.5))", duration: 0.75, ease: "power2.out" },
       2.0
     );
-    enter.from(".game-tagline",    { opacity: 0, y: 8, duration: 0.5 }, 2.75);
-    enter.from("#enter-orbit-btn", { opacity: 0, y: 8, duration: 0.5 }, 2.95);
+    enter.to(".game-tagline",    { opacity: 1, y: 0, duration: 0.5 }, 2.75);
+    enter.to("#enter-orbit-btn", { opacity: 1, y: 0, duration: 0.5 }, 2.95);
 
-    /* scroll timeline — uses hero-panel as scroller */
+    /* scroll timeline — uses hero-panel div as scroller (overflow-y:auto inside page-shell) */
     const scroller = document.getElementById("hero-panel");
 
     const tl = gsap.timeline({
@@ -78,7 +88,7 @@ export default function Hero({ onEnterOrbit }: { onEnterOrbit?: () => void }) {
         scroller,
         start: "top top",
         end: "+=200%",
-        scrub: true,
+        scrub: 1.2,        // smooth lag instead of instant scrub
         pin: true,
         anticipatePin: 1,
       }
@@ -105,10 +115,15 @@ export default function Hero({ onEnterOrbit }: { onEnterOrbit?: () => void }) {
     tl.to([starsSmall.current, starsMid.current, starsLarge.current], { opacity: 0, ease: "none", duration: 0.2 }, 0.80);
     tl.to(globeRef.current,      { opacity: 0, ease: "none", duration: 0.15 }, 0.93);
 
-    }, heroRef); // scope context to #hero section
-
     return () => {
-      ctx.revert(); // kills all tweens, ScrollTriggers, and unpins cleanly
+      enter.kill();
+      const st = tl.scrollTrigger;
+      if (st) st.kill(true);
+      tl.kill();
+      gsap.killTweensOf([
+        starsSmall.current, starsMid.current, starsLarge.current,
+        globeRef.current, horizonRef.current
+      ]);
     };
   }, [onEnterOrbit]);
 
