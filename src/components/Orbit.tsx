@@ -257,8 +257,10 @@ export default function Orbit({ onExit }: { onExit?: () => void }) {
     function applyBridge(ringName:RingName){
       if(transTimer)clearTimeout(transTimer);
       const k=CAM_KF[ringName];
-      TGT.x=k.x+10;TGT.y=k.y+55;TGT.z=k.z;TGT.yaw=k.yaw;TGT.pitch=k.pitch-8;TGT.roll=k.roll*2;
-      transTimer=setTimeout(()=>Object.assign(TGT,k),680);
+      // cinematic arc: fly high, look down, level roll — feels like a drone swoop
+      TGT.x=k.x-120; TGT.y=220; TGT.z=0;
+      TGT.yaw=k.yaw; TGT.pitch=-22; TGT.roll=0;
+      transTimer=setTimeout(()=>Object.assign(TGT,k),900);
     }
 
     function next(){
