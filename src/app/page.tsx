@@ -10,16 +10,14 @@ export default function HomePage() {
   const heroRef = useRef<HeroHandle>(null);
 
   const handleEnterOrbit = () => {
-    // animate hero elements down first, then slide the panel
     heroRef.current?.exitDown();
     setTimeout(() => setShowOrbit(true), 350);
   };
 
   const handleExit = () => {
     setShowOrbit(false);
-    // scroll hero-panel back to top instantly
-    document.getElementById("hero-panel")?.scrollTo({ top: 0, behavior: "instant" });
-    // replay entrance after panel slides back into view
+    // scroll body back to top so ScrollTrigger resets to start
+    window.scrollTo({ top: 0, behavior: "instant" });
     setTimeout(() => {
       heroRef.current?.replayEntrance();
     }, SLIDE_MS);
@@ -27,7 +25,10 @@ export default function HomePage() {
 
   return (
     <div className="page-shell">
-      <div id="hero-panel" className={`page-panel page-panel--hero${showOrbit ? " hidden" : ""}`}>
+      {/* Spacer gives body its scroll height — hidden when orbit is active */}
+      <div className={`hero-scroll-spacer${showOrbit ? " hidden" : ""}`} />
+
+      <div className={`page-panel page-panel--hero${showOrbit ? " hidden" : ""}`}>
         <Hero ref={heroRef} onEnterOrbit={handleEnterOrbit} />
       </div>
       <div className={`page-panel page-panel--orbit${showOrbit ? " visible" : ""}`}>
