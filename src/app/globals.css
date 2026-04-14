@@ -11,3 +11,38 @@ body {
   background: #000;
   color: #fff;
 }
+
+/* ── page transition shell ── */
+.page-shell {
+  position: relative;
+  width: 100vw;
+  height: 100vh;
+  overflow: hidden;
+}
+
+.page-panel {
+  position: absolute;
+  inset: 0;
+  will-change: transform;
+  transition: transform 1.3s cubic-bezier(0.76, 0, 0.24, 1);
+}
+
+.page-panel--hero {
+  z-index: 1;
+  transform: translateY(0);
+}
+.page-panel--hero.hidden {
+  transform: translateY(100vh);
+  z-index: 0;
+  transition-duration: 1.3s;
+}
+
+.page-panel--orbit {
+  z-index: 0;
+  transform: translateY(-100vh);
+  transition-duration: 1.5s;
+}
+.page-panel--orbit.visible {
+  transform: translateY(0);
+  z-index: 1;
+}
