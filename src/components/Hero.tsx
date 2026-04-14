@@ -455,7 +455,7 @@ export default function Hero({ onEnterOrbit }: { onEnterOrbit?: () => void }) {
           <span className="logo-eyebrow">· Online Creative Force ·</span>
           <div className="game-logo" data-text="EFFORTLESS CREW">EFFORTLESS CREW</div>
           <span className="game-tagline">Branding &nbsp;·&nbsp; Web Design &nbsp;·&nbsp; Video &nbsp;·&nbsp; Automation</span>
-          <button id="enter-orbit-btn" onClick={onEnterOrbit}>
+          <button type="button" id="enter-orbit-btn" onClick={onEnterOrbit}>
             <span className="fill" />
             <span>Discover Our Services</span>
           </button>
