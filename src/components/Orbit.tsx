@@ -300,12 +300,20 @@ export default function Orbit({ onExit }: { onExit?: () => void }) {
         orbitGrps[name].rotation.y=THREE.MathUtils.degToRad(ringRot[name]);
       });
 
-      CUR.x=lerp(CUR.x,TGT.x,.022); CUR.y=lerp(CUR.y,TGT.y,.022); CUR.z=lerp(CUR.z,TGT.z,.022);
-      CUR.yaw=shortLerp(CUR.yaw,TGT.yaw,.022); CUR.pitch=shortLerp(CUR.pitch,TGT.pitch,.022); CUR.roll=shortLerp(CUR.roll,TGT.roll,.022);
-      camera.position.set(CUR.x,CUR.y,CUR.z);
-      camera.rotation.y=THREE.MathUtils.degToRad(CUR.yaw);
-      camera.rotation.x=THREE.MathUtils.degToRad(CUR.pitch);
-      camera.rotation.z=THREE.MathUtils.degToRad(CUR.roll);
+      // spring physics — cinematic ease-in/out with slight overshoot
+      VEL.x+=(TGT.x-CUR.x)*SPRING; VEL.x*=DAMP; CUR.x+=VEL.x;
+      VEL.y+=(TGT.y-CUR.y)*SPRING; VEL.y*=DAMP; CUR.y+=VEL.y;
+      VEL.z+=(TGT.z-CUR.z)*SPRING; VEL.z*=DAMP; CUR.z+=VEL.z;
+      let dy=((TGT.yaw-CUR.yaw)%360+360)%360; if(dy>180)dy-=360;
+      VEL.yaw+=dy*SPRING; VEL.yaw*=DAMP; CUR.yaw+=VEL.yaw;
+      VEL.pitch+=(TGT.pitch-CUR.pitch)*SPRING; VEL.pitch*=DAMP; CUR.pitch+=VEL.pitch;
+      VEL.roll+=(TGT.roll-CUR.roll)*SPRING;  VEL.roll*=DAMP;  CUR.roll+=VEL.roll;
+      // idle drift — handheld feel, makes it feel alive
+      const drift=0.28;
+      camera.position.set(CUR.x+Math.sin(t*0.28)*drift, CUR.y+Math.sin(t*0.41)*drift*0.6, CUR.z+Math.cos(t*0.19)*drift*0.4);
+      camera.rotation.y=THREE.MathUtils.degToRad(CUR.yaw+Math.sin(t*0.22)*0.08);
+      camera.rotation.x=THREE.MathUtils.degToRad(CUR.pitch+Math.sin(t*0.37)*0.06);
+      camera.rotation.z=THREE.MathUtils.degToRad(CUR.roll+Math.sin(t*0.31)*0.05);
 
       RING_ORDER.forEach((rn,ri)=>{
         orbList[rn].forEach((orb,i)=>{
