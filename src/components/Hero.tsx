@@ -105,7 +105,11 @@ export default function Hero({ onEnterOrbit }: { onEnterOrbit?: () => void }) {
 
     return () => {
       enter.kill();
-      tl.scrollTrigger?.kill();
+      const st = tl.scrollTrigger;
+      if (st) {
+        st.disable(false); // unpin before DOM removal
+        st.kill(true);
+      }
       tl.kill();
     };
   }, [onEnterOrbit]);
