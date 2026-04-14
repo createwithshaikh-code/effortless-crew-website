@@ -63,7 +63,7 @@ export default function Hero({ onEnterOrbit }: { onEnterOrbit?: () => void }) {
          2.75 — tagline
          2.95 — button
     */
-    const enter = gsap.timeline({ defaults: { ease: "power3.out" }, delay: 1.4 });
+    const enter = gsap.timeline({ defaults: { ease: "power3.out" }, delay: 0.25 });
     enter.to(horizonRef.current, { y: "0vh", duration: 1.5 }, 0);
     enter.to(globeRef.current,   { opacity: 1, scale: 1, duration: 1.2 }, 0.2);
     enter.to([starsSmall.current, starsMid.current, starsLarge.current], { opacity: 1, duration: 1, stagger: 0.1 }, 0.2);
