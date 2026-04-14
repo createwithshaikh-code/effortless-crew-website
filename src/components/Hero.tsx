@@ -349,15 +349,24 @@ export default function Hero() {
           will-change: transform, opacity;
           opacity: 0;
         }
-        .ch1-headline {
+        /* single centered block — no overlap at any aspect ratio */
+        #ch1-block {
           position: absolute;
+          top: 50%; left: 0; right: 0;
+          transform: translateY(-50%);
+          z-index: 5;
+          display: flex;
+          flex-direction: column;
+          gap: clamp(10px, 2vh, 28px);
+          padding: 0 5%;
+          will-change: transform, opacity;
+        }
+        .ch1-headline {
           font-family: 'Orbitron', monospace;
-          font-size: clamp(36px, 6vw, 110px);
+          font-size: clamp(28px, 5.5vw, 100px);
           font-weight: 900;
           letter-spacing: -1px;
           line-height: 1;
-          width: 90%; left: 5%;
-          z-index: 5;
           will-change: transform, opacity;
           opacity: 0;
           background: linear-gradient(180deg, #ffffff 0%, #ffe4b0 60%, #ffb347 100%);
@@ -365,21 +374,9 @@ export default function Hero() {
           -webkit-text-fill-color: transparent;
           background-clip: text;
         }
-        #ch1-line1 {
-          top: 50%;
-          transform: translateY(-120%);
-          text-align: left;
-        }
-        .ch1-line2 {
-          top: 50%;
-          transform: translateY(-10%);
-          text-align: right;
-          left: auto; right: 5%; width: 90%;
-        }
+        #ch1-line1 { text-align: left; }
+        .ch1-line2  { text-align: right; }
         #ch1-divider {
-          position: absolute;
-          top: 60%;
-          left: 5%; right: 5%;
           height: 1px;
           background: linear-gradient(90deg,
             transparent 0%,
@@ -388,14 +385,9 @@ export default function Hero() {
             transparent 100%
           );
           opacity: 0;
-          z-index: 5;
           will-change: transform, opacity;
         }
         #ch1-sub {
-          position: absolute;
-          top: 60%;
-          transform: translateY(200%);
-          left: 0; right: 0;
           font-family: 'Rajdhani', sans-serif;
           font-size: clamp(11px, 1.2vw, 17px);
           font-weight: 400;
@@ -404,7 +396,6 @@ export default function Hero() {
           color: rgba(255,200,130,0.55);
           text-align: center;
           opacity: 0;
-          z-index: 5;
           will-change: opacity, transform;
         }
       `}</style>
