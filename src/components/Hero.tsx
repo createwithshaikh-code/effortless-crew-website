@@ -100,9 +100,8 @@ const Hero = forwardRef<HeroHandle, { onEnterOrbit?: () => void }>(
     // Play entrance on first mount
     playEntrance(0.25);
 
-    // Scroll timeline
+    // Scroll timeline — scrub:true matches original (instant, no lag/bounce)
     const scroller = document.getElementById("hero-panel");
-    let st: ScrollTrigger | null = null;
 
     const tl = gsap.timeline({
       scrollTrigger: {
@@ -110,28 +109,28 @@ const Hero = forwardRef<HeroHandle, { onEnterOrbit?: () => void }>(
         scroller,
         start: "top top",
         end: "+=200%",
-        scrub: 1.2,
+        scrub: true,
         pin: true,
         anticipatePin: 1,
-        onToggle: self => { st = self; },
+        fastScrollEnd: true,
       }
     });
 
-    st = tl.scrollTrigger ?? null;
-
-    tl.to(starsSmall.current,  { y: "-18vh", ease: "none", duration: 1 }, 0);
-    tl.to(starsMid.current,    { y: "-18vh", ease: "none", duration: 1 }, 0);
-    tl.to(starsLarge.current,  { y: "-18vh", ease: "none", duration: 1 }, 0);
-    tl.to(globeRef.current,    { y: "-22vh", ease: "none", duration: 1 }, 0);
-    tl.to(heroTextRef.current, { opacity: 0, y: "-28vh", ease: "none", duration: 0.55 }, 0);
-    tl.to(horizonRef.current,  { y: "-72vh", ease: "none", duration: 1 }, 0);
+    // Move whole layer-stars div (not individual stars) — matches original
+    tl.to("#layer-stars",      { y: "-18vh", ease: "none", duration: 1, force3D: true }, 0);
+    tl.to(globeRef.current,    { y: "-22vh", ease: "none", duration: 1, force3D: true }, 0);
+    tl.to(heroTextRef.current, { opacity: 0, y: "-28vh", ease: "none", duration: 0.55, force3D: true }, 0);
+    tl.to(horizonRef.current,  { y: "-72vh", ease: "none", duration: 1, force3D: true }, 0);
 
     tl.fromTo(ch1Line1.current,   { x: "-15vw", opacity: 0 }, { x: "0vw", opacity: 1, ease: "none", duration: 0.2 }, 0.4);
     tl.fromTo(ch1Line2.current,   { x: "15vw",  opacity: 0 }, { x: "0vw", opacity: 1, ease: "none", duration: 0.2 }, 0.48);
     tl.fromTo(ch1Divider.current, { opacity: 0 }, { opacity: 1, ease: "none", duration: 0.12 }, 0.58);
-    tl.fromTo(ch1Sub.current,     { opacity: 0 }, { opacity: 1, ease: "none", duration: 0.1  }, 0.62);
-    tl.fromTo(ch1Nebula.current,  { opacity: 0 }, { opacity: 1, ease: "none", duration: 0.2  }, 0.4);
-    tl.to("#ch1-block", { y: "-30vh", opacity: 0, ease: "power2.in", duration: 0.15 }, 0.65);
+    tl.fromTo(ch1Sub.current,     { y: "14px", opacity: 0 }, { y: "0px", opacity: 1, ease: "none", duration: 0.1 }, 0.62);
+    tl.fromTo(ch1Nebula.current,  { opacity: 0 }, { opacity: 1, ease: "none", duration: 0.2 }, 0.4);
+    tl.to(ch1Line1.current,  { y: "-30vh", opacity: 0, ease: "power2.in", duration: 0.15 }, 0.65);
+    tl.to(ch1Line2.current,  { y: "-30vh", opacity: 0, ease: "power2.in", duration: 0.15 }, 0.65);
+    tl.to(ch1Divider.current,{ y: "-30vh", opacity: 0, ease: "power2.in", duration: 0.15 }, 0.65);
+    tl.to(ch1Sub.current,    { y: "-10vh", opacity: 1, scale: 1.10, ease: "power2.in", duration: 0.2 }, 0.65);
     tl.to(globeRef.current,      { scale: 12, ease: "power1.in", duration: 0.2 }, 0.78);
     tl.to(horizonRef.current,    { opacity: 0, ease: "none", duration: 0.2 }, 0.80);
     tl.to([starsSmall.current, starsMid.current, starsLarge.current], { opacity: 0, ease: "none", duration: 0.2 }, 0.80);
