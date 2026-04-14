@@ -1,6 +1,9 @@
 "use client";
 import { useEffect, useRef } from "react";
 import { gsap } from "gsap";
+import { ScrollTrigger } from "gsap/ScrollTrigger";
+
+gsap.registerPlugin(ScrollTrigger);
 
 function buildStarField(el: HTMLElement, count: number, color: string, size: number) {
   const S = Math.max(window.innerWidth, window.innerHeight) * 2.2;
@@ -21,6 +24,13 @@ export default function Hero({ onEnterOrbit }: { onEnterOrbit?: () => void }) {
   const starsLarge = useRef<HTMLDivElement>(null);
   const globeRef   = useRef<HTMLDivElement>(null);
   const horizonRef = useRef<HTMLDivElement>(null);
+  const heroRef    = useRef<HTMLDivElement>(null);
+  const heroTextRef= useRef<HTMLDivElement>(null);
+  const ch1Line1   = useRef<HTMLDivElement>(null);
+  const ch1Line2   = useRef<HTMLDivElement>(null);
+  const ch1Divider = useRef<HTMLDivElement>(null);
+  const ch1Sub     = useRef<HTMLDivElement>(null);
+  const ch1Nebula  = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     if (starsSmall.current) buildStarField(starsSmall.current, 900, "255,230,200", 1);
@@ -32,45 +42,68 @@ export default function Hero({ onEnterOrbit }: { onEnterOrbit?: () => void }) {
       gsap.to(r.current, { filter: "brightness(0.55)", duration: 2.5 + Math.random()*2, ease: "sine.inOut", yoyo: true, repeat: -1, delay: Math.random()*2 });
     });
 
-    const tl = gsap.timeline({ defaults: { ease: "power3.out" } });
-
-    // planet rises
-    tl.from(horizonRef.current, { y: "-60vh", duration: 1.5 }, 0);
-    tl.from(globeRef.current,   { opacity: 0, scale: 0.9, duration: 1.2 }, 0.2);
-    tl.from([starsSmall.current, starsMid.current, starsLarge.current], { opacity: 0, duration: 1, stagger: 0.1 }, 0.2);
-
-    // eyebrow
-    tl.from(".logo-eyebrow", { opacity: 0, y: 10, duration: 0.6 }, 0.9);
-
-    // EFFORTLESS char by char
-    tl.from(".ec-char", { opacity: 0, duration: 0.3, stagger: 0.055 }, 1.1);
-
-    // CREW — appears all at once with bright flash glow
-    tl.set("#txt-crew", { opacity: 1 }, 1.75);
-    tl.fromTo("#txt-crew",
+    /* entrance animations */
+    const enter = gsap.timeline({ defaults: { ease: "power3.out" } });
+    enter.from(horizonRef.current, { y: "-60vh", duration: 1.5 }, 0);
+    enter.from(globeRef.current,   { opacity: 0, scale: 0.9, duration: 1.2 }, 0.2);
+    enter.from([starsSmall.current, starsMid.current, starsLarge.current], { opacity: 0, duration: 1, stagger: 0.1 }, 0.2);
+    enter.from(".logo-eyebrow",   { opacity: 0, y: 10, duration: 0.6 }, 0.9);
+    enter.from(".ec-char",        { opacity: 0, duration: 0.3, stagger: 0.055 }, 1.1);
+    enter.set("#txt-crew",        { opacity: 1 }, 1.75);
+    enter.fromTo("#txt-crew",
       { filter: "brightness(5) drop-shadow(0 0 50px rgba(255,200,80,1)) drop-shadow(0 0 100px rgba(255,140,0,1))" },
       { filter: "brightness(1) drop-shadow(0 0 14px rgba(255,140,0,0.5))", duration: 0.7, ease: "power2.out" },
       1.75
     );
+    enter.from(".game-tagline",   { opacity: 0, y: 8, duration: 0.5 }, 2.1);
+    enter.from("#enter-orbit-btn",{ opacity: 0, y: 8, duration: 0.5 }, 2.3);
 
-    // tagline + button
-    tl.from(".game-tagline", { opacity: 0, y: 8, duration: 0.5 }, 2.1);
-    tl.from("#enter-orbit-btn", { opacity: 0, y: 8, duration: 0.5 }, 2.3);
+    /* scroll timeline — uses hero-panel as scroller */
+    const scroller = document.getElementById("hero-panel");
 
-    // scroll down triggers orbit
-    const onWheel = (e: WheelEvent) => { if (e.deltaY > 0) onEnterOrbit?.(); };
-    window.addEventListener("wheel", onWheel, { once: true });
+    const tl = gsap.timeline({
+      scrollTrigger: {
+        trigger: heroRef.current,
+        scroller,
+        start: "top top",
+        end: "+=200%",
+        scrub: true,
+        pin: true,
+        anticipatePin: 1,
+      }
+    });
+
+    tl.to(starsSmall.current,  { y: "-18vh", ease: "none", duration: 1 }, 0);
+    tl.to(starsMid.current,    { y: "-18vh", ease: "none", duration: 1 }, 0);
+    tl.to(starsLarge.current,  { y: "-18vh", ease: "none", duration: 1 }, 0);
+    tl.to(globeRef.current,    { y: "-22vh", ease: "none", duration: 1 }, 0);
+    tl.to(heroTextRef.current, { opacity: 0, y: "-28vh", ease: "none", duration: 0.55 }, 0);
+    tl.to(horizonRef.current,  { y: "-72vh", ease: "none", duration: 1 }, 0);
+
+    /* chapter 1 */
+    tl.fromTo(ch1Line1.current,   { x: "-15vw", opacity: 0 }, { x: "0vw", opacity: 1, ease: "none", duration: 0.2 }, 0.4);
+    tl.fromTo(ch1Line2.current,   { x: "15vw",  opacity: 0 }, { x: "0vw", opacity: 1, ease: "none", duration: 0.2 }, 0.48);
+    tl.fromTo(ch1Divider.current, { opacity: 0 }, { opacity: 1, ease: "none", duration: 0.12 }, 0.58);
+    tl.fromTo(ch1Sub.current,     { opacity: 0 }, { opacity: 1, ease: "none", duration: 0.1  }, 0.62);
+    tl.fromTo(ch1Nebula.current,  { opacity: 0 }, { opacity: 1, ease: "none", duration: 0.2  }, 0.4);
+
+    tl.to("#ch1-block", { y: "-30vh", opacity: 0, ease: "power2.in", duration: 0.15 }, 0.65);
+
+    tl.to(globeRef.current,      { scale: 12, ease: "power1.in", duration: 0.2 }, 0.78);
+    tl.to(horizonRef.current,    { opacity: 0, ease: "none", duration: 0.2 }, 0.80);
+    tl.to([starsSmall.current, starsMid.current, starsLarge.current], { opacity: 0, ease: "none", duration: 0.2 }, 0.80);
+    tl.to(globeRef.current,      { opacity: 0, ease: "none", duration: 0.15 }, 0.93);
 
     return () => {
-      tl.kill();
-      window.removeEventListener("wheel", onWheel);
+      enter.kill();
+      ScrollTrigger.getAll().forEach(t => t.kill());
     };
   }, [onEnterOrbit]);
 
   return (
     <>
       <style>{`
-        @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@900&family=Rajdhani:wght@300;600;700&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@900&family=Rajdhani:wght@300;400;600;700&display=swap');
 
         #hero { position:relative;width:100%;height:100vh;overflow:hidden;background:#000;isolation:isolate; }
 
@@ -100,21 +133,14 @@ export default function Hero({ onEnterOrbit }: { onEnterOrbit?: () => void }) {
           transform:translateY(-50%);
           z-index:6;text-align:center;padding:0 20px;
         }
-
         .logo-eyebrow {
-          display:block;
-          font-family:'Rajdhani',sans-serif;
-          font-size:11px;font-weight:600;
-          letter-spacing:7px;text-transform:uppercase;
+          display:block;font-family:'Rajdhani',sans-serif;
+          font-size:11px;font-weight:600;letter-spacing:7px;text-transform:uppercase;
           color:rgba(255,210,140,.65);margin-bottom:18px;
         }
-
-        /* one-line logo */
         .game-logo {
           font-family:'Orbitron',monospace;font-weight:900;
-          font-size:clamp(34px,6.2vw,92px);
-          letter-spacing:-2px;line-height:1;
-          display:block;
+          font-size:clamp(34px,6.2vw,92px);letter-spacing:-2px;line-height:1;display:block;
         }
         #txt-effortless {
           background:linear-gradient(180deg,#fff 0%,#ffe4a0 40%,#ffb347 100%);
@@ -128,7 +154,6 @@ export default function Hero({ onEnterOrbit }: { onEnterOrbit?: () => void }) {
           display:inline;opacity:0;
           filter:drop-shadow(0 0 14px rgba(255,140,0,0.5));
         }
-
         .game-tagline {
           display:block;margin-top:14px;
           font-family:'Rajdhani',sans-serif;
@@ -137,30 +162,49 @@ export default function Hero({ onEnterOrbit }: { onEnterOrbit?: () => void }) {
           color:rgba(255,200,130,.65);
           text-shadow:0 0 30px rgba(255,160,50,.4);
         }
-
         #enter-orbit-btn {
-          display:inline-flex;align-items:center;gap:.7rem;
-          margin-top:2.6rem;
+          display:inline-flex;align-items:center;gap:.7rem;margin-top:2.6rem;
           background:transparent;border:1px solid rgba(255,140,0,.45);
-          color:#ffb347;
-          font-family:'Rajdhani',sans-serif;font-size:.78rem;font-weight:700;
-          letter-spacing:.3em;text-transform:uppercase;
-          padding:.9rem 2.4rem;cursor:pointer;
-          position:relative;overflow:hidden;pointer-events:all;
+          color:#ffb347;font-family:'Rajdhani',sans-serif;font-size:.78rem;font-weight:700;
+          letter-spacing:.3em;text-transform:uppercase;padding:.9rem 2.4rem;
+          cursor:pointer;position:relative;overflow:hidden;pointer-events:all;
           transition:color .3s,border-color .3s;
         }
-        #enter-orbit-btn .fill {
-          position:absolute;inset:0;
-          background:linear-gradient(90deg,#ff8c00,#ffb347);
-          transform:translateX(-100%);transition:transform .35s ease;z-index:0;
-        }
+        #enter-orbit-btn .fill { position:absolute;inset:0;background:linear-gradient(90deg,#ff8c00,#ffb347);transform:translateX(-100%);transition:transform .35s ease;z-index:0; }
         #enter-orbit-btn span { position:relative;z-index:1; }
         #enter-orbit-btn:hover { color:#000;border-color:transparent; }
         #enter-orbit-btn:hover .fill { transform:translateX(0); }
 
+        /* chapter 1 */
+        #ch1-nebula {
+          position:absolute;top:40%;right:-15%;width:70vw;height:70vw;border-radius:50%;
+          background:radial-gradient(ellipse at center,rgba(160,60,10,.18) 0%,rgba(80,30,5,.08) 40%,transparent 70%);
+          filter:blur(60px);pointer-events:none;z-index:5;opacity:0;
+        }
+        #ch1-block {
+          position:absolute;top:50%;left:0;right:0;transform:translateY(-50%);
+          z-index:5;display:flex;flex-direction:column;gap:clamp(10px,2vh,28px);padding:0 5%;
+        }
+        .ch1-headline {
+          font-family:'Orbitron',monospace;font-size:clamp(28px,5.5vw,100px);font-weight:900;
+          letter-spacing:-1px;line-height:1;opacity:0;
+          background:linear-gradient(180deg,#fff 0%,#ffe4b0 60%,#ffb347 100%);
+          -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
+        }
+        #ch1-line1 { text-align:left; }
+        .ch1-line2  { text-align:right; }
+        #ch1-divider {
+          height:1px;opacity:0;
+          background:linear-gradient(90deg,transparent,rgba(255,160,50,.5) 30%,rgba(255,160,50,.5) 70%,transparent);
+        }
+        #ch1-sub {
+          font-family:'Rajdhani',sans-serif;font-size:clamp(11px,1.2vw,17px);
+          font-weight:400;letter-spacing:6px;text-transform:uppercase;
+          color:rgba(255,200,130,.55);text-align:center;opacity:0;
+        }
+
         #layer-horizon {
-          position:absolute;bottom:-16vh;left:0;
-          width:100%;height:60vh;z-index:4;
+          position:absolute;bottom:-16vh;left:0;width:100%;height:60vh;z-index:4;
           backface-visibility:hidden;
         }
         @media (min-aspect-ratio:16/9){ #layer-horizon { bottom:-36vh; } }
@@ -191,7 +235,7 @@ export default function Hero({ onEnterOrbit }: { onEnterOrbit?: () => void }) {
         <button type="button" className="nav-cta">Get Started</button>
       </nav>
 
-      <section id="hero">
+      <section id="hero" ref={heroRef}>
         <div id="layer-stars">
           <div id="stars-small" ref={starsSmall} />
           <div id="stars-mid"   ref={starsMid} />
@@ -200,7 +244,7 @@ export default function Hero({ onEnterOrbit }: { onEnterOrbit?: () => void }) {
 
         <div id="globe" ref={globeRef} />
 
-        <div id="hero-text">
+        <div id="hero-text" ref={heroTextRef}>
           <span className="logo-eyebrow">ONE STOP AGENCY</span>
           <div className="game-logo">
             <span id="txt-effortless">
@@ -242,6 +286,15 @@ export default function Hero({ onEnterOrbit }: { onEnterOrbit?: () => void }) {
             <path d="M-100,120 Q720,-60 1540,120" fill="none" stroke="rgba(255,140,0,0.9)" strokeWidth="2.5" filter="url(#glow)"/>
             <path d="M-100,120 Q720,-60 1540,120" fill="none" stroke="rgba(255,120,0,0.25)" strokeWidth="18" filter="url(#atmosGlow)"/>
           </svg>
+        </div>
+
+        {/* Chapter 1 */}
+        <div id="ch1-nebula" ref={ch1Nebula} />
+        <div id="ch1-block">
+          <div id="ch1-line1"   ref={ch1Line1} className="ch1-headline">ONE CREW.</div>
+          <div id="ch1-divider" ref={ch1Divider} />
+          <div id="ch1-line2"   ref={ch1Line2} className="ch1-headline ch1-line2">EVERY DIRECTION.</div>
+          <div id="ch1-sub"     ref={ch1Sub}>The Universe&apos;s True Creative Team</div>
         </div>
       </section>
     </>
