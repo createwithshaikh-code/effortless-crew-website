@@ -34,10 +34,10 @@ const RADII  = { inner: 330, middle: 600, outer: 870 };
 const SPEEDS = { inner: 22,  middle: 15,  outer: 9   };
 
 const CAM_KF = {
-  inner:    { x: SYS_X+465,  y:12, z:0, yaw:90, pitch:-4,  roll:-12 },
-  middle:   { x: SYS_X+735,  y:14, z:0, yaw:90, pitch:-5,  roll:-14 },
-  outer:    { x: SYS_X+990,  y:16, z:0, yaw:90, pitch:-6,  roll:-16 },
-  pushback: { x: SYS_X+1060, y:16, z:0, yaw:90, pitch:-6,  roll:-18 },
+  inner:    { x: SYS_X+465,  y:12, z:0, yaw:90, pitch:-4,  roll:-14 }, // banking left
+  middle:   { x: SYS_X+735,  y:14, z:0, yaw:90, pitch:-6,  roll:+16 }, // banking RIGHT
+  outer:    { x: SYS_X+990,  y:16, z:0, yaw:90, pitch:-2,  roll:-3  }, // near-level, cinematic
+  pushback: { x: SYS_X+1060, y:16, z:0, yaw:90, pitch:-3,  roll:+4  },
 };
 
 const lerp = (a:number,b:number,t:number) => a+(b-a)*t;
