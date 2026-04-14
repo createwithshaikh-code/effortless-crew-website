@@ -70,17 +70,17 @@ export default function Hero({ onEnterOrbit }: { onEnterOrbit?: () => void }) {
     /* scroll timeline — uses hero-panel as scroller */
     const scroller = document.getElementById("hero-panel");
 
-    const tl = gsap.timeline({
-      scrollTrigger: {
-        trigger: heroRef.current,
-        scroller,
-        start: "top top",
-        end: "+=200%",
-        scrub: true,
-        pin: true,
-        anticipatePin: 1,
-      }
+    const st = ScrollTrigger.create({
+      trigger: heroRef.current,
+      scroller,
+      start: "top top",
+      end: "+=200%",
+      scrub: true,
+      pin: true,
+      anticipatePin: 1,
     });
+
+    const tl = gsap.timeline({ scrollTrigger: st });
 
     tl.to(starsSmall.current,  { y: "-18vh", ease: "none", duration: 1 }, 0);
     tl.to(starsMid.current,    { y: "-18vh", ease: "none", duration: 1 }, 0);
