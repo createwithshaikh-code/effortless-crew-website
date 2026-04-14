@@ -173,7 +173,7 @@ const Hero = forwardRef<HeroHandle, { onEnterOrbit?: () => void }>(
         #stars-small,#stars-mid,#stars-large { position:absolute;inset:0; }
 
         #globe {
-          position:absolute;z-index:2;left:50%;top:50%;
+          position:absolute;z-index:3;left:50%;top:50%;
           transform:translate(-50%,-52%);
           width:clamp(340px,60vmin,680px);height:clamp(340px,60vmin,680px);
           border-radius:50%;
