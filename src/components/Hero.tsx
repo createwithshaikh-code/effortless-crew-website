@@ -109,13 +109,10 @@ const Hero = forwardRef<HeroHandle, { onEnterOrbit?: () => void }>(
     // Play entrance on first mount
     playEntrance(0.25);
 
-    // Scroll timeline — scrub:true matches original (instant, no lag/bounce)
-    const scroller = document.getElementById("hero-panel");
-
+    // Scroll timeline — body scrolls natively (matches original HTML exactly)
     const tl = gsap.timeline({
       scrollTrigger: {
         trigger: heroRef.current,
-        scroller,
         start: "top top",
         end: "+=200%",
         scrub: true,
