@@ -8,7 +8,7 @@ export default function HomePage() {
 
   return (
     <div className="page-shell">
-      <div className={`page-panel page-panel--hero${showOrbit ? " hidden" : ""}`}>
+      <div id="hero-panel" className={`page-panel page-panel--hero${showOrbit ? " hidden" : ""}`}>
         <Hero onEnterOrbit={() => setShowOrbit(true)} />
       </div>
       <div className={`page-panel page-panel--orbit${showOrbit ? " visible" : ""}`}>
