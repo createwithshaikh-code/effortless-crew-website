@@ -1,27 +1,34 @@
 "use client";
-import { useState } from "react";
-import Hero from "@/components/Hero";
+import { useState, useRef } from "react";
+import Hero, { HeroHandle } from "@/components/Hero";
 import Orbit from "@/components/Orbit";
 
-const TRANSITION_MS = 1350; // matches CSS transition duration
+const SLIDE_MS = 1350; // matches CSS transition duration
 
 export default function HomePage() {
-  const [showOrbit, setShowOrbit]   = useState(false);
-  const [heroKey,   setHeroKey]     = useState(0);
+  const [showOrbit, setShowOrbit] = useState(false);
+  const heroRef = useRef<HeroHandle>(null);
+
+  const handleEnterOrbit = () => {
+    // animate hero elements down first, then slide the panel
+    heroRef.current?.exitDown();
+    setTimeout(() => setShowOrbit(true), 350);
+  };
 
   const handleExit = () => {
     setShowOrbit(false);
-    // wait for slide transition, then reset scroll + remount Hero so entrance replays
+    // scroll hero-panel back to top instantly
+    document.getElementById("hero-panel")?.scrollTo({ top: 0, behavior: "instant" });
+    // replay entrance after panel slides back into view
     setTimeout(() => {
-      document.getElementById("hero-panel")?.scrollTo({ top: 0, behavior: "instant" });
-      setHeroKey(k => k + 1);
-    }, TRANSITION_MS);
+      heroRef.current?.replayEntrance();
+    }, SLIDE_MS);
   };
 
   return (
     <div className="page-shell">
       <div id="hero-panel" className={`page-panel page-panel--hero${showOrbit ? " hidden" : ""}`}>
-        <Hero key={heroKey} onEnterOrbit={() => setShowOrbit(true)} />
+        <Hero ref={heroRef} onEnterOrbit={handleEnterOrbit} />
       </div>
       <div className={`page-panel page-panel--orbit${showOrbit ? " visible" : ""}`}>
         <Orbit onExit={handleExit} />
