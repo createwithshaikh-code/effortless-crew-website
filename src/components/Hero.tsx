@@ -85,9 +85,8 @@ export default function Hero() {
     tl.fromTo(ch1Sub.current,    { y: "14px",  opacity: 0 }, { y: "0px", opacity: 1,  ease: "none", duration: 0.1 },  0.62);
     tl.fromTo(ch1Nebula.current, { opacity: 0 }, { opacity: 1, ease: "none", duration: 0.2 }, 0.4);
 
-    tl.to([ch1Line1.current, ch1Line2.current, ch1Divider.current],
+    tl.to("#ch1-block",
       { y: "-30vh", opacity: 0, ease: "power2.in", duration: 0.15 }, 0.65);
-    tl.to(ch1Sub.current,  { y: "-10vh", opacity: 1, scale: 1.10, ease: "power2.in", duration: 0.2 }, 0.65);
     tl.to(globeRef.current,{ scale: 12, ease: "power1.in", duration: 0.2, force3D: true }, 0.78);
     tl.to(horizonRef.current, { opacity: 0, ease: "none", duration: 0.2 }, 0.80);
     tl.to([starsSmall.current, starsMid.current, starsLarge.current],
