@@ -22,7 +22,7 @@ function buildStarField(
   el.style.cssText = `position:absolute;inset:0;width:${size}px;height:${size}px;box-shadow:${shadows};background:transparent;border-radius:50%;`;
 }
 
-export default function Hero() {
+export default function Hero({ onEnterOrbit }: { onEnterOrbit?: () => void }) {
   const heroRef      = useRef<HTMLDivElement>(null);
   const starsSmall   = useRef<HTMLDivElement>(null);
   const starsMid     = useRef<HTMLDivElement>(null);
