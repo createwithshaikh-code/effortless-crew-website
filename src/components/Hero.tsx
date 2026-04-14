@@ -105,7 +105,8 @@ export default function Hero({ onEnterOrbit }: { onEnterOrbit?: () => void }) {
 
     return () => {
       enter.kill();
-      ScrollTrigger.getAll().forEach(t => t.kill());
+      tl.scrollTrigger?.kill();
+      tl.kill();
     };
   }, [onEnterOrbit]);
 
