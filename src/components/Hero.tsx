@@ -82,7 +82,7 @@ export default function Hero() {
     tl.fromTo(ch1Line1.current,  { x: "-15vw", opacity: 0 }, { x: "0vw", opacity: 1, ease: "none", duration: 0.2 }, 0.4);
     tl.fromTo(ch1Line2.current,  { x: "15vw",  opacity: 0 }, { x: "0vw", opacity: 1, ease: "none", duration: 0.2 }, 0.48);
     tl.fromTo(ch1Divider.current,{ opacity: 0 }, { opacity: 1, ease: "none", duration: 0.12 }, 0.58);
-    tl.fromTo(ch1Sub.current,    { y: "14px",  opacity: 0 }, { y: "0px", opacity: 1,  ease: "none", duration: 0.1 },  0.62);
+    tl.fromTo(ch1Sub.current,    { opacity: 0 }, { opacity: 1, ease: "none", duration: 0.1 }, 0.62);
     tl.fromTo(ch1Nebula.current, { opacity: 0 }, { opacity: 1, ease: "none", duration: 0.2 }, 0.4);
 
     tl.to("#ch1-block",
