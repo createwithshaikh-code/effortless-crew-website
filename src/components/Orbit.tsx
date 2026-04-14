@@ -166,9 +166,11 @@ export default function Orbit({ onExit }: { onExit?: () => void }) {
     RING_ORDER.forEach(name=>{
       const r=RADII[name]; const col=RING_HEX[name];
       // outer soft glow
-      sysGrp.add(Object.assign(new THREE.Mesh(new THREE.TorusGeometry(r,5,8,150),new THREE.MeshBasicMaterial({color:col,transparent:true,opacity:.04,blending:THREE.AdditiveBlending,depthWrite:false})),{rotation:{x:Math.PI/2,y:0,z:0}}));
+      const glow1=new THREE.Mesh(new THREE.TorusGeometry(r,5,8,150),new THREE.MeshBasicMaterial({color:col,transparent:true,opacity:.04,blending:THREE.AdditiveBlending,depthWrite:false}));
+      glow1.rotation.x=Math.PI/2; sysGrp.add(glow1);
       // mid glow
-      sysGrp.add(Object.assign(new THREE.Mesh(new THREE.TorusGeometry(r,1.8,8,150),new THREE.MeshBasicMaterial({color:col,transparent:true,opacity:.12,blending:THREE.AdditiveBlending,depthWrite:false})),{rotation:{x:Math.PI/2,y:0,z:0}}));
+      const glow2=new THREE.Mesh(new THREE.TorusGeometry(r,1.8,8,150),new THREE.MeshBasicMaterial({color:col,transparent:true,opacity:.12,blending:THREE.AdditiveBlending,depthWrite:false}));
+      glow2.rotation.x=Math.PI/2; sysGrp.add(glow2);
       // sharp thin line
       const line=new THREE.Mesh(new THREE.TorusGeometry(r,.28,8,150),new THREE.MeshBasicMaterial({color:col,transparent:true,opacity:.85}));
       line.rotation.x=Math.PI/2; sysGrp.add(line);
