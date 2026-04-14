@@ -177,11 +177,40 @@ export default function Hero({ onEnterOrbit }: { onEnterOrbit?: () => void }) {
           text-align: center;
           width: 100%;
           padding: 0 20px;
-          pointer-events: none;
           will-change: opacity, transform;
           backface-visibility: hidden;
           transform-style: preserve-3d;
         }
+        #enter-orbit-btn {
+          display: inline-flex;
+          align-items: center;
+          gap: .7rem;
+          margin-top: 2.8rem;
+          background: transparent;
+          border: 1px solid rgba(255,140,0,.45);
+          color: #ffb347;
+          font-family: 'Rajdhani', sans-serif;
+          font-size: .78rem;
+          font-weight: 700;
+          letter-spacing: .3em;
+          text-transform: uppercase;
+          padding: .9rem 2.4rem;
+          cursor: pointer;
+          position: relative;
+          overflow: hidden;
+          pointer-events: all;
+          transition: color .3s, border-color .3s;
+        }
+        #enter-orbit-btn .fill {
+          position: absolute; inset: 0;
+          background: linear-gradient(90deg, #ff8c00, #ffb347);
+          transform: translateX(-100%);
+          transition: transform .35s ease;
+          z-index: 0;
+        }
+        #enter-orbit-btn span { position: relative; z-index: 1; }
+        #enter-orbit-btn:hover { color: #000; border-color: transparent; }
+        #enter-orbit-btn:hover .fill { transform: translateX(0); }
         .game-logo {
           font-family: 'Orbitron', monospace;
           font-size: clamp(36px, 6.5vw, 96px);
