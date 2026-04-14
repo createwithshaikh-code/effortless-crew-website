@@ -10,28 +10,23 @@ body {
   height: 100%;
   background: #000;
   color: #fff;
+  overflow-x: hidden;
 }
 
 /* ── page transition shell ── */
 .page-shell {
   position: relative;
   width: 100vw;
-  height: 100vh;
-  overflow: hidden;
 }
 
-.page-panel {
-  position: absolute;
+/* Hero panel: fixed to viewport, body scroll drives GSAP */
+.page-panel--hero {
+  position: fixed;
   inset: 0;
+  z-index: 1;
+  overflow: hidden;
   will-change: transform;
   transition: transform 1.3s cubic-bezier(0.76, 0, 0.24, 1);
-}
-
-.page-panel--hero {
-  z-index: 1;
-  transform: translateY(0);
-  overflow-y: auto;
-  overflow-x: hidden;
 }
 .page-panel--hero.hidden {
   transform: translateY(100vh);
@@ -39,12 +34,27 @@ body {
   transition-duration: 1.3s;
 }
 
+/* Spacer that gives the body its scrollable height (300vh = pin + 200% travel) */
+.hero-scroll-spacer {
+  height: 300vh;
+  pointer-events: none;
+}
+/* Hide spacer when orbit is active so body has no scroll height */
+.hero-scroll-spacer.hidden {
+  display: none;
+}
+
+/* Orbit panel: fixed, slides in from top */
 .page-panel--orbit {
+  position: fixed;
+  inset: 0;
   z-index: 0;
+  overflow: hidden;
+  will-change: transform;
   transform: translateY(-100vh);
-  transition-duration: 1.5s;
+  transition: transform 1.5s cubic-bezier(0.76, 0, 0.24, 1);
 }
 .page-panel--orbit.visible {
   transform: translateY(0);
-  z-index: 1;
+  z-index: 2;
 }
