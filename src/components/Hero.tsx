@@ -469,11 +469,13 @@ export default function Hero() {
         </div>
 
         {/* Chapter 1 */}
-        <div id="ch1-nebula"  ref={ch1Nebula}></div>
-        <div id="ch1-line1"   ref={ch1Line1} className="ch1-headline">ONE CREW.</div>
-        <div id="ch1-line2"   ref={ch1Line2} className="ch1-headline ch1-line2">EVERY DIRECTION.</div>
-        <div id="ch1-divider" ref={ch1Divider}></div>
-        <div id="ch1-sub"     ref={ch1Sub}>The Universe&apos;s True Creative Team</div>
+        <div id="ch1-nebula" ref={ch1Nebula}></div>
+        <div id="ch1-block">
+          <div id="ch1-line1"   ref={ch1Line1} className="ch1-headline">ONE CREW.</div>
+          <div id="ch1-divider" ref={ch1Divider}></div>
+          <div id="ch1-line2"   ref={ch1Line2} className="ch1-headline ch1-line2">EVERY DIRECTION.</div>
+          <div id="ch1-sub"     ref={ch1Sub}>The Universe&apos;s True Creative Team</div>
+        </div>
       </section>
     </>
   );
