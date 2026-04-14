@@ -76,11 +76,12 @@ function makePlanetTex(col: number) {
 /* ── glow sprite texture ── */
 function makeGlowTex(col:number){
   const hex="#"+col.toString(16).padStart(6,"0");
-  return mkTex(128,128,(ctx,W,H)=>{
+  return mkTex(256,256,(ctx,W,H)=>{
     const g=ctx.createRadialGradient(W/2,H/2,0,W/2,H/2,W/2);
-    g.addColorStop(0,  hex+"cc");
-    g.addColorStop(0.3,hex+"55");
-    g.addColorStop(0.7,hex+"18");
+    g.addColorStop(0,  hex+"ff");
+    g.addColorStop(0.2,hex+"cc");
+    g.addColorStop(0.5,hex+"66");
+    g.addColorStop(0.8,hex+"22");
     g.addColorStop(1,  "transparent");
     ctx.fillStyle=g;ctx.fillRect(0,0,W,H);
   });
