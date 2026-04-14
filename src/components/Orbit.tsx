@@ -235,7 +235,7 @@ export default function Orbit({ onExit }: { onExit?: () => void }) {
     const CUR={...CAM_KF.inner}; const TGT={...CAM_KF.inner};
     // spring velocities for cinematic camera
     const VEL={x:0,y:0,z:0,yaw:0,pitch:0,roll:0};
-    const SPRING=0.028, DAMP=0.78;
+    const SPRING=0.010, DAMP=0.86;
     let curRing:RingName="inner"; let curIdx=0;
     let transTimer:ReturnType<typeof setTimeout>|null=null;
 
