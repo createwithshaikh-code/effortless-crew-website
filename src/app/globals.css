@@ -32,6 +32,7 @@ body {
   transform: translateY(0);
   overflow-y: auto;
   overflow-x: hidden;
+  background: transparent;
 }
 .page-panel--hero.hidden {
   transform: translateY(100vh);
