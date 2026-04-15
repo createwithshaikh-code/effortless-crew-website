@@ -13,7 +13,7 @@ export default function HomePage() {
   const handleEnterOrbit = () => {
     heroRef.current?.exitDown();
     // Stars drift downward, ease to stop as solar system settles
-    gsap.to("#hero-stars-wrap", { y: "30%", duration: 2.4, ease: "power2.out" });
+    gsap.to("#hero-stars-wrap", { y: "30%", duration: 4.0, ease: "power2.out" });
     document.body.style.overflow = "hidden";
     // Orbit overlay slides in from above
     setTimeout(() => setShowOrbit(true), 350);
