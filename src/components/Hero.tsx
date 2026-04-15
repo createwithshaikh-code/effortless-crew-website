@@ -102,9 +102,6 @@ const Hero = forwardRef<HeroHandle, { onEnterOrbit?: () => void }>(
 
     const scroller = document.getElementById("hero-panel")!;
 
-    // Lock scroll during animation — unlock only after final text appears
-    scroller.style.overflowY = "hidden";
-
     const tl = gsap.timeline({
       scrollTrigger: {
         trigger: heroRef.current,
@@ -114,8 +111,6 @@ const Hero = forwardRef<HeroHandle, { onEnterOrbit?: () => void }>(
         scrub: 0.5,
         pin: true,
         anticipatePin: 1,
-        onLeave: () => { scroller.style.overflowY = "auto"; },
-        onEnterBack: () => { scroller.style.overflowY = "hidden"; },
       }
     });
 
