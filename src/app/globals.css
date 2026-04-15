@@ -6,56 +6,19 @@
 
 html, body {
   width: 100%;
-  height: 100%;
   background: #000;
   color: #fff;
-}
-
-.page-shell {
-  position: relative;
-  width: 100vw;
-  height: 100vh;
-  overflow: hidden;
-  background: #000;
-}
-
-/* Shared stars — always behind everything */
-#shared-stars-wrap {
-  position: absolute;
-  inset: 0;
-  z-index: 0;
-  pointer-events: none;
-  overflow: hidden;
-}
-
-.page-panel {
-  position: absolute;
-  inset: 0;
-  will-change: transform;
-  transition: transform 1.3s cubic-bezier(0.76, 0, 0.24, 1);
-}
-
-.page-panel--hero {
-  z-index: 1;
-  transform: translateY(0);
-  overflow-y: auto;
-  overflow-x: hidden;
-  background: transparent;
   overscroll-behavior: none;
 }
-.page-panel--hero.hidden {
-  transform: translateY(100vh);
-  z-index: 0;
-  transition-duration: 1.3s;
-}
 
-.page-panel--orbit {
-  z-index: 0;
+.orbit-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 50;
   transform: translateY(-100vh);
-  transition-duration: 1.5s;
+  transition: transform 1.5s cubic-bezier(0.76, 0, 0.24, 1);
   background: transparent;
 }
-.page-panel--orbit.visible {
+.orbit-overlay.visible {
   transform: translateY(0);
-  z-index: 1;
 }
