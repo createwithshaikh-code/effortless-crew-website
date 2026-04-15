@@ -187,6 +187,7 @@ const Hero = forwardRef<HeroHandle, { onEnterOrbit?: () => void }>(
           transform-origin:center;
           clip-path:ellipse(50% 38% at 50% 30%);
         }
+        @keyframes heroStarsSlowRotate { to { transform:rotate(360deg); } }
         .hss { position:absolute;inset:0; }
         .hss:nth-child(1) { animation:hsTwinkle 5s ease-in-out infinite alternate-reverse; }
         .hss:nth-child(2) { animation:hsTwinkle 3.8s ease-in-out infinite alternate; }
