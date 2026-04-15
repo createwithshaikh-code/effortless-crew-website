@@ -25,7 +25,7 @@ export default function HomePage() {
 
   const handleExit = () => {
     // 1. Cards fade out first
-    gsap.to("#orbit-hud", { opacity: 0, duration: 0.45, ease: "power2.in" });
+    gsap.to("#orbit-hud", { opacity: 0, duration: 0.25, ease: "power2.in" });
 
     // 2. After cards gone, start panel transition
     setTimeout(() => {
