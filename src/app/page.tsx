@@ -21,7 +21,7 @@ export default function HomePage() {
     heroRef.current?.prepareEntrance();
     setShowOrbit(false);
     window.scrollTo({ top: 0, behavior: "instant" });
-    gsap.to("#hero-stars", { y: "0%", duration: 1.0, ease: "power2.out" });
+    gsap.to("#hero-stars-wrap", { y: "0%", duration: 1.0, ease: "power2.out" });
     setTimeout(() => {
       document.body.style.overflow = "";
       heroRef.current?.replayEntrance();
