@@ -157,11 +157,15 @@ const Hero = forwardRef<HeroHandle, { onEnterOrbit?: () => void }>(
           overflow:hidden;background:transparent;isolation:isolate;
         }
 
+        #hero-stars-wrap {
+          position:absolute;top:0;left:0;width:100%;height:100%;
+          z-index:1;pointer-events:none;
+        }
         #hero-stars {
           position:absolute;top:50%;left:50%;
           width:220vmax;height:220vmax;
           margin-left:-110vmax;margin-top:-110vmax;
-          z-index:1;transform-origin:center;
+          transform-origin:center;
           animation:heroStarRotate 120s linear infinite;
           clip-path:ellipse(50% 38% at 50% 30%);
           pointer-events:none;
