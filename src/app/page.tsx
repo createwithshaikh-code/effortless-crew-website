@@ -41,7 +41,7 @@ export default function HomePage() {
         document.body.style.overflow = "";
         heroRef.current?.replayEntrance();
       }, SLIDE_MS);
-    }, 280);
+    }, 100);
   };
 
   return (
