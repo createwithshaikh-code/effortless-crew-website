@@ -18,10 +18,10 @@ export default function HomePage() {
     document.body.style.overflow = "hidden";
     // Orbit overlay slides in from above
     setTimeout(() => setShowOrbit(true), 350);
-    // Cards fade in after overlay finishes sliding (350 delay + 1500 transition + 200 buffer)
+    // Cards fade in after overlay finishes sliding
     setTimeout(() => {
-      gsap.to("#orbit-hud", { opacity: 1, duration: 0.9, ease: "power2.out" });
-    }, 2050);
+      gsap.to("#orbit-hud", { opacity: 1, duration: 0.5, ease: "power2.out" });
+    }, 1100);
   };
 
   const handleExit = () => {
