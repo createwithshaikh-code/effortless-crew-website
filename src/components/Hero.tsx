@@ -68,7 +68,6 @@ const Hero = forwardRef<HeroHandle, { onEnterOrbit?: () => void }>(
       enterTlRef.current?.kill();
       gsap.to(horizonRef.current,  { y: "60vh", opacity: 1, duration: 0.7, ease: "power2.in" });
       gsap.to(globeRef.current,    { y: "20vh", opacity: 0, duration: 0.5, ease: "power2.in", delay: 0.05 });
-      gsap.to([starsSmall.current, starsMid.current, starsLarge.current], { opacity: 0, duration: 0.4 });
       gsap.to(".logo-eyebrow, .ec-char, #txt-crew, .game-tagline, #enter-orbit-btn",
         { opacity: 0, y: 20, duration: 0.35, stagger: 0.04, ease: "power2.in" });
     },
