@@ -22,8 +22,8 @@ export default function HomePage() {
     setShowOrbit(false);
     document.getElementById("hero-panel")?.scrollTo({ top: 0, behavior: "instant" });
     // restore both layers
-    gsap.to("#hero-stars",        { y: "0%", duration: 1.1, ease: "power2.out" });
-    gsap.to("#hero-stars-static", { y: "0%", duration: 1.1, ease: "power2.out" });
+    gsap.to("#hero-stars-wrap",        { y: "0%", duration: 1.1, ease: "power2.out" });
+    gsap.to("#hero-stars-static-wrap", { y: "0%", duration: 1.1, ease: "power2.out" });
     setTimeout(() => {
       heroRef.current?.replayEntrance();
     }, SLIDE_MS);
