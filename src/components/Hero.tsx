@@ -48,7 +48,7 @@ const Hero = forwardRef<HeroHandle, { onEnterOrbit?: () => void }>(
       horizonRef.current, globeRef.current, heroTextRef.current,
       ch1Line1.current, ch1Line2.current, ch1Divider.current, ch1Sub.current,
     ], { clearProps: "all" });
-    gsap.set("#layer-stars", { clearProps: "all" });
+    gsap.set("#layer-stars", { clearProps: "opacity,y" });
 
     // entrance start states
     gsap.set(horizonRef.current,  { y: "60vh", opacity: 1 });
