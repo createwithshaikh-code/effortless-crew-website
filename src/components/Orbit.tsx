@@ -257,9 +257,9 @@ export default function Orbit({ onExit }: { onExit?: () => void }) {
       snapTarget[ring]=snapDeg(ring,idx);
       Object.assign(TGT,CAM_KF[ring]);
       updateUI();
-      // nudge orbit stars rotation when moving between rings
-      const el = document.getElementById("orbit-stars");
-      if(el) gsap.to(el, { rotation: starRotOffset[ring], duration: 2.5, ease: "power2.out" });
+      // nudge wrapper rotation when moving between rings — inner CSS spin keeps going
+      const wrap = document.getElementById("orbit-stars-wrap");
+      if(wrap) gsap.to(wrap, { rotation: starRotOffset[ring], duration: 2.5, ease: "power2.out" });
     }
 
     function applyBridge(ringName:RingName){
