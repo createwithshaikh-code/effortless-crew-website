@@ -169,7 +169,7 @@ const Hero = forwardRef<HeroHandle, { onEnterOrbit?: () => void }>(
           width:220vmax;height:220vmax;
           margin-left:-110vmax;margin-top:-110vmax;
           transform-origin:center;
-          animation:heroStarRotate 120s linear infinite;
+          animation:heroStarRotate 200s linear infinite;
           clip-path:ellipse(50% 38% at 50% 30%);
         }
         @keyframes heroStarRotate { to { transform:rotate(-360deg); } }
