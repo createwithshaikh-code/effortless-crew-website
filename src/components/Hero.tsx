@@ -43,10 +43,9 @@ const Hero = forwardRef<HeroHandle, { onEnterOrbit?: () => void }>(
   function playEntrance(delay = 0.3) {
     enterTlRef.current?.kill();
 
-    // clear GSAP inline styles
+    // clear GSAP inline styles (NOT star refs — buildStarField sets their cssText)
     gsap.set([
       horizonRef.current, globeRef.current, heroTextRef.current,
-      starsSmall.current, starsMid.current, starsLarge.current,
       ch1Line1.current, ch1Line2.current, ch1Divider.current, ch1Sub.current,
     ], { clearProps: "all" });
     gsap.set("#layer-stars", { clearProps: "all" });
