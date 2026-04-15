@@ -79,13 +79,23 @@ const Hero = forwardRef<HeroHandle, { onEnterOrbit?: () => void }>(
   useEffect(() => {
     playEntrance(0.25);
 
-    // Scroll timeline — hero panel is position:fixed so no pin needed.
-    // We drive the timeline directly from window scroll.
-    const tl = gsap.timeline({ paused: true });
-    scrollTlRef.current = tl;
+    const scroller = document.getElementById("hero-panel");
+
+    const tl = gsap.timeline({
+      scrollTrigger: {
+        trigger: heroRef.current,
+        scroller,
+        start: "top top",
+        end: "+=400%",
+        scrub: true,
+        pin: true,
+        anticipatePin: 1,
+        fastScrollEnd: true,
+      }
+    });
 
     // === PARALLAX LAYER (0 → 0.5 progress) ===
-    // Stars are in shared layer (page root) — driven from page.tsx
+    // Stars are in shared layer behind panels
     // Globe drifts up + starts growing from the very beginning
     tl.to(globeRef.current,    { y: "-10vh", scale: 1.6, ease: "none", duration: 0.5, force3D: true }, 0);
     // Hero text moves up and fades
