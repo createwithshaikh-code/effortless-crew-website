@@ -138,7 +138,7 @@ const Hero = forwardRef<HeroHandle, { onEnterOrbit?: () => void }>(
       <style>{`
         @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@900&family=Rajdhani:wght@300;400;600;700&display=swap');
 
-        #hero { position:relative;width:100%;height:100vh;overflow:hidden;background:#000;isolation:isolate; }
+        #hero { position:relative;width:100%;height:100vh;overflow:hidden;background:transparent;isolation:isolate; }
 
         #globe {
           position:absolute;z-index:3;left:50%;top:50%;
