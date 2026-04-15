@@ -18,6 +18,7 @@ export default function HomePage() {
   };
 
   const handleExit = () => {
+    heroRef.current?.prepareEntrance();
     setShowOrbit(false);
     window.scrollTo({ top: 0, behavior: "instant" });
     gsap.to("#hero-stars", { y: "0%", duration: 1.0, ease: "power2.out" });
