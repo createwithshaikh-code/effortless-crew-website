@@ -360,11 +360,16 @@ export default function Orbit({ onExit }: { onExit?: () => void }) {
       <style>{`
         @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@700;900&family=Rajdhani:wght@400;600;700&display=swap');
 
+        /* GSAP nudges the wrapper — CSS spin lives on inner */
+        #orbit-stars-wrap {
+          position:absolute;inset:0;z-index:0;pointer-events:none;
+          transform-origin:center center;
+        }
         #orbit-stars {
           position:absolute;top:50%;left:50%;
           width:220vmax;height:220vmax;
           margin-left:-110vmax;margin-top:-110vmax;
-          z-index:0;transform-origin:center;
+          transform-origin:center;
           animation:oStarRotate 120s linear infinite;
           pointer-events:none;
         }
