@@ -204,9 +204,8 @@ export default function Orbit({ onExit }: { onExit?: () => void }) {
       });
     });
 
-    /* stars (Three.js for depth) */
-    let starPoints: THREE.Points;
-    {const N=2000,pos=new Float32Array(N*3);for(let i=0;i<N;i++){pos[i*3]=(Math.random()-.5)*9000;pos[i*3+1]=(Math.random()-.5)*9000;pos[i*3+2]=(Math.random()-.5)*9000;}const g=new THREE.BufferGeometry();g.setAttribute("position",new THREE.BufferAttribute(pos,3));starPoints=new THREE.Points(g,new THREE.PointsMaterial({color:0xffe8c0,size:1.2,transparent:true,opacity:.3}));scene.add(starPoints);}
+    /* reacting stars — hero CSS stars visible through transparent renderer */
+    const reactingStars = document.getElementById('hero-stars');
 
     /* dust */
     {const N=300,pos=new Float32Array(N*3);for(let i=0;i<N;i++){const rad=100+Math.random()*520,th=Math.random()*Math.PI*2,ph=(Math.random()-.5)*.6;pos[i*3]=rad*Math.cos(th)*Math.cos(ph);pos[i*3+1]=rad*Math.sin(ph)*75;pos[i*3+2]=rad*Math.sin(th)*Math.cos(ph);}const g=new THREE.BufferGeometry();g.setAttribute("position",new THREE.BufferAttribute(pos,3));sysGrp.add(new THREE.Points(g,new THREE.PointsMaterial({color:0xff8c00,size:.7,transparent:true,opacity:.18})));}
