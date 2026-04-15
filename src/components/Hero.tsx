@@ -222,7 +222,7 @@ const Hero = forwardRef<HeroHandle, { onEnterOrbit?: () => void }>(
           display:inline-flex;align-items:center;gap:.7rem;margin-top:2.6rem;
           background:transparent;border:1px solid rgba(255,140,0,.45);
           color:#ffb347;font-family:'Rajdhani',sans-serif;font-size:.78rem;font-weight:700;
-          letter-spacing:.3em;text-transform:uppercase;padding:.9rem 2.4rem;
+          letter-spacing:.3em;text-transform:uppercase;padding:.65rem 1.8rem;
           cursor:pointer;position:relative;overflow:hidden;pointer-events:all;
           transition:color .3s,border-color .3s;
         }
