@@ -125,7 +125,7 @@ const Hero = forwardRef<HeroHandle, { onEnterOrbit?: () => void }>(
       { y: "-20vh", opacity: 0, ease: "none", duration: 0.12 }, 0.62);
 
     // GLOBE EXPANDS (slow start, accelerates)
-    tl.to(globeRef.current, { scale: 14, ease: "power2.in", duration: 0.5, force3D: true }, 0.5);
+    tl.fromTo(globeRef.current, { scale: 1 }, { scale: 14, ease: "power2.in", duration: 0.5, force3D: true }, 0.5);
 
     // FINAL TEXT appears
     tl.fromTo("#ch1-final", { opacity: 0 }, { opacity: 1, ease: "none", duration: 0.1 }, 0.65);
