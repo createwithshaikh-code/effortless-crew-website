@@ -211,6 +211,9 @@ export default function Orbit({ onExit }: { onExit?: () => void }) {
     /* dust */
     {const N=300,pos=new Float32Array(N*3);for(let i=0;i<N;i++){const rad=100+Math.random()*520,th=Math.random()*Math.PI*2,ph=(Math.random()-.5)*.6;pos[i*3]=rad*Math.cos(th)*Math.cos(ph);pos[i*3+1]=rad*Math.sin(ph)*75;pos[i*3+2]=rad*Math.sin(th)*Math.cos(ph);}const g=new THREE.BufferGeometry();g.setAttribute("position",new THREE.BufferAttribute(pos,3));sysGrp.add(new THREE.Points(g,new THREE.PointsMaterial({color:0xff8c00,size:.7,transparent:true,opacity:.18})));}
 
+    /* star activity — 1 = spinning fast, 0 = still */
+    let starActivity = 1.0;
+
     /* state */
     const ringRot:Record<string,number>={inner:0,middle:0,outer:0};
     const ringPaused:Record<string,boolean>={inner:false,middle:false,outer:false};
