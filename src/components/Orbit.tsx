@@ -442,11 +442,13 @@ export default function Orbit({ onExit }: { onExit?: () => void }) {
         #o-exit:hover { border-color:#e05000;color:#e05000; }
       `}</style>
 
-      {/* Star field — matches hero stars exactly */}
-      <div id="orbit-stars">
-        <div className="os" ref={s1} />
-        <div className="os" ref={s2} />
-        <div className="os" ref={s3} />
+      {/* Wrapper GSAP nudges; inner div keeps CSS spin */}
+      <div id="orbit-stars-wrap">
+        <div id="orbit-stars">
+          <div className="os" ref={s1} />
+          <div className="os" ref={s2} />
+          <div className="os" ref={s3} />
+        </div>
       </div>
 
       {/* Three.js mount */}
