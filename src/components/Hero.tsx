@@ -24,7 +24,6 @@ const Hero = forwardRef<HeroHandle, { onEnterOrbit?: () => void }>(
   const ch1Divider  = useRef<HTMLDivElement>(null);
   const ch1Sub      = useRef<HTMLDivElement>(null);
   const enterTlRef  = useRef<gsap.core.Timeline | null>(null);
-  const scrollTlRef = useRef<gsap.core.Timeline | null>(null);
 
   function playEntrance(delay = 0.3) {
     enterTlRef.current?.kill();
