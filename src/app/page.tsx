@@ -41,6 +41,7 @@ export default function HomePage() {
       setTimeout(() => {
         document.body.style.overflow = "";
         heroRef.current?.replayEntrance();
+        gsap.to("#nav", { opacity: 1, duration: 0.6, ease: "power2.out" });
       }, SLIDE_MS);
     }, 100);
   };
