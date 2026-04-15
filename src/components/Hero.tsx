@@ -63,7 +63,7 @@ const Hero = forwardRef<HeroHandle, { onEnterOrbit?: () => void }>(
     const enter = gsap.timeline({ defaults: { ease: "power3.out" }, delay });
     enterTlRef.current = enter;
 
-    enter.to(horizonRef.current,  { y: "0vh", duration: 1.4, ease: "power2.out" }, 0);
+    enter.to(horizonRef.current,  { y: "0vh", duration: 1.4, ease: "power2.out", onComplete: () => gsap.set(horizonRef.current, { clearProps: "transform" }) }, 0);
     enter.to(globeRef.current,    { opacity: 1, scale: 1, duration: 1.2 }, 0.2);
     enter.to(".logo-eyebrow",     { opacity: 1, y: 0, duration: 0.6 }, 0.9);
     enter.to(".ec-char",          { opacity: 1, duration: 0.3, stagger: 0.055 }, 1.2);
