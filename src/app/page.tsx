@@ -4,7 +4,7 @@ import Hero, { HeroHandle } from "@/components/Hero";
 import Orbit from "@/components/Orbit";
 import { gsap } from "gsap";
 
-const SLIDE_MS = 900;
+const SLIDE_MS = 700;
 
 export default function HomePage() {
   const [showOrbit, setShowOrbit] = useState(false);
