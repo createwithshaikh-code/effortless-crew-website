@@ -85,8 +85,7 @@ const Hero = forwardRef<HeroHandle, { onEnterOrbit?: () => void }>(
     scrollTlRef.current = tl;
 
     // === PARALLAX LAYER (0 → 0.5 progress) ===
-    // Stars drift up slowly
-    tl.to("#layer-stars",      { y: "-18vh", ease: "none", duration: 0.5, force3D: true }, 0);
+    // Stars are in shared layer (page root) — driven from page.tsx
     // Globe drifts up + starts growing from the very beginning
     tl.to(globeRef.current,    { y: "-10vh", scale: 1.6, ease: "none", duration: 0.5, force3D: true }, 0);
     // Hero text moves up and fades
