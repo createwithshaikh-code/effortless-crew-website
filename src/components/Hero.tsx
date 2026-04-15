@@ -260,7 +260,7 @@ const Hero = forwardRef<HeroHandle, { onEnterOrbit?: () => void }>(
         }
 
         #layer-horizon {
-          position:absolute;bottom:-16vh;left:0;width:100%;height:60vh;z-index:4;
+          position:absolute;bottom:-16vh;left:0;width:100%;height:60vh;z-index:7;
           backface-visibility:hidden;
         }
         @media (min-aspect-ratio:16/9){ #layer-horizon { bottom:-36vh; } }
