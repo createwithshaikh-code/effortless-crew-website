@@ -1,6 +1,7 @@
 "use client";
 import { useEffect, useRef } from "react";
 import * as THREE from "three";
+import { gsap } from "gsap";
 
 const RING_COLORS = { inner: "#ff8c00", middle: "#e05000", outer: "#ffcc44" };
 const RING_HEX    = { inner: 0xff8c00,  middle: 0xe05000,  outer: 0xffcc44  };
