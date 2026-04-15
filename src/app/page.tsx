@@ -11,6 +11,7 @@ export default function HomePage() {
   const heroRef = useRef<HeroHandle>(null);
 
   const handleEnterOrbit = () => {
+    heroRef.current?.exitDown();
     // Stars drift downward, ease to stop as solar system settles
     gsap.to("#hero-stars-wrap", { y: "30%", duration: 2.4, ease: "power2.out" });
     document.body.style.overflow = "hidden";
