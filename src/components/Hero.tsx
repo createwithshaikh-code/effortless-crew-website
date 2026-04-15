@@ -100,16 +100,6 @@ const Hero = forwardRef<HeroHandle, { onEnterOrbit?: () => void }>(
     if (starsMid.current)   buildStarField(starsMid.current,   280, "255,240,210", 1.5);
     if (starsLarge.current) buildStarField(starsLarge.current, 100, "255,248,230", 2);
 
-    // twinkle — use brightness so it doesn't conflict with opacity scroll tweens
-    [starsSmall, starsMid, starsLarge].forEach(r => {
-      if (!r.current) return;
-      gsap.to(r.current, {
-        filter: "brightness(0.55)",
-        duration: 2.5 + Math.random() * 2,
-        ease: "sine.inOut", yoyo: true, repeat: -1, delay: Math.random() * 2
-      });
-    });
-
     playEntrance(0.25);
 
     // Scroll timeline — hero panel is position:fixed so no pin needed.
