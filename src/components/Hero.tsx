@@ -160,15 +160,18 @@ const Hero = forwardRef<HeroHandle, { onEnterOrbit?: () => void }>(
           overflow:hidden;background:transparent;isolation:isolate;
         }
 
-        /* Spinning star layer */
+        /* GSAP moves these wrapper divs (no CSS transform on them) */
+        #hero-stars-wrap, #hero-stars-static-wrap {
+          position:absolute;inset:0;z-index:1;pointer-events:none;
+        }
+        /* Spinning inner div — CSS rotation lives here */
         #hero-stars {
           position:absolute;top:50%;left:50%;
           width:220vmax;height:220vmax;
           margin-left:-110vmax;margin-top:-110vmax;
-          z-index:1;transform-origin:center;
+          transform-origin:center;
           animation:heroStarRotate 120s linear infinite;
           clip-path:ellipse(50% 38% at 50% 30%);
-          pointer-events:none;
         }
         @keyframes heroStarRotate { to { transform:rotate(-360deg); } }
         .hs { position:absolute;inset:0; }
@@ -176,15 +179,13 @@ const Hero = forwardRef<HeroHandle, { onEnterOrbit?: () => void }>(
         .hs:nth-child(2) { animation:hsTwinkle 4.8s ease-in-out infinite alternate-reverse; }
         .hs:nth-child(3) { animation:hsTwinkle 2.9s ease-in-out infinite alternate; }
         @keyframes hsTwinkle { from{filter:brightness(1);} to{filter:brightness(0.5);} }
-
-        /* Static (non-spinning) star layer — same stars, no rotation */
+        /* Static inner div — no rotation */
         #hero-stars-static {
           position:absolute;top:50%;left:50%;
           width:220vmax;height:220vmax;
           margin-left:-110vmax;margin-top:-110vmax;
-          z-index:1;transform-origin:center;
+          transform-origin:center;
           clip-path:ellipse(50% 38% at 50% 30%);
-          pointer-events:none;
         }
         .hss { position:absolute;inset:0; }
         .hss:nth-child(1) { animation:hsTwinkle 5s ease-in-out infinite alternate-reverse; }
