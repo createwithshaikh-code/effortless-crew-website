@@ -28,14 +28,12 @@ const Hero = forwardRef<HeroHandle, { onEnterOrbit?: () => void }>(
   function playEntrance(delay = 0.3) {
     enterTlRef.current?.kill();
 
-    // clear GSAP inline styles (NOT star refs — buildStarField sets their cssText)
     gsap.set([
       horizonRef.current, globeRef.current, heroTextRef.current,
       ch1Line1.current, ch1Line2.current, ch1Divider.current, ch1Sub.current,
     ], { clearProps: "all" });
 
-    // entrance start states
-    gsap.set(horizonRef.current,  { y: "60vh", opacity: 1 });
+    gsap.set(horizonRef.current,  { y: "60vh" });
     gsap.set(globeRef.current,    { opacity: 0, scale: 0.9 });
     gsap.set(".logo-eyebrow",     { opacity: 0, y: 10 });
     gsap.set(".ec-char",          { opacity: 0 });
@@ -43,11 +41,11 @@ const Hero = forwardRef<HeroHandle, { onEnterOrbit?: () => void }>(
     gsap.set(".game-tagline",     { opacity: 0, y: 8 });
     gsap.set("#enter-orbit-btn",  { opacity: 0, y: 8 });
     gsap.set([ch1Line1.current, ch1Line2.current, ch1Divider.current, ch1Sub.current], { opacity: 0 });
+    gsap.set("#ch1-final",        { opacity: 0 });
 
     const enter = gsap.timeline({ defaults: { ease: "power3.out" }, delay });
     enterTlRef.current = enter;
 
-    // horizon slides up from below
     enter.to(horizonRef.current,  { y: "0vh", duration: 1.4, ease: "power2.out" }, 0);
     enter.to(globeRef.current,    { opacity: 1, scale: 1, duration: 1.2 }, 0.2);
     enter.to(".logo-eyebrow",     { opacity: 1, y: 0, duration: 0.6 }, 0.9);
@@ -65,8 +63,8 @@ const Hero = forwardRef<HeroHandle, { onEnterOrbit?: () => void }>(
   useImperativeHandle(ref, () => ({
     exitDown() {
       enterTlRef.current?.kill();
-      gsap.to(horizonRef.current,  { y: "60vh", opacity: 1, duration: 0.7, ease: "power2.in" });
-      gsap.to(globeRef.current,    { y: "20vh", opacity: 0, duration: 0.5, ease: "power2.in", delay: 0.05 });
+      gsap.to(horizonRef.current, { y: "60vh", duration: 0.7, ease: "power2.in" });
+      gsap.to(globeRef.current,   { y: "20vh", opacity: 0, duration: 0.5, ease: "power2.in", delay: 0.05 });
       gsap.to(".logo-eyebrow, .ec-char, #txt-crew, .game-tagline, #enter-orbit-btn",
         { opacity: 0, y: 20, duration: 0.35, stagger: 0.04, ease: "power2.in" });
     },
@@ -78,7 +76,7 @@ const Hero = forwardRef<HeroHandle, { onEnterOrbit?: () => void }>(
   useEffect(() => {
     playEntrance(0.25);
 
-    const scroller = document.getElementById("hero-panel");
+    const scroller = document.getElementById("hero-panel")!;
 
     const tl = gsap.timeline({
       scrollTrigger: {
@@ -93,37 +91,32 @@ const Hero = forwardRef<HeroHandle, { onEnterOrbit?: () => void }>(
       }
     });
 
-    // === PARALLAX LAYER (0 → 0.5 progress) ===
-    // Stars are in shared layer behind panels
-    // Globe drifts up + starts growing from the very beginning
-    tl.to(globeRef.current,    { y: "-10vh", scale: 1.6, ease: "none", duration: 0.5, force3D: true }, 0);
-    // Hero text moves up and fades
-    tl.to(heroTextRef.current, { y: "-20vh", opacity: 0, ease: "none", duration: 0.35, force3D: true }, 0);
-    // Horizon rises fastest — catches up to text
-    tl.to(horizonRef.current,  { y: "-55vh", ease: "none", duration: 0.5, force3D: true }, 0);
-    // CTA fades early
-    tl.to("#enter-orbit-btn",  { opacity: 0, y: "-8vh", ease: "none", duration: 0.2, force3D: true }, 0);
+    // PARALLAX — horizon catches up to text, feels like ground rising
+    tl.to(heroTextRef.current, { y: "-22vh", opacity: 0, ease: "none", duration: 0.4, force3D: true }, 0);
+    tl.to(horizonRef.current,  { y: "-60vh", ease: "none", duration: 0.55, force3D: true }, 0);
+    tl.to(globeRef.current,    { y: "-8vh",  ease: "none", duration: 0.55, force3D: true }, 0);
+    tl.to("#shared-stars",     { y: "-10vh", ease: "none", duration: 0.55, force3D: true }, 0);
 
-    // === CHAPTER 1 REVEAL (0.35 → 0.55) ===
-    tl.fromTo(ch1Line1.current,  { x: "-15vw", opacity: 0 }, { x: "0vw", opacity: 1, ease: "none", duration: 0.12 }, 0.35);
-    tl.fromTo(ch1Line2.current,  { x: "15vw",  opacity: 0 }, { x: "0vw", opacity: 1, ease: "none", duration: 0.12 }, 0.42);
-    tl.fromTo(ch1Divider.current,{ opacity: 0 }, { opacity: 1, ease: "none", duration: 0.08 }, 0.50);
-    tl.fromTo(ch1Sub.current,    { opacity: 0, scale: 0.92 }, { opacity: 1, scale: 1, ease: "none", duration: 0.08 }, 0.54);
+    // CHAPTER 1 — ONE CREW. slides from left, DOES EVERYTHING IMAGINABLE from right
+    tl.fromTo(ch1Line1.current,   { x: "-15vw", opacity: 0 }, { x: "0vw", opacity: 1, ease: "none", duration: 0.12 }, 0.38);
+    tl.fromTo(ch1Line2.current,   { x: "15vw",  opacity: 0 }, { x: "0vw", opacity: 1, ease: "none", duration: 0.12 }, 0.45);
+    tl.fromTo(ch1Divider.current, { opacity: 0 }, { opacity: 1, ease: "none", duration: 0.08 }, 0.52);
+    tl.fromTo(ch1Sub.current,     { opacity: 0 }, { opacity: 1, ease: "none", duration: 0.08 }, 0.56);
 
-    // === CHAPTER 1 EXIT (0.58 → 0.70) ===
-    tl.to(ch1Line1.current,   { y: "-25vh", opacity: 0, ease: "none", duration: 0.12 }, 0.58);
-    tl.to(ch1Line2.current,   { y: "-25vh", opacity: 0, ease: "none", duration: 0.12 }, 0.58);
-    tl.to(ch1Divider.current, { y: "-25vh", opacity: 0, ease: "none", duration: 0.12 }, 0.58);
-    tl.to(ch1Sub.current,     { opacity: 0, ease: "none", duration: 0.08 }, 0.62);
+    // CHAPTER 1 EXIT — float up and fade
+    tl.to([ch1Line1.current, ch1Line2.current, ch1Divider.current, ch1Sub.current],
+      { y: "-20vh", opacity: 0, ease: "none", duration: 0.12 }, 0.62);
 
-    // === GLOBE EXPANDS + CENTER TEXT APPEARS (0.55 → 1.0) ===
-    tl.to(globeRef.current,   { scale: 14, ease: "power2.in", duration: 0.45, force3D: true }, 0.55);
-    tl.fromTo("#ch1-final",   { opacity: 0, scale: 0.88 }, { opacity: 1, scale: 1, ease: "none", duration: 0.15 }, 0.60);
+    // GLOBE EXPANDS (slow start, accelerates)
+    tl.to(globeRef.current, { scale: 14, ease: "power2.in", duration: 0.5, force3D: true }, 0.5);
 
-    // === FADE EVERYTHING OUT (0.78 → 1.0) ===
-    tl.to(horizonRef.current, { opacity: 0, ease: "none", duration: 0.12 }, 0.78);
-    tl.to("#shared-stars",    { opacity: 0, ease: "none", duration: 0.12 }, 0.78);
-    tl.to(globeRef.current,   { opacity: 0, ease: "none", duration: 0.12, force3D: true }, 0.88);
+    // FINAL TEXT appears
+    tl.fromTo("#ch1-final", { opacity: 0 }, { opacity: 1, ease: "none", duration: 0.1 }, 0.65);
+
+    // FADE EVERYTHING OUT
+    tl.to(horizonRef.current,  { opacity: 0, ease: "none", duration: 0.1 }, 0.78);
+    tl.to("#shared-stars",     { opacity: 0, ease: "none", duration: 0.1 }, 0.78);
+    tl.to(globeRef.current,    { opacity: 0, ease: "none", duration: 0.1, force3D: true }, 0.88);
 
     return () => {
       enterTlRef.current?.kill();
@@ -138,7 +131,10 @@ const Hero = forwardRef<HeroHandle, { onEnterOrbit?: () => void }>(
       <style>{`
         @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@900&family=Rajdhani:wght@300;400;600;700&display=swap');
 
-        #hero { position:relative;width:100%;height:100vh;overflow:hidden;background:transparent;isolation:isolate; }
+        #hero {
+          position:relative;width:100%;height:100vh;
+          overflow:hidden;background:transparent;isolation:isolate;
+        }
 
         #globe {
           position:absolute;z-index:3;left:50%;top:50%;
@@ -153,8 +149,7 @@ const Hero = forwardRef<HeroHandle, { onEnterOrbit?: () => void }>(
 
         #hero-text {
           position:absolute;top:50%;left:0;right:0;
-          transform:translateY(-50%);
-          z-index:6;text-align:center;padding:0 20px;
+          transform:translateY(-50%);z-index:6;text-align:center;padding:0 20px;
         }
         .logo-eyebrow {
           display:block;font-family:'Rajdhani',sans-serif;
@@ -167,23 +162,18 @@ const Hero = forwardRef<HeroHandle, { onEnterOrbit?: () => void }>(
         }
         #txt-effortless {
           background:linear-gradient(180deg,#fff 0%,#ffe4a0 40%,#ffb347 100%);
-          -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
-          display:inline;
+          -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;display:inline;
         }
         .ec-char { display:inline; }
         #txt-crew {
           background:linear-gradient(180deg,#fff 0%,#ffe4a0 40%,#ffb347 100%);
           -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
-          display:inline;opacity:0;
-          filter:drop-shadow(0 0 14px rgba(255,140,0,0.5));
+          display:inline;opacity:0;filter:drop-shadow(0 0 14px rgba(255,140,0,0.5));
         }
         .game-tagline {
-          display:block;margin-top:14px;
-          font-family:'Rajdhani',sans-serif;
-          font-size:clamp(15.5px,2.1vw,23.3px);font-weight:300;
-          letter-spacing:5px;text-transform:uppercase;
-          color:rgba(255,200,130,.65);
-          text-shadow:0 0 30px rgba(255,160,50,.4);
+          display:block;margin-top:14px;font-family:'Rajdhani',sans-serif;
+          font-size:clamp(15.5px,2.1vw,23.3px);font-weight:300;letter-spacing:5px;text-transform:uppercase;
+          color:rgba(255,200,130,.65);text-shadow:0 0 30px rgba(255,160,50,.4);
         }
         #enter-orbit-btn {
           display:inline-flex;align-items:center;gap:.7rem;margin-top:2.6rem;
@@ -193,12 +183,15 @@ const Hero = forwardRef<HeroHandle, { onEnterOrbit?: () => void }>(
           cursor:pointer;position:relative;overflow:hidden;pointer-events:all;
           transition:color .3s,border-color .3s;
         }
-        #enter-orbit-btn .fill { position:absolute;inset:0;background:linear-gradient(90deg,#ff8c00,#ffb347);transform:translateX(-100%);transition:transform .35s ease;z-index:0; }
+        #enter-orbit-btn .fill {
+          position:absolute;inset:0;background:linear-gradient(90deg,#ff8c00,#ffb347);
+          transform:translateX(-100%);transition:transform .35s ease;z-index:0;
+        }
         #enter-orbit-btn span { position:relative;z-index:1; }
         #enter-orbit-btn:hover { color:#000;border-color:transparent; }
         #enter-orbit-btn:hover .fill { transform:translateX(0); }
 
-        /* Chapter 1 */
+        /* Chapter 1 block */
         #ch1-block {
           position:absolute;top:50%;left:0;right:0;transform:translateY(-50%);
           z-index:7;display:flex;flex-direction:column;align-items:center;
@@ -214,7 +207,7 @@ const Hero = forwardRef<HeroHandle, { onEnterOrbit?: () => void }>(
         #ch1-line2 { text-align:right; }
         #ch1-divider {
           width:100%;height:1px;opacity:0;
-          background:linear-gradient(90deg,transparent 0%,rgba(255,160,50,0) 10%,rgba(255,200,80,1) 50%,rgba(255,160,50,0) 90%,transparent 100%);
+          background:linear-gradient(90deg,transparent 0%,rgba(255,200,80,1) 50%,transparent 100%);
           box-shadow:0 0 8px 2px rgba(255,160,50,0.6);
         }
         #ch1-sub {
@@ -223,7 +216,7 @@ const Hero = forwardRef<HeroHandle, { onEnterOrbit?: () => void }>(
           color:rgba(255,200,130,.5);text-align:center;opacity:0;
         }
 
-        /* Final center text */
+        /* Final text */
         #ch1-final {
           position:absolute;top:50%;left:0;right:0;transform:translateY(-50%);
           z-index:8;text-align:center;padding:0 10%;
@@ -312,7 +305,6 @@ const Hero = forwardRef<HeroHandle, { onEnterOrbit?: () => void }>(
           </svg>
         </div>
 
-        {/* Chapter 1 */}
         <div id="ch1-block">
           <div id="ch1-line1" ref={ch1Line1} className="ch1-headline">ONE CREW.</div>
           <div id="ch1-divider" ref={ch1Divider} />
@@ -320,7 +312,6 @@ const Hero = forwardRef<HeroHandle, { onEnterOrbit?: () => void }>(
           <div id="ch1-sub" ref={ch1Sub}>we are the most creative team in the universe</div>
         </div>
 
-        {/* Final center text — stays last */}
         <div id="ch1-final">we are the most creative team in the universe</div>
       </section>
     </>
