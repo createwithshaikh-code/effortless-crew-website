@@ -344,6 +344,21 @@ export default function Orbit({ onExit }: { onExit?: () => void }) {
       <style>{`
         @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@700;900&family=Rajdhani:wght@400;600;700&display=swap');
 
+        #orbit-stars {
+          position:absolute;top:50%;left:50%;
+          width:220vmax;height:220vmax;
+          margin-left:-110vmax;margin-top:-110vmax;
+          z-index:0;transform-origin:center;
+          animation:oStarRotate 120s linear infinite;
+          pointer-events:none;
+        }
+        @keyframes oStarRotate { to { transform:rotate(-360deg); } }
+        .os { position:absolute;inset:0; }
+        .os:nth-child(1) { animation:osTwinkle 3.5s ease-in-out infinite alternate; }
+        .os:nth-child(2) { animation:osTwinkle 4.8s ease-in-out infinite alternate-reverse; }
+        .os:nth-child(3) { animation:osTwinkle 2.9s ease-in-out infinite alternate; }
+        @keyframes osTwinkle { from{filter:brightness(1);} to{filter:brightness(0.5);} }
+
         /* ── HUD panel ── */
         #orbit-hud {
           --ac: #ff8c00;
