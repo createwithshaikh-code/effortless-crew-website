@@ -351,6 +351,7 @@ export default function Orbit({ onExit }: { onExit?: () => void }) {
           z-index:20;
           padding:0 5vw 2rem;
           background:linear-gradient(to top, rgba(2,1,8,.96) 0%, rgba(2,1,8,.85) 60%, transparent 100%);
+          opacity:0;
         }
         .hud-divider {
           width:100%;height:1px;
