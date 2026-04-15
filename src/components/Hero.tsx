@@ -113,7 +113,7 @@ const Hero = forwardRef<HeroHandle, { onEnterOrbit?: () => void }>(
     tl.to(heroTextRef.current, { y: "-22vh", opacity: 0, ease: "none", duration: 0.4, force3D: true }, 0);
     tl.to(horizonRef.current,  { y: "-60vh", ease: "none", duration: 0.55, force3D: true }, 0);
     tl.to(globeRef.current,    { y: "-8vh",  ease: "none", duration: 0.55, force3D: true }, 0);
-    tl.to("#shared-stars",     { y: "-10vh", ease: "none", duration: 0.55, force3D: true }, 0);
+    tl.to("#hero-stars",       { y: "-10vh", ease: "none", duration: 0.55, force3D: true }, 0);
 
     // CHAPTER 1 — ONE CREW. slides from left, DOES EVERYTHING IMAGINABLE from right
     tl.fromTo(ch1Line1.current,   { x: "-15vw", opacity: 0 }, { x: "0vw", opacity: 1, ease: "none", duration: 0.12 }, 0.38);
