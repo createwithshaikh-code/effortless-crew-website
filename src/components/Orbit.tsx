@@ -338,18 +338,6 @@ export default function Orbit({ onExit }: { onExit?: () => void }) {
       <style>{`
         @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@700;900&family=Rajdhani:wght@400;600;700&display=swap');
 
-        /* same star layer as hero for seamless feel */
-        #orbit-stars {
-          position:absolute;top:50%;left:50%;
-          width:220vmax;height:220vmax;
-          margin-left:-110vmax;margin-top:-110vmax;
-          z-index:0;transform-origin:center;
-          animation:oStarRotate 120s linear infinite;
-          pointer-events:none;
-        }
-        @keyframes oStarRotate { to { transform:rotate(-360deg); } }
-        .os { position:absolute;inset:0; }
-
         /* ── HUD panel ── */
         #orbit-hud {
           --ac: #ff8c00;
