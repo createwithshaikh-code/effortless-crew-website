@@ -250,12 +250,16 @@ export default function Orbit({ onExit }: { onExit?: () => void }) {
       if(panelRef.current) panelRef.current.style.setProperty("--ac",c);
     }
 
+    const starRotOffset = { inner: 0, middle: 15, outer: 30 };
     function goTo(ring:RingName,idx:number){
       curRing=ring;curIdx=idx;
       RING_ORDER.forEach(r=>{ringPaused[r]=(r===ring);if(r!==ring)snapTarget[r]=null;});
       snapTarget[ring]=snapDeg(ring,idx);
       Object.assign(TGT,CAM_KF[ring]);
       updateUI();
+      // nudge orbit stars rotation when moving between rings
+      const el = document.getElementById("orbit-stars");
+      if(el) gsap.to(el, { rotation: starRotOffset[ring], duration: 2.5, ease: "power2.out" });
     }
 
     function applyBridge(ringName:RingName){
