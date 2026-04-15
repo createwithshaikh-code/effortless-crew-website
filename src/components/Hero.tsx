@@ -300,10 +300,12 @@ const Hero = forwardRef<HeroHandle, { onEnterOrbit?: () => void }>(
       </nav>
 
       <section id="hero" ref={heroRef}>
-        <div id="hero-stars">
-          <div className="hs" ref={s1Ref} />
-          <div className="hs" ref={s2Ref} />
-          <div className="hs" ref={s3Ref} />
+        <div id="hero-stars-wrap">
+          <div id="hero-stars">
+            <div className="hs" ref={s1Ref} />
+            <div className="hs" ref={s2Ref} />
+            <div className="hs" ref={s3Ref} />
+          </div>
         </div>
 
         <div id="globe" ref={globeRef} />
