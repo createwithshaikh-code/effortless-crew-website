@@ -11,21 +11,41 @@ export default function HomePage() {
   const heroRef = useRef<HeroHandle>(null);
 
   const handleEnterOrbit = () => {
-    heroRef.current?.exitDown();
-    gsap.to("#hero-stars-wrap", { y: "25%", duration: 1.0, ease: "power2.out" });
+    // Stars drift downward, ease to stop as solar system settles
+    gsap.to("#hero-stars-wrap", { y: "30%", duration: 2.4, ease: "power2.out" });
     document.body.style.overflow = "hidden";
+    // Orbit overlay slides in from above
     setTimeout(() => setShowOrbit(true), 350);
+    // Cards fade in after overlay finishes sliding (350 delay + 1500 transition + 200 buffer)
+    setTimeout(() => {
+      gsap.to("#orbit-hud", { opacity: 1, duration: 0.9, ease: "power2.out" });
+    }, 2050);
   };
 
   const handleExit = () => {
-    heroRef.current?.prepareEntrance();
-    setShowOrbit(false);
-    window.scrollTo({ top: 0, behavior: "instant" });
-    gsap.to("#hero-stars-wrap", { y: "0%", duration: 1.0, ease: "power2.out" });
+    // 1. Cards fade out first
+    gsap.to("#orbit-hud", { opacity: 0, duration: 0.45, ease: "power2.in" });
+
+    // 2. After cards gone, start panel transition
     setTimeout(() => {
-      document.body.style.overflow = "";
-      heroRef.current?.replayEntrance();
-    }, SLIDE_MS);
+      heroRef.current?.prepareEntrance();
+      setShowOrbit(false);
+      window.scrollTo({ top: 0, behavior: "instant" });
+
+      // Stars move upward
+      gsap.to("#hero-stars-wrap", { y: "-20%", duration: 1.3, ease: "power2.in" });
+
+      // Stars ease to stop when horizon gradient appears (~1700ms from now)
+      setTimeout(() => {
+        gsap.to("#hero-stars-wrap", { y: "0%", duration: 1.6, ease: "power2.out" });
+      }, 1700);
+
+      // Unlock scroll + replay entrance after orbit finishes sliding away
+      setTimeout(() => {
+        document.body.style.overflow = "";
+        heroRef.current?.replayEntrance();
+      }, SLIDE_MS);
+    }, 500);
   };
 
   return (
