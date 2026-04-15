@@ -54,7 +54,6 @@ const Hero = forwardRef<HeroHandle, { onEnterOrbit?: () => void }>(
     // entrance start states
     gsap.set(horizonRef.current,  { y: "60vh", opacity: 1 });
     gsap.set(globeRef.current,    { opacity: 0, scale: 0.9 });
-    gsap.set([starsSmall.current, starsMid.current, starsLarge.current], { opacity: 0 });
     gsap.set(".logo-eyebrow",     { opacity: 0, y: 10 });
     gsap.set(".ec-char",          { opacity: 0 });
     gsap.set("#txt-crew",         { opacity: 0 });
@@ -68,7 +67,6 @@ const Hero = forwardRef<HeroHandle, { onEnterOrbit?: () => void }>(
     // horizon slides up from below
     enter.to(horizonRef.current,  { y: "0vh", duration: 1.4, ease: "power2.out" }, 0);
     enter.to(globeRef.current,    { opacity: 1, scale: 1, duration: 1.2 }, 0.2);
-    enter.to([starsSmall.current, starsMid.current, starsLarge.current], { opacity: 1, duration: 1, stagger: 0.1 }, 0.2);
     enter.to(".logo-eyebrow",     { opacity: 1, y: 0, duration: 0.6 }, 0.9);
     enter.to(".ec-char",          { opacity: 1, duration: 0.3, stagger: 0.055 }, 1.2);
     enter.set("#txt-crew",        { opacity: 1 }, 2.0);
