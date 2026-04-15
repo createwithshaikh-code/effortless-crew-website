@@ -113,7 +113,7 @@ const Hero = forwardRef<HeroHandle, { onEnterOrbit?: () => void }>(
 
     // === FADE EVERYTHING OUT (0.78 → 1.0) ===
     tl.to(horizonRef.current, { opacity: 0, ease: "none", duration: 0.12 }, 0.78);
-    tl.to("#layer-stars",     { opacity: 0, ease: "none", duration: 0.12 }, 0.78);
+    tl.to("#shared-stars",    { opacity: 0, ease: "none", duration: 0.12 }, 0.78);
     tl.to(globeRef.current,   { opacity: 0, ease: "none", duration: 0.12, force3D: true }, 0.88);
 
     // Drive timeline from scroll — spacer gives body its 300vh scroll height
