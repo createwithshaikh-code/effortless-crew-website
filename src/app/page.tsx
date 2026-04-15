@@ -78,13 +78,10 @@ export default function HomePage() {
 
   return (
     <div className="page-shell">
-      {/* Always-mounted star field — shared between hero and orbit */}
+      {/* Always-mounted star field behind both panels */}
       <SharedStars />
 
-      {/* Spacer gives body scroll height — hidden when orbit is active */}
-      <div className={`hero-scroll-spacer${showOrbit ? " hidden" : ""}`} />
-
-      <div className={`page-panel page-panel--hero${showOrbit ? " hidden" : ""}`}>
+      <div id="hero-panel" className={`page-panel page-panel--hero${showOrbit ? " hidden" : ""}`}>
         <Hero ref={heroRef} onEnterOrbit={handleEnterOrbit} />
       </div>
       <div className={`page-panel page-panel--orbit${showOrbit ? " visible" : ""}`}>
