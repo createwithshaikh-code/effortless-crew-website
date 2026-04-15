@@ -5,7 +5,19 @@
       "Bash(vercel --version)",
       "Bash(npx vercel:*)",
       "Bash(vercel --prod)",
-      "Bash(vercel login:*)"
+      "Bash(vercel login:*)",
+      "Bash(gh --version)",
+      "Bash(winget install:*)",
+      "Bash(\"/c/Users/jassim/AppData/Local/Microsoft/WinGet/Packages/GitHub.cli_Microsoft.Winget.Source_8wekyb3d8bbwe/gh.exe\" --version)",
+      "Bash(cmd /c \"where gh\")",
+      "Bash(cmd /c \"gh --version\")",
+      "Bash(cmd /c \"dir /s /b C:\\\\Users\\\\jassim\\\\AppData\\\\Local\\\\GitHub\\\\* 2>nul | findstr gh.exe\")",
+      "Bash(cmd /c \"dir /s /b C:\\\\Program Files\\\\GitHub* 2>nul | findstr gh.exe\")",
+      "Bash(\"/c/Program Files/GitHub CLI/gh.exe\" --version)",
+      "Bash(\"/c/Program Files/GitHub CLI/gh.exe\" auth status)",
+      "Bash(cmd /c 'git credential fill')",
+      "Bash(\"/c/Program Files/GitHub CLI/gh.exe\" repo create \"effortless-new-look\" --public --description \"Effortless Crew Website - New Look\")",
+      "Bash(\"/c/Program Files/GitHub CLI/gh.exe\" auth token)"
     ]
   }
 }
