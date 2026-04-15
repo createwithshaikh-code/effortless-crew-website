@@ -319,6 +319,11 @@ const Hero = forwardRef<HeroHandle, { onEnterOrbit?: () => void }>(
           <div className="hs" ref={s2Ref} />
           <div className="hs" ref={s3Ref} />
         </div>
+        <div id="hero-stars-static">
+          <div className="hss" ref={ss1Ref} />
+          <div className="hss" ref={ss2Ref} />
+          <div className="hss" ref={ss3Ref} />
+        </div>
 
         <div id="globe" ref={globeRef} />
 
