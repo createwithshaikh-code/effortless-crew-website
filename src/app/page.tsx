@@ -37,9 +37,10 @@ export default function HomePage() {
       // Stars drift back up and ease to stop — mirrors the entrance motion
       gsap.to("#hero-stars-wrap", { y: "0%", duration: 4.0, ease: "power2.out" });
 
-      // Unlock scroll + replay entrance after orbit finishes sliding away
+      // Unlock scroll + reset position + replay entrance
       setTimeout(() => {
         document.body.style.overflow = "";
+        window.scrollTo({ top: 0, behavior: "instant" });
         heroRef.current?.replayEntrance();
         gsap.to("#nav", { opacity: 1, duration: 0.6, ease: "power2.out" });
       }, SLIDE_MS);
