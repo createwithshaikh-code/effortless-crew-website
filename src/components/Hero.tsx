@@ -26,6 +26,9 @@ export interface HeroHandle {
 const Hero = forwardRef<HeroHandle, { onEnterOrbit?: () => void }>(
   function Hero({ onEnterOrbit }, ref) {
 
+  const s1Ref       = useRef<HTMLDivElement>(null);
+  const s2Ref       = useRef<HTMLDivElement>(null);
+  const s3Ref       = useRef<HTMLDivElement>(null);
   const globeRef    = useRef<HTMLDivElement>(null);
   const horizonRef  = useRef<HTMLDivElement>(null);
   const heroRef     = useRef<HTMLElement>(null);
