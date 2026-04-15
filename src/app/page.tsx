@@ -12,18 +12,16 @@ export default function HomePage() {
 
   const handleEnterOrbit = () => {
     heroRef.current?.exitDown();
-    // spinning layer moves down 10%, static layer moves down 5% — parallax
-    gsap.to("#hero-stars-wrap",        { y: "10%", duration: 0.9, ease: "power2.out" });
-    gsap.to("#hero-stars-static-wrap", { y: "5%",  duration: 0.9, ease: "power2.out" });
+    // nudge stars down 5%
+    gsap.to("#hero-stars", { y: "5%", duration: 0.8, ease: "power2.out" });
     setTimeout(() => setShowOrbit(true), 350);
   };
 
   const handleExit = () => {
     setShowOrbit(false);
     document.getElementById("hero-panel")?.scrollTo({ top: 0, behavior: "instant" });
-    // restore both layers
-    gsap.to("#hero-stars-wrap",        { y: "0%", duration: 1.1, ease: "power2.out" });
-    gsap.to("#hero-stars-static-wrap", { y: "0%", duration: 1.1, ease: "power2.out" });
+    // restore stars
+    gsap.to("#hero-stars", { y: "0%", duration: 1.0, ease: "power2.out" });
     setTimeout(() => {
       heroRef.current?.replayEntrance();
     }, SLIDE_MS);

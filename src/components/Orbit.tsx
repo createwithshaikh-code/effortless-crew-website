@@ -1,7 +1,6 @@
 "use client";
 import { useEffect, useRef } from "react";
 import * as THREE from "three";
-import { gsap } from "gsap";
 
 const RING_COLORS = { inner: "#ff8c00", middle: "#e05000", outer: "#ffcc44" };
 const RING_HEX    = { inner: 0xff8c00,  middle: 0xe05000,  outer: 0xffcc44  };
@@ -88,17 +87,6 @@ function makeGlowTex(col:number){
   });
 }
 
-function buildStarField(el:HTMLElement,count:number,color:string,size:number){
-  const S=Math.max(window.innerWidth,window.innerHeight)*2.2;
-  const shadows=Array.from({length:count},()=>{
-    const x=(Math.random()*S).toFixed(1);
-    const y=(Math.random()*S).toFixed(1);
-    const a=(Math.random()*0.6+0.35).toFixed(2);
-    return `${x}px ${y}px 0 rgba(${color},${a})`;
-  }).join(",");
-  el.style.cssText=`position:absolute;inset:0;width:${size}px;height:${size}px;box-shadow:${shadows};background:transparent;border-radius:50%;`;
-}
-
 export default function Orbit({ onExit }: { onExit?: () => void }) {
   const mountRef   = useRef<HTMLDivElement>(null);
   const nameRef    = useRef<HTMLDivElement>(null);
@@ -106,14 +94,8 @@ export default function Orbit({ onExit }: { onExit?: () => void }) {
   const ringRef    = useRef<HTMLDivElement>(null);
   const counterRef = useRef<HTMLDivElement>(null);
   const panelRef   = useRef<HTMLDivElement>(null);
-  const s1 = useRef<HTMLDivElement>(null);
-  const s2 = useRef<HTMLDivElement>(null);
-  const s3 = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    if(s1.current) buildStarField(s1.current, 900,"255,230,200",1);
-    if(s2.current) buildStarField(s2.current, 280,"255,240,210",1.5);
-    if(s3.current) buildStarField(s3.current, 100,"255,248,230",2);
 
     const container = mountRef.current!;
 
@@ -250,16 +232,12 @@ export default function Orbit({ onExit }: { onExit?: () => void }) {
       if(panelRef.current) panelRef.current.style.setProperty("--ac",c);
     }
 
-    const starRotOffset = { inner: 0, middle: 15, outer: 30 };
     function goTo(ring:RingName,idx:number){
       curRing=ring;curIdx=idx;
       RING_ORDER.forEach(r=>{ringPaused[r]=(r===ring);if(r!==ring)snapTarget[r]=null;});
       snapTarget[ring]=snapDeg(ring,idx);
       Object.assign(TGT,CAM_KF[ring]);
       updateUI();
-      // nudge wrapper rotation when moving between rings — inner CSS spin keeps going
-      const wrap = document.getElementById("orbit-stars-wrap");
-      if(wrap) gsap.to(wrap, { rotation: starRotOffset[ring], duration: 2.5, ease: "power2.out" });
     }
 
     function applyBridge(ringName:RingName){
@@ -360,26 +338,6 @@ export default function Orbit({ onExit }: { onExit?: () => void }) {
       <style>{`
         @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@700;900&family=Rajdhani:wght@400;600;700&display=swap');
 
-        /* GSAP nudges the wrapper — CSS spin lives on inner */
-        #orbit-stars-wrap {
-          position:absolute;inset:0;z-index:0;pointer-events:none;
-          transform-origin:center center;
-        }
-        #orbit-stars {
-          position:absolute;top:50%;left:50%;
-          width:220vmax;height:220vmax;
-          margin-left:-110vmax;margin-top:-110vmax;
-          transform-origin:center;
-          animation:oStarRotate 120s linear infinite;
-          pointer-events:none;
-        }
-        @keyframes oStarRotate { to { transform:rotate(-360deg); } }
-        .os { position:absolute;inset:0; }
-        .os:nth-child(1) { animation:osTwinkle 3.5s ease-in-out infinite alternate; }
-        .os:nth-child(2) { animation:osTwinkle 4.8s ease-in-out infinite alternate-reverse; }
-        .os:nth-child(3) { animation:osTwinkle 2.9s ease-in-out infinite alternate; }
-        @keyframes osTwinkle { from{filter:brightness(1);} to{filter:brightness(0.5);} }
-
         /* ── HUD panel ── */
         #orbit-hud {
           --ac: #ff8c00;
@@ -442,16 +400,7 @@ export default function Orbit({ onExit }: { onExit?: () => void }) {
         #o-exit:hover { border-color:#e05000;color:#e05000; }
       `}</style>
 
-      {/* Wrapper GSAP nudges; inner div keeps CSS spin */}
-      <div id="orbit-stars-wrap">
-        <div id="orbit-stars">
-          <div className="os" ref={s1} />
-          <div className="os" ref={s2} />
-          <div className="os" ref={s3} />
-        </div>
-      </div>
-
-      {/* Three.js mount */}
+      {/* Three.js mount (transparent bg so shared stars show through) */}
       <div ref={mountRef} style={{position:"absolute",inset:0,zIndex:1}} />
 
       {/* HUD */}

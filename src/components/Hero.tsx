@@ -29,9 +29,6 @@ const Hero = forwardRef<HeroHandle, { onEnterOrbit?: () => void }>(
   const s1Ref       = useRef<HTMLDivElement>(null);
   const s2Ref       = useRef<HTMLDivElement>(null);
   const s3Ref       = useRef<HTMLDivElement>(null);
-  const ss1Ref      = useRef<HTMLDivElement>(null);
-  const ss2Ref      = useRef<HTMLDivElement>(null);
-  const ss3Ref      = useRef<HTMLDivElement>(null);
   const globeRef    = useRef<HTMLDivElement>(null);
   const horizonRef  = useRef<HTMLDivElement>(null);
   const heroRef     = useRef<HTMLElement>(null);
@@ -91,12 +88,9 @@ const Hero = forwardRef<HeroHandle, { onEnterOrbit?: () => void }>(
   }));
 
   useEffect(() => {
-    if (s1Ref.current)  buildStarField(s1Ref.current,  900, "255,230,200", 1);
-    if (s2Ref.current)  buildStarField(s2Ref.current,  280, "255,240,210", 1.5);
-    if (s3Ref.current)  buildStarField(s3Ref.current,  100, "255,248,230", 2);
-    if (ss1Ref.current) buildStarField(ss1Ref.current, 900, "255,230,200", 1);
-    if (ss2Ref.current) buildStarField(ss2Ref.current, 280, "255,240,210", 1.5);
-    if (ss3Ref.current) buildStarField(ss3Ref.current, 100, "255,248,230", 2);
+    if (s1Ref.current) buildStarField(s1Ref.current, 900, "255,230,200", 1);
+    if (s2Ref.current) buildStarField(s2Ref.current, 280, "255,240,210", 1.5);
+    if (s3Ref.current) buildStarField(s3Ref.current, 100, "255,248,230", 2);
 
     playEntrance(0.25);
 
@@ -108,9 +102,10 @@ const Hero = forwardRef<HeroHandle, { onEnterOrbit?: () => void }>(
         scroller,
         start: "top top",
         end: "+=400%",
-        scrub: 0.5,
+        scrub: true,
         pin: true,
         anticipatePin: 1,
+        fastScrollEnd: true,
       }
     });
 
@@ -118,7 +113,7 @@ const Hero = forwardRef<HeroHandle, { onEnterOrbit?: () => void }>(
     tl.to(heroTextRef.current, { y: "-22vh", opacity: 0, ease: "none", duration: 0.4, force3D: true }, 0);
     tl.to(horizonRef.current,  { y: "-60vh", ease: "none", duration: 0.55, force3D: true }, 0);
     tl.to(globeRef.current,    { y: "-8vh",  ease: "none", duration: 0.55, force3D: true }, 0);
-    tl.to("#hero-stars-wrap",  { y: "-10vh", ease: "none", duration: 0.55, force3D: true }, 0);
+    tl.to("#hero-stars",       { y: "-10vh", ease: "none", duration: 0.55, force3D: true }, 0);
 
     // CHAPTER 1 — ONE CREW. slides from left, DOES EVERYTHING IMAGINABLE from right
     tl.fromTo(ch1Line1.current,   { x: "-15vw", opacity: 0 }, { x: "0vw", opacity: 1, ease: "none", duration: 0.12 }, 0.38);
@@ -138,7 +133,7 @@ const Hero = forwardRef<HeroHandle, { onEnterOrbit?: () => void }>(
 
     // FADE EVERYTHING OUT
     tl.to(horizonRef.current,  { opacity: 0, ease: "none", duration: 0.1 }, 0.78);
-    tl.to("#hero-stars-wrap",  { opacity: 0, ease: "none", duration: 0.1 }, 0.78);
+    tl.to("#hero-stars",       { opacity: 0, ease: "none", duration: 0.1 }, 0.78);
     tl.to(globeRef.current,    { opacity: 0, ease: "none", duration: 0.1, force3D: true }, 0.88);
 
     return () => {
@@ -159,18 +154,14 @@ const Hero = forwardRef<HeroHandle, { onEnterOrbit?: () => void }>(
           overflow:hidden;background:transparent;isolation:isolate;
         }
 
-        /* GSAP moves these wrapper divs (no CSS transform on them) */
-        #hero-stars-wrap, #hero-stars-static-wrap {
-          position:absolute;inset:0;z-index:1;pointer-events:none;
-        }
-        /* Spinning inner div — CSS rotation lives here */
         #hero-stars {
           position:absolute;top:50%;left:50%;
           width:220vmax;height:220vmax;
           margin-left:-110vmax;margin-top:-110vmax;
-          transform-origin:center;
-          animation:heroStarRotate 200s linear infinite;
+          z-index:1;transform-origin:center;
+          animation:heroStarRotate 120s linear infinite;
           clip-path:ellipse(50% 38% at 50% 30%);
+          pointer-events:none;
         }
         @keyframes heroStarRotate { to { transform:rotate(-360deg); } }
         .hs { position:absolute;inset:0; }
@@ -178,20 +169,6 @@ const Hero = forwardRef<HeroHandle, { onEnterOrbit?: () => void }>(
         .hs:nth-child(2) { animation:hsTwinkle 4.8s ease-in-out infinite alternate-reverse; }
         .hs:nth-child(3) { animation:hsTwinkle 2.9s ease-in-out infinite alternate; }
         @keyframes hsTwinkle { from{filter:brightness(1);} to{filter:brightness(0.5);} }
-        /* Static inner div — slow rotation */
-        #hero-stars-static {
-          animation:heroStarsSlowRotate 200s linear infinite reverse;
-          position:absolute;top:50%;left:50%;
-          width:220vmax;height:220vmax;
-          margin-left:-110vmax;margin-top:-110vmax;
-          transform-origin:center;
-          clip-path:ellipse(50% 38% at 50% 30%);
-        }
-        @keyframes heroStarsSlowRotate { to { transform:rotate(360deg); } }
-        .hss { position:absolute;inset:0; }
-        .hss:nth-child(1) { animation:hsTwinkle 5s ease-in-out infinite alternate-reverse; }
-        .hss:nth-child(2) { animation:hsTwinkle 3.8s ease-in-out infinite alternate; }
-        .hss:nth-child(3) { animation:hsTwinkle 6s ease-in-out infinite alternate-reverse; }
 
         #globe {
           position:absolute;z-index:3;left:50%;top:50%;
@@ -316,20 +293,10 @@ const Hero = forwardRef<HeroHandle, { onEnterOrbit?: () => void }>(
       </nav>
 
       <section id="hero" ref={heroRef}>
-        {/* GSAP moves the wrapper; CSS rotation lives on inner div */}
-        <div id="hero-stars-wrap">
-          <div id="hero-stars">
-            <div className="hs" ref={s1Ref} />
-            <div className="hs" ref={s2Ref} />
-            <div className="hs" ref={s3Ref} />
-          </div>
-        </div>
-        <div id="hero-stars-static-wrap">
-          <div id="hero-stars-static">
-            <div className="hss" ref={ss1Ref} />
-            <div className="hss" ref={ss2Ref} />
-            <div className="hss" ref={ss3Ref} />
-          </div>
+        <div id="hero-stars">
+          <div className="hs" ref={s1Ref} />
+          <div className="hs" ref={s2Ref} />
+          <div className="hs" ref={s3Ref} />
         </div>
 
         <div id="globe" ref={globeRef} />
