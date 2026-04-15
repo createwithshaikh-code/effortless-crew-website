@@ -138,11 +138,11 @@ const Hero = forwardRef<HeroHandle, { onEnterOrbit?: () => void }>(
     tl.to("#layer-stars",     { opacity: 0, ease: "none", duration: 0.12 }, 0.78);
     tl.to(globeRef.current,   { opacity: 0, ease: "none", duration: 0.12, force3D: true }, 0.88);
 
-    // Drive timeline from scroll
+    // Drive timeline from scroll — spacer gives body its 300vh scroll height
     const ST = ScrollTrigger.create({
-      trigger: document.body,
+      trigger: ".hero-scroll-spacer",
       start: "top top",
-      end: "+=200%",
+      end: "bottom bottom",
       scrub: true,
       fastScrollEnd: true,
       onUpdate: (self) => {
