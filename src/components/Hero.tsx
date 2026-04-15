@@ -19,42 +19,40 @@ function buildStarField(el: HTMLElement, count: number, color: string, size: num
 const CHARS = ["E","F","F","O","R","T","L","E","S","S"];
 
 export interface HeroHandle {
-  exitDown: () => void;   // animate horizon down before CTA transition
-  replayEntrance: () => void; // replay entrance after returning from orbit
+  exitDown: () => void;
+  replayEntrance: () => void;
 }
 
 const Hero = forwardRef<HeroHandle, { onEnterOrbit?: () => void }>(
   function Hero({ onEnterOrbit }, ref) {
-  const starsSmall = useRef<HTMLDivElement>(null);
-  const starsMid   = useRef<HTMLDivElement>(null);
-  const starsLarge = useRef<HTMLDivElement>(null);
-  const globeRef   = useRef<HTMLDivElement>(null);
-  const horizonRef = useRef<HTMLDivElement>(null);
-  const heroRef    = useRef<HTMLElement>(null);
-  const heroTextRef= useRef<HTMLDivElement>(null);
-  const ch1Line1   = useRef<HTMLDivElement>(null);
-  const ch1Line2   = useRef<HTMLDivElement>(null);
-  const ch1Divider = useRef<HTMLDivElement>(null);
-  const ch1Sub     = useRef<HTMLDivElement>(null);
-  const ch1Nebula  = useRef<HTMLDivElement>(null);
 
-  const enterTlRef = useRef<gsap.core.Timeline | null>(null);
+  const starsSmall  = useRef<HTMLDivElement>(null);
+  const starsMid    = useRef<HTMLDivElement>(null);
+  const starsLarge  = useRef<HTMLDivElement>(null);
+  const globeRef    = useRef<HTMLDivElement>(null);
+  const horizonRef  = useRef<HTMLDivElement>(null);
+  const heroRef     = useRef<HTMLElement>(null);
+  const heroTextRef = useRef<HTMLDivElement>(null);
+  const ch1Line1    = useRef<HTMLDivElement>(null);
+  const ch1Line2    = useRef<HTMLDivElement>(null);
+  const ch1Divider  = useRef<HTMLDivElement>(null);
+  const ch1Sub      = useRef<HTMLDivElement>(null);
+  const enterTlRef  = useRef<gsap.core.Timeline | null>(null);
+  const scrollTlRef = useRef<gsap.core.Timeline | null>(null);
 
   function playEntrance(delay = 0.3) {
-    // kill any running entrance
     enterTlRef.current?.kill();
 
-    // clear all GSAP inline styles so scroll-driven transforms don't linger
+    // clear GSAP inline styles
     gsap.set([
       horizonRef.current, globeRef.current, heroTextRef.current,
       starsSmall.current, starsMid.current, starsLarge.current,
-      ch1Line1.current, ch1Line2.current, ch1Divider.current,
-      ch1Sub.current, ch1Nebula.current,
+      ch1Line1.current, ch1Line2.current, ch1Divider.current, ch1Sub.current,
     ], { clearProps: "all" });
     gsap.set("#layer-stars", { clearProps: "all" });
 
-    // now set entrance start states
-    gsap.set(horizonRef.current,  { y: "0vh", opacity: 1 });
+    // entrance start states
+    gsap.set(horizonRef.current,  { y: "60vh", opacity: 1 });
     gsap.set(globeRef.current,    { opacity: 0, scale: 0.9 });
     gsap.set([starsSmall.current, starsMid.current, starsLarge.current], { opacity: 0 });
     gsap.set(".logo-eyebrow",     { opacity: 0, y: 10 });
@@ -62,34 +60,35 @@ const Hero = forwardRef<HeroHandle, { onEnterOrbit?: () => void }>(
     gsap.set("#txt-crew",         { opacity: 0 });
     gsap.set(".game-tagline",     { opacity: 0, y: 8 });
     gsap.set("#enter-orbit-btn",  { opacity: 0, y: 8 });
+    gsap.set([ch1Line1.current, ch1Line2.current, ch1Divider.current, ch1Sub.current], { opacity: 0 });
 
     const enter = gsap.timeline({ defaults: { ease: "power3.out" }, delay });
     enterTlRef.current = enter;
 
-    enter.from(horizonRef.current, { y: "-60vh", duration: 1.5 }, 0);
-    enter.to(globeRef.current,   { opacity: 1, scale: 1, duration: 1.2 }, 0.2);
+    // horizon slides up from below
+    enter.to(horizonRef.current,  { y: "0vh", duration: 1.4, ease: "power2.out" }, 0);
+    enter.to(globeRef.current,    { opacity: 1, scale: 1, duration: 1.2 }, 0.2);
     enter.to([starsSmall.current, starsMid.current, starsLarge.current], { opacity: 1, duration: 1, stagger: 0.1 }, 0.2);
-    enter.to(".logo-eyebrow",   { opacity: 1, y: 0, duration: 0.6 }, 0.9);
-    enter.to(".ec-char",        { opacity: 1, duration: 0.3, stagger: 0.055 }, 1.2);
-    enter.set("#txt-crew", { opacity: 1 }, 2.0);
+    enter.to(".logo-eyebrow",     { opacity: 1, y: 0, duration: 0.6 }, 0.9);
+    enter.to(".ec-char",          { opacity: 1, duration: 0.3, stagger: 0.055 }, 1.2);
+    enter.set("#txt-crew",        { opacity: 1 }, 2.0);
     enter.fromTo("#txt-crew",
       { filter: "brightness(6) drop-shadow(0 0 60px rgba(255,210,80,1)) drop-shadow(0 0 120px rgba(255,140,0,1))" },
       { filter: "brightness(1) drop-shadow(0 0 14px rgba(255,140,0,0.5))", duration: 0.75, ease: "power2.out" },
       2.0
     );
-    enter.to(".game-tagline",    { opacity: 1, y: 0, duration: 0.5 }, 2.75);
-    enter.to("#enter-orbit-btn", { opacity: 1, y: 0, duration: 0.5 }, 2.95);
+    enter.to(".game-tagline",     { opacity: 1, y: 0, duration: 0.5 }, 2.75);
+    enter.to("#enter-orbit-btn",  { opacity: 1, y: 0, duration: 0.5 }, 2.95);
   }
 
-  // Expose methods to parent
   useImperativeHandle(ref, () => ({
     exitDown() {
-      // animate horizon and globe down before panel slides
       enterTlRef.current?.kill();
-      gsap.to(horizonRef.current,  { y: "30vh", opacity: 0, duration: 0.6, ease: "power2.in" });
+      gsap.to(horizonRef.current,  { y: "60vh", opacity: 1, duration: 0.7, ease: "power2.in" });
       gsap.to(globeRef.current,    { y: "20vh", opacity: 0, duration: 0.5, ease: "power2.in", delay: 0.05 });
       gsap.to([starsSmall.current, starsMid.current, starsLarge.current], { opacity: 0, duration: 0.4 });
-      gsap.to(".logo-eyebrow, .ec-char, #txt-crew, .game-tagline, #enter-orbit-btn", { opacity: 0, y: 20, duration: 0.35, stagger: 0.04, ease: "power2.in" });
+      gsap.to(".logo-eyebrow, .ec-char, #txt-crew, .game-tagline, #enter-orbit-btn",
+        { opacity: 0, y: 20, duration: 0.35, stagger: 0.04, ease: "power2.in" });
     },
     replayEntrance() {
       playEntrance(0.3);
@@ -101,51 +100,71 @@ const Hero = forwardRef<HeroHandle, { onEnterOrbit?: () => void }>(
     if (starsMid.current)   buildStarField(starsMid.current,   280, "255,240,210", 1.5);
     if (starsLarge.current) buildStarField(starsLarge.current, 100, "255,248,230", 2);
 
+    // twinkle — use brightness so it doesn't conflict with opacity scroll tweens
     [starsSmall, starsMid, starsLarge].forEach(r => {
       if (!r.current) return;
-      gsap.to(r.current, { filter: "brightness(0.55)", duration: 2.5 + Math.random()*2, ease: "sine.inOut", yoyo: true, repeat: -1, delay: Math.random()*2 });
+      gsap.to(r.current, {
+        filter: "brightness(0.55)",
+        duration: 2.5 + Math.random() * 2,
+        ease: "sine.inOut", yoyo: true, repeat: -1, delay: Math.random() * 2
+      });
     });
 
-    // Play entrance on first mount
     playEntrance(0.25);
 
-    // Scroll timeline — body scrolls natively (matches original HTML exactly)
-    const tl = gsap.timeline({
-      scrollTrigger: {
-        trigger: heroRef.current,
-        start: "top top",
-        end: "+=200%",
-        scrub: true,
-        pin: true,
-        anticipatePin: 1,
-        fastScrollEnd: true,
-      }
+    // Scroll timeline — hero panel is position:fixed so no pin needed.
+    // We drive the timeline directly from window scroll.
+    const tl = gsap.timeline({ paused: true });
+    scrollTlRef.current = tl;
+
+    // === PARALLAX LAYER (0 → 0.5 progress) ===
+    // Stars drift up slowly
+    tl.to("#layer-stars",      { y: "-18vh", ease: "none", duration: 0.5, force3D: true }, 0);
+    // Globe drifts up + starts growing from the very beginning
+    tl.to(globeRef.current,    { y: "-10vh", scale: 1.6, ease: "none", duration: 0.5, force3D: true }, 0);
+    // Hero text moves up and fades
+    tl.to(heroTextRef.current, { y: "-20vh", opacity: 0, ease: "none", duration: 0.35, force3D: true }, 0);
+    // Horizon rises fastest — catches up to text
+    tl.to(horizonRef.current,  { y: "-55vh", ease: "none", duration: 0.5, force3D: true }, 0);
+    // CTA fades early
+    tl.to("#enter-orbit-btn",  { opacity: 0, y: "-8vh", ease: "none", duration: 0.2, force3D: true }, 0);
+
+    // === CHAPTER 1 REVEAL (0.35 → 0.55) ===
+    tl.fromTo(ch1Line1.current,  { x: "-15vw", opacity: 0 }, { x: "0vw", opacity: 1, ease: "none", duration: 0.12 }, 0.35);
+    tl.fromTo(ch1Line2.current,  { x: "15vw",  opacity: 0 }, { x: "0vw", opacity: 1, ease: "none", duration: 0.12 }, 0.42);
+    tl.fromTo(ch1Divider.current,{ opacity: 0 }, { opacity: 1, ease: "none", duration: 0.08 }, 0.50);
+    tl.fromTo(ch1Sub.current,    { opacity: 0, scale: 0.92 }, { opacity: 1, scale: 1, ease: "none", duration: 0.08 }, 0.54);
+
+    // === CHAPTER 1 EXIT (0.58 → 0.70) ===
+    tl.to(ch1Line1.current,   { y: "-25vh", opacity: 0, ease: "none", duration: 0.12 }, 0.58);
+    tl.to(ch1Line2.current,   { y: "-25vh", opacity: 0, ease: "none", duration: 0.12 }, 0.58);
+    tl.to(ch1Divider.current, { y: "-25vh", opacity: 0, ease: "none", duration: 0.12 }, 0.58);
+    tl.to(ch1Sub.current,     { opacity: 0, ease: "none", duration: 0.08 }, 0.62);
+
+    // === GLOBE EXPANDS + CENTER TEXT APPEARS (0.55 → 1.0) ===
+    tl.to(globeRef.current,   { scale: 14, ease: "power2.in", duration: 0.45, force3D: true }, 0.55);
+    tl.fromTo("#ch1-final",   { opacity: 0, scale: 0.88 }, { opacity: 1, scale: 1, ease: "none", duration: 0.15 }, 0.60);
+
+    // === FADE EVERYTHING OUT (0.78 → 1.0) ===
+    tl.to(horizonRef.current, { opacity: 0, ease: "none", duration: 0.12 }, 0.78);
+    tl.to("#layer-stars",     { opacity: 0, ease: "none", duration: 0.12 }, 0.78);
+    tl.to(globeRef.current,   { opacity: 0, ease: "none", duration: 0.12, force3D: true }, 0.88);
+
+    // Drive timeline from scroll
+    const ST = ScrollTrigger.create({
+      trigger: document.body,
+      start: "top top",
+      end: "+=200%",
+      scrub: true,
+      fastScrollEnd: true,
+      onUpdate: (self) => {
+        tl.progress(self.progress);
+      },
     });
-
-    // Move whole layer-stars div (not individual stars) — matches original
-    tl.to("#layer-stars",      { y: "-18vh", ease: "none", duration: 1, force3D: true }, 0);
-    tl.to(globeRef.current,    { y: "-22vh", ease: "none", duration: 1, force3D: true }, 0);
-    tl.to(heroTextRef.current, { opacity: 0, y: "-28vh", ease: "none", duration: 0.55, force3D: true }, 0);
-    tl.to(horizonRef.current,  { y: "-72vh", ease: "none", duration: 1, force3D: true }, 0);
-
-    tl.fromTo(ch1Line1.current,   { x: "-15vw", opacity: 0 }, { x: "0vw", opacity: 1, ease: "none", duration: 0.2 }, 0.4);
-    tl.fromTo(ch1Line2.current,   { x: "15vw",  opacity: 0 }, { x: "0vw", opacity: 1, ease: "none", duration: 0.2 }, 0.48);
-    tl.fromTo(ch1Divider.current, { opacity: 0 }, { opacity: 1, ease: "none", duration: 0.12 }, 0.58);
-    tl.fromTo(ch1Sub.current,     { y: "14px", opacity: 0 }, { y: "0px", opacity: 1, ease: "none", duration: 0.1 }, 0.62);
-    tl.fromTo(ch1Nebula.current,  { opacity: 0 }, { opacity: 1, ease: "none", duration: 0.2 }, 0.4);
-    tl.to(ch1Line1.current,  { y: "-30vh", opacity: 0, ease: "power2.in", duration: 0.15 }, 0.65);
-    tl.to(ch1Line2.current,  { y: "-30vh", opacity: 0, ease: "power2.in", duration: 0.15 }, 0.65);
-    tl.to(ch1Divider.current,{ y: "-30vh", opacity: 0, ease: "power2.in", duration: 0.15 }, 0.65);
-    tl.to(ch1Sub.current,    { y: "-10vh", opacity: 1, scale: 1.10, ease: "power2.in", duration: 0.2 }, 0.65);
-    tl.to(globeRef.current,   { scale: 12, ease: "power1.in", duration: 0.2, force3D: true }, 0.78);
-    tl.to(horizonRef.current, { opacity: 0, ease: "none", duration: 0.2 }, 0.80);
-    tl.to("#layer-stars",     { opacity: 0, ease: "none", duration: 0.2 }, 0.80);
-    tl.to(globeRef.current,   { opacity: 0, ease: "none", duration: 0.15, force3D: true }, 0.93);
 
     return () => {
       enterTlRef.current?.kill();
-      // Kill ST without trying to restore DOM — React handles DOM removal
-      tl.scrollTrigger?.kill(false);
+      ST.kill();
       tl.kill();
     };
   // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -177,6 +196,7 @@ const Hero = forwardRef<HeroHandle, { onEnterOrbit?: () => void }>(
           background:radial-gradient(circle at 38% 35%,#08080f 0%,#04040c 40%,#000 100%);
           box-shadow:0 0 60px 10px rgba(255,140,0,.10),0 0 120px 30px rgba(255,100,0,.07),0 0 200px 60px rgba(200,80,0,.04);
           outline:1px solid rgba(255,160,0,.06);
+          transform-origin:center center;
         }
 
         #hero-text {
@@ -226,32 +246,39 @@ const Hero = forwardRef<HeroHandle, { onEnterOrbit?: () => void }>(
         #enter-orbit-btn:hover { color:#000;border-color:transparent; }
         #enter-orbit-btn:hover .fill { transform:translateX(0); }
 
-        /* chapter 1 */
-        #ch1-nebula {
-          position:absolute;top:40%;right:-15%;width:70vw;height:70vw;border-radius:50%;
-          background:radial-gradient(ellipse at center,rgba(160,60,10,.18) 0%,rgba(80,30,5,.08) 40%,transparent 70%);
-          filter:blur(60px);pointer-events:none;z-index:5;opacity:0;
-        }
+        /* Chapter 1 */
         #ch1-block {
           position:absolute;top:50%;left:0;right:0;transform:translateY(-50%);
-          z-index:5;display:flex;flex-direction:column;gap:clamp(10px,2vh,28px);padding:0 5%;
+          z-index:7;display:flex;flex-direction:column;align-items:center;
+          gap:clamp(8px,1.8vh,24px);padding:0 6%;pointer-events:none;
         }
         .ch1-headline {
-          font-family:'Orbitron',monospace;font-size:clamp(28px,5.5vw,100px);font-weight:900;
-          letter-spacing:-1px;line-height:1;opacity:0;
+          font-family:'Orbitron',monospace;font-size:clamp(26px,5vw,88px);font-weight:900;
+          letter-spacing:-1px;line-height:1;opacity:0;width:100%;
           background:linear-gradient(180deg,#fff 0%,#ffe4b0 60%,#ffb347 100%);
           -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
         }
         #ch1-line1 { text-align:left; }
-        .ch1-line2  { text-align:right; }
+        #ch1-line2 { text-align:right; }
         #ch1-divider {
-          height:1px;opacity:0;
-          background:linear-gradient(90deg,transparent,rgba(255,160,50,.5) 30%,rgba(255,160,50,.5) 70%,transparent);
+          width:100%;height:1px;opacity:0;
+          background:linear-gradient(90deg,transparent 0%,rgba(255,160,50,0) 10%,rgba(255,200,80,1) 50%,rgba(255,160,50,0) 90%,transparent 100%);
+          box-shadow:0 0 8px 2px rgba(255,160,50,0.6);
         }
         #ch1-sub {
-          font-family:'Rajdhani',sans-serif;font-size:clamp(11px,1.2vw,17px);
-          font-weight:400;letter-spacing:6px;text-transform:uppercase;
-          color:rgba(255,200,130,.55);text-align:center;opacity:0;
+          font-family:'Rajdhani',sans-serif;font-size:clamp(10px,1.1vw,15px);
+          font-weight:300;letter-spacing:8px;text-transform:uppercase;
+          color:rgba(255,200,130,.5);text-align:center;opacity:0;
+        }
+
+        /* Final center text */
+        #ch1-final {
+          position:absolute;top:50%;left:0;right:0;transform:translateY(-50%);
+          z-index:8;text-align:center;padding:0 10%;
+          font-family:'Rajdhani',sans-serif;font-size:clamp(13px,1.4vw,20px);
+          font-weight:300;letter-spacing:7px;text-transform:uppercase;
+          color:rgba(255,200,130,.7);opacity:0;pointer-events:none;
+          text-shadow:0 0 40px rgba(255,160,50,.4);
         }
 
         #layer-horizon {
@@ -340,13 +367,15 @@ const Hero = forwardRef<HeroHandle, { onEnterOrbit?: () => void }>(
         </div>
 
         {/* Chapter 1 */}
-        <div id="ch1-nebula" ref={ch1Nebula} />
         <div id="ch1-block">
-          <div id="ch1-line1"   ref={ch1Line1} className="ch1-headline">ONE CREW.</div>
+          <div id="ch1-line1" ref={ch1Line1} className="ch1-headline">ONE CREW.</div>
           <div id="ch1-divider" ref={ch1Divider} />
-          <div id="ch1-line2"   ref={ch1Line2} className="ch1-headline ch1-line2">EVERY DIRECTION.</div>
-          <div id="ch1-sub"     ref={ch1Sub}>The Universe&apos;s True Creative Team</div>
+          <div id="ch1-line2" ref={ch1Line2} className="ch1-headline">DOES EVERYTHING IMAGINABLE.</div>
+          <div id="ch1-sub" ref={ch1Sub}>we are the most creative team in the universe</div>
         </div>
+
+        {/* Final center text — stays last */}
+        <div id="ch1-final">we are the most creative team in the universe</div>
       </section>
     </>
   );
