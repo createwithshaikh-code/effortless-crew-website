@@ -12,7 +12,7 @@ export default function HomePage() {
 
   const handleEnterOrbit = () => {
     heroRef.current?.exitDown();
-    gsap.to("#hero-stars", { y: "5%", duration: 0.8, ease: "power2.out" });
+    gsap.to("#hero-stars-wrap", { y: "25%", duration: 1.0, ease: "power2.out" });
     document.body.style.overflow = "hidden";
     setTimeout(() => setShowOrbit(true), 350);
   };
