@@ -180,7 +180,7 @@ const Hero = forwardRef<HeroHandle, { onEnterOrbit?: () => void }>(
         @keyframes hsTwinkle { from{filter:brightness(1);} to{filter:brightness(0.5);} }
         /* Static inner div — slow rotation */
         #hero-stars-static {
-          animation:heroStarsSlowRotate 240s linear infinite;
+          animation:heroStarsSlowRotate 200s linear infinite reverse;
           position:absolute;top:50%;left:50%;
           width:220vmax;height:220vmax;
           margin-left:-110vmax;margin-top:-110vmax;
