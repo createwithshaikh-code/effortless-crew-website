@@ -170,7 +170,7 @@ const Hero = forwardRef<HeroHandle, { onEnterOrbit?: () => void }>(
           clip-path:ellipse(50% 38% at 50% 30%);
           pointer-events:none;
         }
-        @keyframes heroStarRotate { to { transform:rotate(-360deg); } }
+        @keyframes heroStarRotate { to { transform:rotate(360deg); } }
         .hs { position:absolute;inset:0; }
         .hs:nth-child(1) { animation:hsTwinkle 3.5s ease-in-out infinite alternate; }
         .hs:nth-child(2) { animation:hsTwinkle 4.8s ease-in-out infinite alternate-reverse; }
