@@ -94,8 +94,14 @@ export default function Orbit({ onExit }: { onExit?: () => void }) {
   const ringRef    = useRef<HTMLDivElement>(null);
   const counterRef = useRef<HTMLDivElement>(null);
   const panelRef   = useRef<HTMLDivElement>(null);
+  const s1 = useRef<HTMLDivElement>(null);
+  const s2 = useRef<HTMLDivElement>(null);
+  const s3 = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
+    if(s1.current) buildStarField(s1.current, 900,"255,230,200",1);
+    if(s2.current) buildStarField(s2.current, 280,"255,240,210",1.5);
+    if(s3.current) buildStarField(s3.current, 100,"255,248,230",2);
 
     const container = mountRef.current!;
 
