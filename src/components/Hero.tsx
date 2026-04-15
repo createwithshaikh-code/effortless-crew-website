@@ -5,6 +5,17 @@ import { ScrollTrigger } from "gsap/ScrollTrigger";
 
 gsap.registerPlugin(ScrollTrigger);
 
+function buildStarField(el: HTMLElement, count: number, color: string, size: number) {
+  const S = Math.max(window.innerWidth, window.innerHeight) * 2.2;
+  const shadows = Array.from({ length: count }, () => {
+    const x = (Math.random() * S).toFixed(1);
+    const y = (Math.random() * S).toFixed(1);
+    const a = (Math.random() * 0.6 + 0.35).toFixed(2);
+    return `${x}px ${y}px 0 rgba(${color},${a})`;
+  }).join(",");
+  el.style.cssText = `position:absolute;inset:0;width:${size}px;height:${size}px;box-shadow:${shadows};background:transparent;border-radius:50%;`;
+}
+
 const CHARS = ["E","F","F","O","R","T","L","E","S","S"];
 
 export interface HeroHandle {
