@@ -178,8 +178,9 @@ const Hero = forwardRef<HeroHandle, { onEnterOrbit?: () => void }>(
         .hs:nth-child(2) { animation:hsTwinkle 4.8s ease-in-out infinite alternate-reverse; }
         .hs:nth-child(3) { animation:hsTwinkle 2.9s ease-in-out infinite alternate; }
         @keyframes hsTwinkle { from{filter:brightness(1);} to{filter:brightness(0.5);} }
-        /* Static inner div — no rotation */
+        /* Static inner div — slow rotation */
         #hero-stars-static {
+          animation:heroStarsSlowRotate 240s linear infinite;
           position:absolute;top:50%;left:50%;
           width:220vmax;height:220vmax;
           margin-left:-110vmax;margin-top:-110vmax;
