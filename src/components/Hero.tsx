@@ -227,7 +227,7 @@ const Hero = forwardRef<HeroHandle, { onEnterOrbit?: () => void }>(
         /* Chapter 1 block */
         #ch1-block {
           position:absolute;top:50%;left:0;right:0;transform:translateY(-50%);
-          z-index:7;display:flex;flex-direction:column;align-items:center;
+          z-index:9;display:flex;flex-direction:column;align-items:center;
           gap:clamp(8px,1.8vh,24px);padding:0 6%;pointer-events:none;
         }
         .ch1-headline {
