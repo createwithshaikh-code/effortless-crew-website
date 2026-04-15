@@ -48,7 +48,7 @@ const Hero = forwardRef<HeroHandle, { onEnterOrbit?: () => void }>(
       ch1Line1.current, ch1Line2.current, ch1Divider.current, ch1Sub.current,
     ], { clearProps: "all" });
 
-    gsap.set(horizonRef.current,  { y: "-60vh" });
+    gsap.set(horizonRef.current,  { y: "60vh" });
     gsap.set(globeRef.current,    { opacity: 0, scale: 0.9 });
     gsap.set(".logo-eyebrow",     { opacity: 0, y: 10 });
     gsap.set(".ec-char",          { opacity: 0 });
