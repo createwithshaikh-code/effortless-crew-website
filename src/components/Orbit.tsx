@@ -87,7 +87,7 @@ function makeGlowTex(col:number){
   });
 }
 
-function buildStarField(el:HTMLElement,count:number,color:string,size:number){
+function _buildStarField_unused(el:HTMLElement,count:number,color:string,size:number){
   const S=Math.max(window.innerWidth,window.innerHeight)*2.2;
   const shadows=Array.from({length:count},()=>{
     const x=(Math.random()*S).toFixed(1);
