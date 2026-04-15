@@ -154,6 +154,7 @@ const Hero = forwardRef<HeroHandle, { onEnterOrbit?: () => void }>(
           overflow:hidden;background:transparent;isolation:isolate;
         }
 
+        /* Spinning star layer */
         #hero-stars {
           position:absolute;top:50%;left:50%;
           width:220vmax;height:220vmax;
@@ -169,6 +170,20 @@ const Hero = forwardRef<HeroHandle, { onEnterOrbit?: () => void }>(
         .hs:nth-child(2) { animation:hsTwinkle 4.8s ease-in-out infinite alternate-reverse; }
         .hs:nth-child(3) { animation:hsTwinkle 2.9s ease-in-out infinite alternate; }
         @keyframes hsTwinkle { from{filter:brightness(1);} to{filter:brightness(0.5);} }
+
+        /* Static (non-spinning) star layer — same stars, no rotation */
+        #hero-stars-static {
+          position:absolute;top:50%;left:50%;
+          width:220vmax;height:220vmax;
+          margin-left:-110vmax;margin-top:-110vmax;
+          z-index:1;transform-origin:center;
+          clip-path:ellipse(50% 38% at 50% 30%);
+          pointer-events:none;
+        }
+        .hss { position:absolute;inset:0; }
+        .hss:nth-child(1) { animation:hsTwinkle 5s ease-in-out infinite alternate-reverse; }
+        .hss:nth-child(2) { animation:hsTwinkle 3.8s ease-in-out infinite alternate; }
+        .hss:nth-child(3) { animation:hsTwinkle 6s ease-in-out infinite alternate-reverse; }
 
         #globe {
           position:absolute;z-index:3;left:50%;top:50%;
