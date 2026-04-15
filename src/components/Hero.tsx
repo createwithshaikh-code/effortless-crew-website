@@ -143,21 +143,6 @@ const Hero = forwardRef<HeroHandle, { onEnterOrbit?: () => void }>(
 
         #hero { position:relative;width:100%;height:100vh;overflow:hidden;background:#000;isolation:isolate; }
 
-        #layer-stars {
-          position:absolute;top:50%;left:50%;
-          width:220vmax;height:220vmax;
-          margin-left:-110vmax;margin-top:-110vmax;
-          z-index:1;transform-origin:center;
-          animation:starRotate 120s linear infinite;
-          clip-path:ellipse(50% 38% at 50% 30%);
-        }
-        @keyframes starRotate { to { transform:rotate(-360deg); } }
-        #stars-small,#stars-mid,#stars-large { position:absolute;inset:0; }
-        #stars-small { animation:twinkle1 3.5s ease-in-out infinite alternate; }
-        #stars-mid   { animation:twinkle1 4.8s ease-in-out infinite alternate-reverse; }
-        #stars-large { animation:twinkle1 2.9s ease-in-out infinite alternate; }
-        @keyframes twinkle1 { from { filter:brightness(1); } to { filter:brightness(0.5); } }
-
         #globe {
           position:absolute;z-index:3;left:50%;top:50%;
           transform:translate(-50%,-52%);
