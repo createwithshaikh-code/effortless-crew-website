@@ -33,9 +33,9 @@ body {
   transition-duration: 1.3s;
 }
 
-/* Spacer that gives the body its scrollable height (300vh = pin + 200% travel) */
+/* Spacer that gives the body its scrollable height — taller = slower/smoother scroll */
 .hero-scroll-spacer {
-  height: 300vh;
+  height: 500vh;
   pointer-events: none;
 }
 /* Hide spacer when orbit is active so body has no scroll height */
