@@ -32,7 +32,6 @@ export default function HomePage() {
     setTimeout(() => {
       heroRef.current?.prepareEntrance();
       setShowOrbit(false);
-      window.scrollTo({ top: 0, behavior: "instant" });
 
       // Stars drift back up and ease to stop — mirrors the entrance motion
       gsap.to("#hero-stars-wrap", { y: "0%", duration: 4.0, ease: "power2.out" });
