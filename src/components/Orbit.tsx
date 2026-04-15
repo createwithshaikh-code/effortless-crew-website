@@ -421,7 +421,14 @@ export default function Orbit({ onExit }: { onExit?: () => void }) {
         #o-exit:hover { border-color:#e05000;color:#e05000; }
       `}</style>
 
-      {/* Three.js mount (transparent bg so shared stars show through) */}
+      {/* Star field — matches hero stars exactly */}
+      <div id="orbit-stars">
+        <div className="os" ref={s1} />
+        <div className="os" ref={s2} />
+        <div className="os" ref={s3} />
+      </div>
+
+      {/* Three.js mount */}
       <div ref={mountRef} style={{position:"absolute",inset:0,zIndex:1}} />
 
       {/* HUD */}
