@@ -94,12 +94,9 @@ const Hero = forwardRef<HeroHandle, { onEnterOrbit?: () => void }>(
 
     playEntrance(0.25);
 
-    const scroller = document.getElementById("hero-panel")!;
-
     const tl = gsap.timeline({
       scrollTrigger: {
         trigger: heroRef.current,
-        scroller,
         start: "top top",
         end: "+=400%",
         scrub: true,
