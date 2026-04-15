@@ -78,7 +78,7 @@ const Hero = forwardRef<HeroHandle, { onEnterOrbit?: () => void }>(
   useImperativeHandle(ref, () => ({
     exitDown() {
       enterTlRef.current?.kill();
-      gsap.to(horizonRef.current, { y: "-60vh", duration: 0.7, ease: "power2.in" });
+      gsap.to(horizonRef.current, { y: "60vh", duration: 0.7, ease: "power2.in" });
       gsap.to(globeRef.current,   { y: "20vh", opacity: 0, duration: 0.5, ease: "power2.in", delay: 0.05 });
       gsap.to(".logo-eyebrow, .ec-char, #txt-crew, .game-tagline, #enter-orbit-btn",
         { opacity: 0, y: 20, duration: 0.35, stagger: 0.04, ease: "power2.in" });
