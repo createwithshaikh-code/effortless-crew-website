@@ -314,6 +314,10 @@ export default function Orbit({ onExit }: { onExit?: () => void }) {
         });
       });
 
+      starActivity = Math.max(0, starActivity - 0.06 * dt);
+      starPoints.rotation.y += 0.35 * starActivity * dt;
+      starPoints.rotation.x += 0.08 * starActivity * dt;
+
       coreMesh.rotation.y=t*.12;
       eqRing.rotation.z=t*.4;
       glowSpr.material.opacity=.6+.2*Math.sin(t*.75);
