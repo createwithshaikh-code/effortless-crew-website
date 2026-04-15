@@ -175,6 +175,10 @@ const Hero = forwardRef<HeroHandle, { onEnterOrbit?: () => void }>(
         }
         @keyframes starRotate { to { transform:rotate(-360deg); } }
         #stars-small,#stars-mid,#stars-large { position:absolute;inset:0; }
+        #stars-small { animation:twinkle1 3.5s ease-in-out infinite alternate; }
+        #stars-mid   { animation:twinkle1 4.8s ease-in-out infinite alternate-reverse; }
+        #stars-large { animation:twinkle1 2.9s ease-in-out infinite alternate; }
+        @keyframes twinkle1 { from { filter:brightness(1); } to { filter:brightness(0.5); } }
 
         #globe {
           position:absolute;z-index:3;left:50%;top:50%;
