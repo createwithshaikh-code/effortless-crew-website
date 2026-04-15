@@ -332,6 +332,7 @@ export default function Orbit({ onExit }: { onExit?: () => void }) {
       window.removeEventListener("resize",onResize);
       nb?.removeEventListener("click",next); pb?.removeEventListener("click",prev);
       if(transTimer)clearTimeout(transTimer);
+      if(reactingStars) reactingStars.style.rotate = "";
       renderer.dispose();
       if(container.contains(renderer.domElement))container.removeChild(renderer.domElement);
     };
