@@ -91,9 +91,12 @@ const Hero = forwardRef<HeroHandle, { onEnterOrbit?: () => void }>(
   }));
 
   useEffect(() => {
-    if (s1Ref.current) buildStarField(s1Ref.current, 900, "255,230,200", 1);
-    if (s2Ref.current) buildStarField(s2Ref.current, 280, "255,240,210", 1.5);
-    if (s3Ref.current) buildStarField(s3Ref.current, 100, "255,248,230", 2);
+    if (s1Ref.current)  buildStarField(s1Ref.current,  900, "255,230,200", 1);
+    if (s2Ref.current)  buildStarField(s2Ref.current,  280, "255,240,210", 1.5);
+    if (s3Ref.current)  buildStarField(s3Ref.current,  100, "255,248,230", 2);
+    if (ss1Ref.current) buildStarField(ss1Ref.current, 900, "255,230,200", 1);
+    if (ss2Ref.current) buildStarField(ss2Ref.current, 280, "255,240,210", 1.5);
+    if (ss3Ref.current) buildStarField(ss3Ref.current, 100, "255,248,230", 2);
 
     playEntrance(0.25);
 
