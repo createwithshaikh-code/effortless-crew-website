@@ -32,7 +32,7 @@ function SharedStars() {
     <>
       <style>{`
         #shared-stars {
-          position:fixed;top:50%;left:50%;
+          position:absolute;top:50%;left:50%;
           width:220vmax;height:220vmax;
           margin-left:-110vmax;margin-top:-110vmax;
           z-index:0;transform-origin:center;
