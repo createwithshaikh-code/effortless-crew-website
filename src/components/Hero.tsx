@@ -20,6 +20,7 @@ const CHARS = ["E","F","F","O","R","T","L","E","S","S"];
 
 export interface HeroHandle {
   exitDown: () => void;
+  prepareEntrance: () => void;
   replayEntrance: () => void;
 }
 
