@@ -108,10 +108,9 @@ const Hero = forwardRef<HeroHandle, { onEnterOrbit?: () => void }>(
         scroller,
         start: "top top",
         end: "+=400%",
-        scrub: true,
+        scrub: 0.5,
         pin: true,
         anticipatePin: 1,
-        fastScrollEnd: true,
       }
     });
 
