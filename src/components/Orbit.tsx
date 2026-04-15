@@ -334,7 +334,7 @@ export default function Orbit({ onExit }: { onExit?: () => void }) {
   }, []);
 
   return (
-    <div style={{position:"relative",width:"100vw",height:"100vh",background:"#000",overflow:"hidden"}}>
+    <div style={{position:"relative",width:"100vw",height:"100vh",background:"transparent",overflow:"hidden"}}>
       <style>{`
         @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@700;900&family=Rajdhani:wght@400;600;700&display=swap');
 
