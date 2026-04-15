@@ -87,17 +87,6 @@ function makeGlowTex(col:number){
   });
 }
 
-function _buildStarField_unused(el:HTMLElement,count:number,color:string,size:number){
-  const S=Math.max(window.innerWidth,window.innerHeight)*2.2;
-  const shadows=Array.from({length:count},()=>{
-    const x=(Math.random()*S).toFixed(1);
-    const y=(Math.random()*S).toFixed(1);
-    const a=(Math.random()*0.6+0.35).toFixed(2);
-    return `${x}px ${y}px 0 rgba(${color},${a})`;
-  }).join(",");
-  el.style.cssText=`position:absolute;inset:0;width:${size}px;height:${size}px;box-shadow:${shadows};background:transparent;border-radius:50%;`;
-}
-
 export default function Orbit({ onExit }: { onExit?: () => void }) {
   const mountRef   = useRef<HTMLDivElement>(null);
   const nameRef    = useRef<HTMLDivElement>(null);
@@ -105,15 +94,8 @@ export default function Orbit({ onExit }: { onExit?: () => void }) {
   const ringRef    = useRef<HTMLDivElement>(null);
   const counterRef = useRef<HTMLDivElement>(null);
   const panelRef   = useRef<HTMLDivElement>(null);
-  const s1 = useRef<HTMLDivElement>(null);
-  const s2 = useRef<HTMLDivElement>(null);
-  const s3 = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    // star field
-    if(s1.current) buildStarField(s1.current, 900,"255,230,200",1);
-    if(s2.current) buildStarField(s2.current, 280,"255,240,210",1.5);
-    if(s3.current) buildStarField(s3.current, 100,"255,248,230",2);
 
     const container = mountRef.current!;
 
