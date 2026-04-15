@@ -178,7 +178,7 @@ const Hero = forwardRef<HeroHandle, { onEnterOrbit?: () => void }>(
         @keyframes hsTwinkle { from{filter:brightness(1);} to{filter:brightness(0.5);} }
 
         #globe {
-          position:absolute;z-index:3;left:50%;top:50%;
+          position:absolute;z-index:3;left:50%;top:38%;
           transform:translate(-50%,-52%);
           width:clamp(340px,60vmin,680px);height:clamp(340px,60vmin,680px);
           border-radius:50%;
