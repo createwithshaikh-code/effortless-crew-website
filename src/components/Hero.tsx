@@ -133,7 +133,7 @@ const Hero = forwardRef<HeroHandle, { onEnterOrbit?: () => void }>(
 
     // FADE EVERYTHING OUT
     tl.to(horizonRef.current,  { opacity: 0, ease: "none", duration: 0.1 }, 0.78);
-    tl.to("#shared-stars",     { opacity: 0, ease: "none", duration: 0.1 }, 0.78);
+    tl.to("#hero-stars",       { opacity: 0, ease: "none", duration: 0.1 }, 0.78);
     tl.to(globeRef.current,    { opacity: 0, ease: "none", duration: 0.1, force3D: true }, 0.88);
 
     return () => {
