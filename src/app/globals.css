@@ -41,6 +41,7 @@ html, body {
   overflow-y: auto;
   overflow-x: hidden;
   background: transparent;
+  overscroll-behavior: none;
 }
 .page-panel--hero.hidden {
   transform: translateY(100vh);
