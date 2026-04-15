@@ -309,9 +309,9 @@ export default function Orbit({ onExit }: { onExit?: () => void }) {
         });
       });
 
-      starActivity = Math.max(0, starActivity - 0.06 * dt);
-      starPoints.rotation.y += 0.35 * starActivity * dt;
-      starPoints.rotation.x += 0.08 * starActivity * dt;
+      if (reactingStars) {
+        reactingStars.style.rotate = `${CUR.roll * 0.3}deg`;
+      }
 
       coreMesh.rotation.y=t*.12;
       eqRing.rotation.z=t*.4;
