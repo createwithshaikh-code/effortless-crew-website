@@ -29,6 +29,9 @@ const Hero = forwardRef<HeroHandle, { onEnterOrbit?: () => void }>(
   const s1Ref       = useRef<HTMLDivElement>(null);
   const s2Ref       = useRef<HTMLDivElement>(null);
   const s3Ref       = useRef<HTMLDivElement>(null);
+  const ss1Ref      = useRef<HTMLDivElement>(null);
+  const ss2Ref      = useRef<HTMLDivElement>(null);
+  const ss3Ref      = useRef<HTMLDivElement>(null);
   const globeRef    = useRef<HTMLDivElement>(null);
   const horizonRef  = useRef<HTMLDivElement>(null);
   const heroRef     = useRef<HTMLElement>(null);
