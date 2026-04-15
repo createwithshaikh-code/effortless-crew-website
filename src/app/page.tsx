@@ -33,13 +33,8 @@ export default function HomePage() {
       setShowOrbit(false);
       window.scrollTo({ top: 0, behavior: "instant" });
 
-      // Stars move upward
-      gsap.to("#hero-stars-wrap", { y: "-20%", duration: 1.3, ease: "power2.in" });
-
-      // Stars ease to stop when horizon gradient appears (~1700ms from now)
-      setTimeout(() => {
-        gsap.to("#hero-stars-wrap", { y: "0%", duration: 1.6, ease: "power2.out" });
-      }, 1700);
+      // Stars drift back up and ease to stop — mirrors the entrance motion
+      gsap.to("#hero-stars-wrap", { y: "0%", duration: 2.2, ease: "power2.out" });
 
       // Unlock scroll + replay entrance after orbit finishes sliding away
       setTimeout(() => {
