@@ -77,10 +77,6 @@ const Hero = forwardRef<HeroHandle, { onEnterOrbit?: () => void }>(
   }));
 
   useEffect(() => {
-    if (starsSmall.current) buildStarField(starsSmall.current, 900, "255,230,200", 1);
-    if (starsMid.current)   buildStarField(starsMid.current,   280, "255,240,210", 1.5);
-    if (starsLarge.current) buildStarField(starsLarge.current, 100, "255,248,230", 2);
-
     playEntrance(0.25);
 
     // Scroll timeline — hero panel is position:fixed so no pin needed.
