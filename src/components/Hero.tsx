@@ -201,7 +201,7 @@ const Hero = forwardRef<HeroHandle, { onEnterOrbit?: () => void }>(
         }
         .game-logo {
           font-family:'Orbitron',monospace;font-weight:900;
-          font-size:clamp(34px,6.2vw,92px);letter-spacing:-2px;line-height:1;display:block;
+          font-size:clamp(26px,4.8vw,68px);letter-spacing:-2px;line-height:1;display:block;
         }
         #txt-effortless {
           background:linear-gradient(180deg,#fff 0%,#ffe4a0 40%,#ffb347 100%);
