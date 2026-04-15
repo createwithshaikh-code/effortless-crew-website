@@ -241,6 +241,7 @@ export default function Orbit({ onExit }: { onExit?: () => void }) {
       RING_ORDER.forEach(r=>{ringPaused[r]=(r===ring);if(r!==ring)snapTarget[r]=null;});
       snapTarget[ring]=snapDeg(ring,idx);
       Object.assign(TGT,CAM_KF[ring]);
+      starActivity = Math.min(1.0, starActivity + 0.4);
       updateUI();
     }
 
