@@ -13,8 +13,8 @@ export default function HomePage() {
   const handleEnterOrbit = () => {
     heroRef.current?.exitDown();
     // spinning layer moves down 10%, static layer moves down 5% — parallax
-    gsap.to("#hero-stars",        { y: "10%", duration: 0.9, ease: "power2.out" });
-    gsap.to("#hero-stars-static", { y: "5%",  duration: 0.9, ease: "power2.out" });
+    gsap.to("#hero-stars-wrap",        { y: "10%", duration: 0.9, ease: "power2.out" });
+    gsap.to("#hero-stars-static-wrap", { y: "5%",  duration: 0.9, ease: "power2.out" });
     setTimeout(() => setShowOrbit(true), 350);
   };
 
