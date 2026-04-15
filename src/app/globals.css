@@ -4,19 +4,27 @@
   box-sizing: border-box;
 }
 
-html,
-body {
+html, body {
   width: 100%;
   height: 100%;
   background: #000;
   color: #fff;
 }
 
-/* ── page transition shell ── */
 .page-shell {
   position: relative;
   width: 100vw;
   height: 100vh;
+  overflow: hidden;
+  background: #000;
+}
+
+/* Shared stars — always behind everything */
+#shared-stars-wrap {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
   overflow: hidden;
 }
 
