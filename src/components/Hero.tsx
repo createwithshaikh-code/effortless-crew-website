@@ -111,8 +111,7 @@ const Hero = forwardRef<HeroHandle, { onEnterOrbit?: () => void }>(
 
     // PARALLAX — horizon catches up to text, feels like ground rising
     tl.to(heroTextRef.current, { y: "-22vh", opacity: 0, ease: "none", duration: 0.4, force3D: true }, 0);
-    tl.fromTo(horizonRef.current, { y: "0" }, { y: "-60vh", ease: "none", duration: 0.55, force3D: true }, 0);
-    tl.to(globeRef.current,    { y: "-8vh",  ease: "none", duration: 0.55, force3D: true }, 0);
+    tl.fromTo(horizonRef.current, { y: "0" }, { y: "-85vh", ease: "power2.in", duration: 0.4, force3D: true }, 0);
     tl.to("#hero-stars",       { y: "-10vh", ease: "none", duration: 0.55, force3D: true }, 0);
 
     // CHAPTER 1 — ONE CREW. slides from left, DOES EVERYTHING IMAGINABLE from right
