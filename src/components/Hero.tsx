@@ -190,7 +190,7 @@ const Hero = forwardRef<HeroHandle, { onEnterOrbit?: () => void }>(
 
         #hero-text {
           position:absolute;top:38%;left:0;right:0;
-          transform:translateY(-50%);z-index:6;text-align:center;padding:0 20px;
+          z-index:6;text-align:center;padding:0 20px;
         }
         .logo-eyebrow {
           display:block;font-family:'Rajdhani',sans-serif;
