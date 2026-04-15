@@ -4,7 +4,7 @@ import Hero, { HeroHandle } from "@/components/Hero";
 import Orbit from "@/components/Orbit";
 import { gsap } from "gsap";
 
-const SLIDE_MS = 1350;
+const SLIDE_MS = 1500;
 
 export default function HomePage() {
   const [showOrbit, setShowOrbit] = useState(false);
@@ -12,29 +12,27 @@ export default function HomePage() {
 
   const handleEnterOrbit = () => {
     heroRef.current?.exitDown();
-    // nudge stars down 5%
     gsap.to("#hero-stars", { y: "5%", duration: 0.8, ease: "power2.out" });
+    document.body.style.overflow = "hidden";
     setTimeout(() => setShowOrbit(true), 350);
   };
 
   const handleExit = () => {
     setShowOrbit(false);
-    document.getElementById("hero-panel")?.scrollTo({ top: 0, behavior: "instant" });
-    // restore stars
+    window.scrollTo({ top: 0, behavior: "instant" });
     gsap.to("#hero-stars", { y: "0%", duration: 1.0, ease: "power2.out" });
     setTimeout(() => {
+      document.body.style.overflow = "";
       heroRef.current?.replayEntrance();
     }, SLIDE_MS);
   };
 
   return (
-    <div className="page-shell">
-      <div id="hero-panel" className={`page-panel page-panel--hero${showOrbit ? " hidden" : ""}`}>
-        <Hero ref={heroRef} onEnterOrbit={handleEnterOrbit} />
-      </div>
-      <div className={`page-panel page-panel--orbit${showOrbit ? " visible" : ""}`}>
+    <>
+      <Hero ref={heroRef} onEnterOrbit={handleEnterOrbit} />
+      <div className={`orbit-overlay${showOrbit ? " visible" : ""}`}>
         <Orbit onExit={handleExit} />
       </div>
-    </div>
+    </>
   );
 }
