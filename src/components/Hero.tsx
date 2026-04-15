@@ -315,15 +315,20 @@ const Hero = forwardRef<HeroHandle, { onEnterOrbit?: () => void }>(
       </nav>
 
       <section id="hero" ref={heroRef}>
-        <div id="hero-stars">
-          <div className="hs" ref={s1Ref} />
-          <div className="hs" ref={s2Ref} />
-          <div className="hs" ref={s3Ref} />
+        {/* GSAP moves the wrapper; CSS rotation lives on inner div */}
+        <div id="hero-stars-wrap">
+          <div id="hero-stars">
+            <div className="hs" ref={s1Ref} />
+            <div className="hs" ref={s2Ref} />
+            <div className="hs" ref={s3Ref} />
+          </div>
         </div>
-        <div id="hero-stars-static">
-          <div className="hss" ref={ss1Ref} />
-          <div className="hss" ref={ss2Ref} />
-          <div className="hss" ref={ss3Ref} />
+        <div id="hero-stars-static-wrap">
+          <div id="hero-stars-static">
+            <div className="hss" ref={ss1Ref} />
+            <div className="hss" ref={ss2Ref} />
+            <div className="hss" ref={ss3Ref} />
+          </div>
         </div>
 
         <div id="globe" ref={globeRef} />
