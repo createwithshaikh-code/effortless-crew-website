@@ -90,7 +90,7 @@ const Hero = forwardRef<HeroHandle, { onEnterOrbit?: () => void }>(
       gsap.set(".logo-eyebrow, .ec-char, #txt-crew, .game-tagline, #enter-orbit-btn", { opacity: 0 });
     },
     replayEntrance() {
-      playEntrance(0.3);
+      playEntrance(0);
     },
   }));
 
