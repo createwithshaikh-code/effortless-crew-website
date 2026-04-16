@@ -276,15 +276,12 @@ export default function Orbit({ onExit, isActive }: { onExit?: () => void; isAct
     const nb=document.getElementById("o-next"); const pb=document.getElementById("o-prev");
     nb?.addEventListener("click",next); pb?.addEventListener("click",prev);
 
-    /* pause/resume controlled by isActive prop */
-    pausedRef.current = !isActive;
-
     /* loop */
     let rafId=0; const clock=new THREE.Clock();
     function tick(){
       rafId=requestAnimationFrame(tick);
-      if(pausedRef.current) return;
       const dt=clock.getDelta(),t=clock.getElapsedTime();
+      if(pausedRef.current) return;
 
       RING_ORDER.forEach(name=>{
         if(!ringPaused[name])ringRot[name]+=SPEEDS[name]*dt;
