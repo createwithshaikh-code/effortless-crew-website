@@ -293,12 +293,12 @@ const Hero = forwardRef<HeroHandle, { onEnterOrbit?: () => void }>(
       <nav id="nav">
         <div className="nav-logo">EC</div>
         <ul className="nav-links">
-          <li><a href="#">Work</a></li>
-          <li><a href="#">Services</a></li>
-          <li><a href="#">About</a></li>
-          <li><a href="#">Contact</a></li>
+          <li><a href="/for-creators">Creators</a></li>
+          <li><a href="/for-businesses">Businesses</a></li>
+          <li><a href="/for-agencies">Agencies</a></li>
+          <li><a href="/careers">Careers</a></li>
         </ul>
-        <button type="button" className="nav-cta">Get Started</button>
+        <a href="mailto:createwithshaikh@gmail.com" className="nav-cta">Get Started</a>
       </nav>
 
       <section id="hero" ref={heroRef}>
