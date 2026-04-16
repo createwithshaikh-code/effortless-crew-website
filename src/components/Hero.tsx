@@ -286,7 +286,7 @@ const Hero = forwardRef<HeroHandle, { onEnterOrbit?: () => void }>(
         .nav-links { display:flex;gap:36px;list-style:none; }
         .nav-links a { font-family:'Rajdhani',sans-serif;font-size:13px;font-weight:600;letter-spacing:3px;text-transform:uppercase;color:rgba(255,210,150,.6);text-decoration:none;transition:color .3s; }
         .nav-links a:hover { color:#fff; }
-        .nav-cta { font-family:'Rajdhani',sans-serif;font-size:12px;font-weight:700;letter-spacing:3px;text-transform:uppercase;color:#000;background:linear-gradient(135deg,#ffb347,#ff8c00);border:none;padding:10px 26px;cursor:pointer;transition:opacity .3s; }
+        .nav-cta { font-family:'Rajdhani',sans-serif;font-size:12px;font-weight:700;letter-spacing:3px;text-transform:uppercase;color:#000;background:linear-gradient(135deg,#ffb347,#ff8c00);border:none;padding:10px 26px;cursor:pointer;transition:opacity .3s;text-decoration:none; }
         .nav-cta:hover { opacity:.85; }
       `}</style>
 
