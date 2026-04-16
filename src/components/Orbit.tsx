@@ -345,9 +345,12 @@ export default function Orbit({ onExit, isActive }: { onExit?: () => void; isAct
   }, []);
 
   return (
-    <div style={{position:"relative",width:"100vw",height:"100vh",background:"transparent",overflow:"hidden"}}>
+    <div className="orbit-root">
       <style>{`
         @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@700;900&family=Rajdhani:wght@400;600;700&display=swap');
+
+        .orbit-root { position:relative;width:100vw;height:100vh;background:transparent;overflow:hidden; }
+        .orbit-canvas { position:absolute;inset:0;z-index:1; }
 
         /* ── HUD panel ── */
         #orbit-hud {
@@ -413,7 +416,7 @@ export default function Orbit({ onExit, isActive }: { onExit?: () => void; isAct
       `}</style>
 
       {/* Three.js mount (transparent bg so shared stars show through) */}
-      <div ref={mountRef} style={{position:"absolute",inset:0,zIndex:1}} />
+      <div ref={mountRef} className="orbit-canvas" />
 
       {/* HUD */}
       <div id="orbit-hud" ref={panelRef}>
