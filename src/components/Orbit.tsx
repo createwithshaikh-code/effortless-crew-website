@@ -87,13 +87,18 @@ function makeGlowTex(col:number){
   });
 }
 
-export default function Orbit({ onExit }: { onExit?: () => void }) {
+export default function Orbit({ onExit, isActive }: { onExit?: () => void; isActive?: boolean }) {
   const mountRef   = useRef<HTMLDivElement>(null);
   const nameRef    = useRef<HTMLDivElement>(null);
   const descRef    = useRef<HTMLDivElement>(null);
   const ringRef    = useRef<HTMLDivElement>(null);
   const counterRef = useRef<HTMLDivElement>(null);
   const panelRef   = useRef<HTMLDivElement>(null);
+  const pausedRef  = useRef<boolean>(true);
+
+  useEffect(() => {
+    pausedRef.current = !isActive;
+  }, [isActive]);
 
   useEffect(() => {
 
@@ -271,10 +276,14 @@ export default function Orbit({ onExit }: { onExit?: () => void }) {
     const nb=document.getElementById("o-next"); const pb=document.getElementById("o-prev");
     nb?.addEventListener("click",next); pb?.addEventListener("click",prev);
 
+    /* pause/resume controlled by isActive prop */
+    pausedRef.current = !isActive;
+
     /* loop */
     let rafId=0; const clock=new THREE.Clock();
     function tick(){
       rafId=requestAnimationFrame(tick);
+      if(pausedRef.current) return;
       const dt=clock.getDelta(),t=clock.getElapsedTime();
 
       RING_ORDER.forEach(name=>{

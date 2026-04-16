@@ -50,7 +50,7 @@ export default function HomePage() {
     <>
       <Hero ref={heroRef} onEnterOrbit={handleEnterOrbit} />
       <div className={`orbit-overlay${showOrbit ? " visible" : ""}`}>
-        <Orbit onExit={handleExit} />
+        <Orbit onExit={handleExit} isActive={showOrbit} />
       </div>
     </>
   );
