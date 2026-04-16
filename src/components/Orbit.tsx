@@ -212,8 +212,14 @@ export default function Orbit({ onExit, isActive }: { onExit?: () => void; isAct
     /* reacting stars — hero CSS stars visible through transparent renderer */
     const reactingStars = document.getElementById('hero-stars');
 
-    /* dust */
-    {const N=300,pos=new Float32Array(N*3);for(let i=0;i<N;i++){const rad=100+Math.random()*520,th=Math.random()*Math.PI*2,ph=(Math.random()-.5)*.6;pos[i*3]=rad*Math.cos(th)*Math.cos(ph);pos[i*3+1]=rad*Math.sin(ph)*75;pos[i*3+2]=rad*Math.sin(th)*Math.cos(ph);}const g=new THREE.BufferGeometry();g.setAttribute("position",new THREE.BufferAttribute(pos,3));sysGrp.add(new THREE.Points(g,new THREE.PointsMaterial({color:0xff8c00,size:.7,transparent:true,opacity:.18})));}
+    /* dust — circular alpha map prevents square rendering */
+    {
+      const dustTex=mkTex(32,32,(ctx,W,H)=>{const g=ctx.createRadialGradient(W/2,H/2,0,W/2,H/2,W/2);g.addColorStop(0,"rgba(255,140,0,1)");g.addColorStop(0.4,"rgba(255,140,0,0.6)");g.addColorStop(1,"rgba(255,140,0,0)");ctx.fillStyle=g;ctx.fillRect(0,0,W,H);});
+      const N=300,pos=new Float32Array(N*3);
+      for(let i=0;i<N;i++){const rad=100+Math.random()*520,th=Math.random()*Math.PI*2,ph=(Math.random()-.5)*.6;pos[i*3]=rad*Math.cos(th)*Math.cos(ph);pos[i*3+1]=rad*Math.sin(ph)*75;pos[i*3+2]=rad*Math.sin(th)*Math.cos(ph);}
+      const g=new THREE.BufferGeometry();g.setAttribute("position",new THREE.BufferAttribute(pos,3));
+      sysGrp.add(new THREE.Points(g,new THREE.PointsMaterial({color:0xff8c00,size:1.2,map:dustTex,transparent:true,opacity:.18,alphaTest:0.01,depthWrite:false})));
+    }
 
     /* state */
     const ringRot:Record<string,number>={inner:0,middle:0,outer:0};
