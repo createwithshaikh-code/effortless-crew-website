@@ -13,12 +13,10 @@ function buildStarField(el: HTMLElement, count: number, color: string, size: num
 }
 
 export default function StarField() {
-  const s1 = useRef<HTMLDivElement>(null);
   const s2 = useRef<HTMLDivElement>(null);
   const s3 = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    if (s1.current) buildStarField(s1.current, 700, "255,230,200", 1);
     if (s2.current) buildStarField(s2.current, 200, "255,240,210", 1.5);
     if (s3.current) buildStarField(s3.current, 80, "255,248,230", 2);
   }, []);
@@ -42,7 +40,6 @@ export default function StarField() {
       `}</style>
       <div className="sf-wrap">
         <div className="sf-inner">
-          <div className="sf-layer" ref={s1} />
           <div className="sf-layer" ref={s2} />
           <div className="sf-layer" ref={s3} />
         </div>

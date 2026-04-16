@@ -27,7 +27,6 @@ export interface HeroHandle {
 const Hero = forwardRef<HeroHandle, { onEnterOrbit?: () => void }>(
   function Hero({ onEnterOrbit }, ref) {
 
-  const s1Ref       = useRef<HTMLDivElement>(null);
   const s2Ref       = useRef<HTMLDivElement>(null);
   const s3Ref       = useRef<HTMLDivElement>(null);
   const globeRef    = useRef<HTMLDivElement>(null);
@@ -97,7 +96,6 @@ const Hero = forwardRef<HeroHandle, { onEnterOrbit?: () => void }>(
   }));
 
   useEffect(() => {
-    if (s1Ref.current) buildStarField(s1Ref.current, 900, "255,230,200", 1);
     if (s2Ref.current) buildStarField(s2Ref.current, 280, "255,240,210", 1.5);
     if (s3Ref.current) buildStarField(s3Ref.current, 100, "255,248,230", 2);
 
@@ -304,7 +302,6 @@ const Hero = forwardRef<HeroHandle, { onEnterOrbit?: () => void }>(
       <section id="hero" ref={heroRef}>
         <div id="hero-stars-wrap">
           <div id="hero-stars">
-            <div className="hs" ref={s1Ref} />
             <div className="hs" ref={s2Ref} />
             <div className="hs" ref={s3Ref} />
           </div>
